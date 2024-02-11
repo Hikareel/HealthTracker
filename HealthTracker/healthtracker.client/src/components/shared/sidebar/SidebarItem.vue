@@ -33,7 +33,7 @@
         display: flex;
         align-items: center;
         text-decoration: none;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 1.2rem;
         .text{
           display: none;
         }
