@@ -1,25 +1,23 @@
 <template>
   <aside :class="`${is_expanded && 'is-expanded'}`">
-    <!-- <h1 class="app_name">
-      <router-link to="/">HealthTracker</router-link>
-    </h1>
-    <SidebarItem v-for="(link, name) in links" :name="name" :link="link"/> -->
-    <div class="logo">
-      <img src="../../../assets/github.png" alt="Vue"/>
-    </div>
-    <div class="menu-toggle-wrap">
-      <button class="menu-toggle" @click="ToggleMenu">
-        <span class="material-icons">
-          keyboard_double_arrow_right
-        </span>
-      </button>
+    <div class="control">
+      <div class="logo node">
+        <img src="../../../assets/github.png" alt="Logo"/>
+      </div>
+      <div class="menu-toggle-wrap node">
+        <button class="menu-toggle" @click="ToggleMenu">
+          <span class="material-icons">
+            keyboard_double_arrow_right
+          </span>
+        </button>
+      </div>
     </div>
     <div class="menu">
-      <SidebarItem v-for="(link, name) in links" :name="name" :link="link"/>
+      <SidebarItem v-for="obj in Links" v-bind="obj"/>
     </div>
     <div class="flex"></div>
     <div class="menu">
-      <SidebarItem v-for="(link, name) in authLinks" :name="name" :link="link"/>
+      <SidebarItem v-for="obj in AuthLinks" v-bind="obj"/>
     </div>
   </aside>
 </template>
@@ -28,8 +26,6 @@ import SidebarItem from "./SidebarItem.vue";
 import Links from "./sidebarLinks";
 import AuthLinks from "./sidebarAuthLinks";
 import { ref } from "vue";
-const links = Links;
-const authLinks = AuthLinks;
 const is_expanded = ref(false)
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value
@@ -49,19 +45,26 @@ aside {
     flex: 1 1 0;
   }
 
-  .menu-toggle-wrap{
+  .control{
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-    position: relative;
-    top: 0;
-    transition: 0.2s ease-out;
-    .menu-toggle{
+    flex-direction: column;
+    .menu-toggle-wrap{
+      margin-bottom: 1rem;
+      top: 0;
+      align-self: center;
+      margin-right: 0;
       transition: 0.2s ease-out;
-      .material-icons{
-        font-size: 2rem;
-        color: white;
+      .menu-toggle{
+        width: 3rem;
+        transition: 0.5s ease-out;
+        .material-icons{
+          font-size: 2rem;
+          color: white;
+        }
       }
+    }
+    .logo {
+      margin-bottom: 1rem;
     }
   }
 
@@ -71,9 +74,17 @@ aside {
 
   &.is-expanded{
     width: 300px;
-    .menu-toggle-wrap{
-      .menu-toggle{
-        transform: rotate(-180deg);
+    .control{
+      flex-direction: row;
+      justify-content: space-between;
+      .menu-toggle-wrap{
+        justify-items: flex-end;
+        transition: 0.5s ease-out;
+        .menu-toggle{
+          // transform: rotate(-180deg);
+          transform: scaleX(-1);
+          transition: 0.5s ease-out;
+        }
       }
     }
   }
@@ -81,10 +92,6 @@ aside {
   @media (max-width: 768px) {
     position:fixed;
     z-index: 999;
-  }
-
-  .logo {
-    margin-bottom: 1rem;
   }
 }
 </style>
