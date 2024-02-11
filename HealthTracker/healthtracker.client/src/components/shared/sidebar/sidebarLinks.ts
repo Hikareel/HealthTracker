@@ -29,7 +29,7 @@ const Links = reactive({
   6: {
     name: "Community",
     link: "/community",
-    icon: "forum"
+    icon: "groups"
   },
   7: {
     name: "About",

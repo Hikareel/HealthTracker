@@ -4,7 +4,7 @@ const AuthLinks = reactive({
   1: {
     name: "Register",
     link: "/register",
-    icon: "app_registration"
+    icon: "person_add"
   },
   2: {
     name: "Login",
