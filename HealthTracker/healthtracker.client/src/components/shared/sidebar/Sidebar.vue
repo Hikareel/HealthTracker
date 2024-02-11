@@ -13,11 +13,11 @@
       </div>
     </div>
     <div class="menu">
-      <SidebarItem v-for="obj in Links" v-bind="obj"/>
+      <SidebarItem v-for="obj in Links" :item="obj"/>
     </div>
     <div class="flex"></div>
     <div class="menu">
-      <SidebarItem v-for="obj in AuthLinks" v-bind="obj"/>
+      <SidebarItem v-for="obj in AuthLinks" :item="obj"/>
     </div>
   </aside>
 </template>

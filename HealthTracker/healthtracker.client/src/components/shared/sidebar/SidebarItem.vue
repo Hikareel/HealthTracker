@@ -1,30 +1,22 @@
 <template>
   <div class="sidebar_item">
     <p>
-      <router-link class="item" :to="link">
-        <span class="material-icons">{{ icon }}</span>
-        <span class="text">{{ name }}</span>
+      <router-link class="item" :to="`${item.link}`">
+        <span class="material-icons">{{ item.icon }}</span>
+        <span class="text">{{ item.name }}</span>
       </router-link>
     </p>
   </div>
 </template>
-<script lang="ts">
-  export default{
-    props:{
-      name: {
-        type: String,
-        required: true
-      },
-      link:{
-        type: String,
-        required: true
-      },
-      icon:{
-        type: String,
-        required: true
-      }
-    }
+<script lang="ts" setup>
+  interface Item{
+    name: String,
+    link: String,
+    icon: String
   }
+  const props = defineProps<{
+    item: Item
+  }>()
 </script>
 <style lang="scss">
   aside{
