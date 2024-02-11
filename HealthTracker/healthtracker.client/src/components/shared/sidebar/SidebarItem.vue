@@ -1,22 +1,60 @@
 <template>
   <div class="sidebar_item">
-    <p>{{ content }}</p>
+    <p>
+      <router-link class="item" :to="link">
+        <span class="material-icons">home</span>
+        <span class="text">{{ name }}</span>
+      </router-link>
+    </p>
   </div>
 </template>
 <script lang="ts">
   export default{
     props:{
-      content: {
+      name: {
+        type: String,
+        required: true
+      },
+      link:{
         type: String,
         required: true
       }
     }
   }
 </script>
-<style lang="scss" scoped>
-  .sidebar_item p{
-    color: black;
-    font-weight: bold;
-    font-size: large;
+<style lang="scss">
+  aside{
+    .menu{
+      .item{
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        .text{
+          display: none;
+        }
+        &:hover, &.router-link-exact-active{
+          .material-icons, .text{
+            color: greenyellow;
+          }
+        }
+        &.router-link-exact-active{
+          border-right: 5px solid green;
+        }
+      }
+    }
+    .item .text{
+      opacity: 0;
+      transition: 0.1s ease-out;
+    }
+    &.is-expanded{
+      .menu{
+        .item .text{
+          display: flex;
+          opacity: 1;
+          padding-left: 1rem;
+        }
+      }
+    }
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <main class="home-page">
-    <Header title="Home"/>
-    <p>This is a home page</p>
+  <main class="register-page">
+    <Header title="Register"/>
+    <p>This is a register page</p>
   </main>
 </template>
 <script lang="ts" setup>

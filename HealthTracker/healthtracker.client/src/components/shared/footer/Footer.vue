@@ -13,7 +13,7 @@ export default {
   footer{
     margin-top: 20px;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     bottom: 0;
   }
 </style>

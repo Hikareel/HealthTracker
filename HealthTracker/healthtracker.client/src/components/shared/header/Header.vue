@@ -1,20 +1,21 @@
 <template>
   <header>
-    <h1 class="app_name">HealthTracker</h1>
+    <h1 class="app_name">
+      {{ title }}
+    </h1>
   </header>
 </template>
-<script>
+<script lang="ts">
 export default {
-  
+  props:{
+    title: String
+  }
 }
 </script>
 <style>
   header{
-    margin: 20px 0 20px 0;
+    margin: 0 0 20px 0;
     padding: 1rem;
     text-align: center;
-  }
-  .app_name{
-
   }
 </style>

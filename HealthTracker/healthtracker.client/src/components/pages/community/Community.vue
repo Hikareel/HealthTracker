@@ -1,7 +1,7 @@
 <template>
-  <main class="home-page">
-    <Header title="Home"/>
-    <p>This is a home page</p>
+  <main class="community-page">
+    <Header title="Community"/>
+    <p>This is a community page</p>
   </main>
 </template>
 <script lang="ts" setup>

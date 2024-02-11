@@ -1,13 +1,11 @@
 <template>
   <main class="about-page">
-    <h1>About</h1>
+    <Header title="About"/>
     <p>This is a about page</p>
   </main>
 </template>
-<script lang="ts">
-export default {
-  
-}
+<script lang="ts" setup>
+import Header from '../../shared/header/Header.vue'
 </script>
 <style>
   
