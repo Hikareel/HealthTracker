@@ -14,6 +14,8 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
@@ -21,6 +23,14 @@
     <ProjectReference Include="..\healthtracker.client\healthtracker.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\Community\Controllers\" />
+    <Folder Include="Modules\Health\Controllers\" />
+    <Folder Include="Modules\Meals\Controllers\" />
+    <Folder Include="Modules\PhysicalActivity\Controllers\" />
+    <Folder Include="Modules\Users\Controllers\" />
   </ItemGroup>
 
 </Project>
