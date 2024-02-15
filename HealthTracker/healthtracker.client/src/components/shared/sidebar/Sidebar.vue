@@ -90,6 +90,9 @@ aside {
     .logo{
       margin-bottom: auto;
     }
+    @media (max-width: 768px){
+      border-radius: 0 20px 20px 0;
+    }
   }
 
   @media (max-width: 768px) {
