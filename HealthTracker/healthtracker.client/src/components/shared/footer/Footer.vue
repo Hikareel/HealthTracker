@@ -4,12 +4,10 @@
       <SocialLinks/>
       <h1>HealthTracker</h1>
     </div>
-    <Terms/>
   </footer>
 </template>
 <script setup lang="ts">
   import SocialLinks from './components/SocialLinks.vue'
-  import Terms from './components/Terms.vue'
 </script>
 <style lang="scss">
   footer{
