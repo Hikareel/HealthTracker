@@ -7,7 +7,7 @@ import Sidebar from './components/shared/sidebar/Sidebar.vue'
   <div class="main">
     <Sidebar/>
     <div class="content">
-      <RouterView v-slot="{Component}">
+      <RouterView v-slot="{Component}" class="view">
         <Transition name="fade" mode="out-in">
           <component :is="Component"/>
         </Transition>
@@ -28,6 +28,9 @@ import Sidebar from './components/shared/sidebar/Sidebar.vue'
     @media (max-width: 768px) {
       margin-left: 4rem;
     }
+  }
+  .view{
+    min-height: calc(100vh - 116px);
   }
   .fade-enter-from,
   .fade-leave-to {
