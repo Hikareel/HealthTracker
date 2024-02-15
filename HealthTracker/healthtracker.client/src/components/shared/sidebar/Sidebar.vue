@@ -22,9 +22,8 @@
   </aside>
 </template>
 <script lang="ts" setup>
-import SidebarItem from "./SidebarItem.vue";
-import Links from "./sidebarLinks";
-import AuthLinks from "./sidebarAuthLinks";
+import SidebarItem from "./components/SidebarItem.vue";
+import {Links, AuthLinks} from "./data/sidebarLinks";
 import { ref } from "vue";
 const is_expanded = ref(false)
 const ToggleMenu = () => {
@@ -78,15 +77,18 @@ aside {
     .control{
       flex-direction: row;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
       .menu-toggle-wrap{
-        justify-items: flex-end;
         transition: 0.5s ease-out;
         .menu-toggle{
-          // transform: rotate(-180deg);
           transform: scaleX(-1);
           transition: 0.5s ease-out;
         }
       }
+    }
+    .logo{
+      margin-bottom: auto;
     }
   }
 
