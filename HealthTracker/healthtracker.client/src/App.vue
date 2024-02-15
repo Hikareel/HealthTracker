@@ -7,7 +7,11 @@ import Sidebar from './components/shared/sidebar/Sidebar.vue'
   <div class="main">
     <Sidebar/>
     <div class="content">
-      <RouterView/>
+      <RouterView v-slot="{Component}">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component"/>
+        </Transition>
+      </RouterView>
       <Footer />
     </div>
   </div>
@@ -24,5 +28,13 @@ import Sidebar from './components/shared/sidebar/Sidebar.vue'
     @media (max-width: 768px) {
       margin-left: 4rem;
     }
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  .fade-enter-active,
+  .fade-leave-active{
+    transition: opacity 0.3s ease-out;
   }
 </style>
