@@ -9,13 +9,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-  interface Item{
-    name: String,
-    link: String,
-    icon: String
-  }
+  import type { LinkItem } from '../data/sidebarLinks';
   const props = defineProps<{
-    item: Item
+    item: LinkItem
   }>()
 </script>
 <style lang="scss">

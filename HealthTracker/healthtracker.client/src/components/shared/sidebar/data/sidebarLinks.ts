@@ -55,4 +55,11 @@ const AuthLinks = reactive({
     icon: "logout"
   },
 })
-export {Links, AuthLinks}
+
+interface LinkItem{
+  name: String,
+  link: String,
+  icon: String
+}
+export { Links, AuthLinks };
+export type { LinkItem };
