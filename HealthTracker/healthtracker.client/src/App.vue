@@ -1,47 +1,43 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import Footer from './components/shared/footer/Footer.vue'
+import Sidebar from './components/shared/sidebar/Sidebar.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="main">
+    <Sidebar/>
+    <div class="content">
+      <RouterView v-slot="{Component}" class="view">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component"/>
+        </Transition>
+      </RouterView>
+      <Footer />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
+  .main{
     display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
+  .content{
+    margin: 0 auto 0 auto;
+    width: 100vw;
+    flex-direction: column;
+    @media (max-width: 768px) {
+      margin-left: 4rem;
+    }
   }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  .view{
+    min-height: calc(100vh - 116px);
   }
-}
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  .fade-enter-active,
+  .fade-leave-active{
+    transition: opacity 0.3s ease-out;
+  }
 </style>
