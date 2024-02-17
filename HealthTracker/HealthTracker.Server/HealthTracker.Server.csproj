@@ -11,6 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
     </PackageReference>
@@ -35,11 +38,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Core\Interfaces\" />
+    <Folder Include="Core\Helpers\" />
     <Folder Include="Core\Services\" />
     <Folder Include="Modules\Community\Controllers\" />
+    <Folder Include="Modules\Community\DTOs\" />
     <Folder Include="Modules\Health\Controllers\" />
+    <Folder Include="Modules\Health\DTOs\" />
     <Folder Include="Modules\Meals\Controllers\" />
+    <Folder Include="Modules\Meals\DTOs\" />
     <Folder Include="Modules\PhysicalActivity\Controllers\" />
+    <Folder Include="Modules\PhysicalActivity\DTOs\" />
   </ItemGroup>
 
 </Project>
