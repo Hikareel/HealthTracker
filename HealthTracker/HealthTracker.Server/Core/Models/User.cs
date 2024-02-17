@@ -1,19 +1,14 @@
 ﻿using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Health.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace HealthTracker.Server.Core.Models
 {
-    public class User
+    public class User : IdentityUser<int>
     {
-        public int Id { get; set; }
-        [Required]
-        [MaxLength(100, ErrorMessage = "Must be 100 characters or less!")]
-        public string Email { get; set; }
-        [Required]
-        [MaxLength(75, ErrorMessage = "Must be 75 characters or less!")] //Koduje bodajże do 72 znaków
-        public string PasswordHash { get; set; }
+        
         [MaxLength(100, ErrorMessage = "Must be 100 characters or less!")]
         public string FirstName { get; set; }
         [MaxLength(100, ErrorMessage = "Must be 100 characters or less!")]

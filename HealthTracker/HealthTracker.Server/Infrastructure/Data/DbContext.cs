@@ -3,11 +3,13 @@ using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Health.Models;
 using HealthTracker.Server.Modules.Meals.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Infrastrucure.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
