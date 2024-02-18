@@ -1,11 +1,12 @@
 interface RegisterModel {
+  Email: string,
+  UserName: string,
   FirstName: string,
   LastName: string,
-  Password: string,
-  ConfirmPassword: string,
-  Email: string,
-  DateOfBirth: Date,
-  tel: string
+  PhoneNumber: string,
+  DateOfBirth: string,
+  password: string,
+  password_confirmation: string
 }
 
 export type { RegisterModel }

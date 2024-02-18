@@ -41,7 +41,7 @@ const router = createRouter({
       component: Community
     },
     {
-      path: '/register',
+      path: '/register-form',
       component: Register
     },
     {
