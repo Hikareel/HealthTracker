@@ -2,6 +2,9 @@
     <p v-for="msg in er" class="error_msg">
       {{ msg }}
     </p>
+    <p class="registered">
+      {{ isRegistered }}
+    </p>
     <Vueform id="form" v-model="formData" :on-submit="preventSubmit" :display-errors="false" sync>
       <GroupElement name="name" before="Name">
         <TextElement v-model="formData.FirstName" name="FirstName" 
@@ -31,20 +34,30 @@
         <TextElement v-model="formData.password_confirmation" name="password_confirmation" 
                       label="Confirm Password" input-type="password" rules="required"/>
       </GroupElement>
-      <ButtonElement 
-        name="submit" 
-        button-label="Register"
-        :submits="true"
-        align="center"/>
+      <GroupElement name="controll">
+        <ButtonElement
+          id="reset_button"
+          name="reset" 
+          button-label="Reset"
+          :danger="true"
+          :resets="true"
+          align="center"/>
+        <ButtonElement
+          name="submit" 
+          button-label="Register"
+          :submits="true"
+          align="center"/>
+      </GroupElement>
     </Vueform>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref  } from 'vue';
 import type { RegisterModel } from '../data/registerDataModel';
 import axios from 'axios';
 
 const er = ref<string[]>([])
+const isRegistered = ref("")
 
 const formData = ref<RegisterModel>({
   Email: '',
@@ -76,6 +89,11 @@ const preventSubmit = async () => {
       er.value.push(element.description)
     });
   }
+  if(response.message == "User registered successfully"){
+    isRegistered.value = "User registered successfully"
+    er.value.splice(0, er.value.length)
+    document.getElementById('reset_button')!.click()
+  }
 }
 </script>
 
@@ -88,6 +106,11 @@ const preventSubmit = async () => {
   }
   .error_msg{
     color: rgb(231, 48, 48);
+    margin: auto;
+    max-width: 300px;
+  }
+  .registered{
+    color: rgb(101, 252, 0);
     margin: auto;
     max-width: 300px;
   }
