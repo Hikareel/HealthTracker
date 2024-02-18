@@ -28,7 +28,7 @@ namespace HealthTracker.Server.Infrastructure.Repositories
         {
             var user = new User
             {
-                UserName = userDto.Email,
+                UserName = userDto.UserName,
                 Email = userDto.Email,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
@@ -37,7 +37,7 @@ namespace HealthTracker.Server.Infrastructure.Repositories
                 DateOfCreate = DateTime.UtcNow
             };
 
-            return await _userManager.CreateAsync(user, userDto.Password);
+            return await _userManager.CreateAsync(user, userDto.password);
         }
 
         public async Task<string> LoginAsync(LoginDto loginDto)
