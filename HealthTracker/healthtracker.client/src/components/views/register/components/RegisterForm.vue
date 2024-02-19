@@ -51,14 +51,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive  } from 'vue';
+import { ref } from 'vue';
 import type { RegisterModel } from '../data/registerDataModel';
 import axios from 'axios';
 
 const er = ref<string[]>([])
 const isRegistered = ref("")
 
-const formData = reactive<RegisterModel>({
+const formData = ref<RegisterModel>({
   Email: '',
   UserName: '',
   FirstName: '',
@@ -70,12 +70,14 @@ const formData = reactive<RegisterModel>({
 });
 
 const preventSubmit = async () => {
-  formData.DateOfBirth = new Date(formData.DateOfBirth).toISOString()
+  er.value.splice(0, er.value.length)
+  isRegistered.value = ''
+  formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
   let response
   try{
     const {data} = await axios.post(
       '/api/register',
-      JSON.stringify(formData),
+      JSON.stringify(formData.value),
       {
         headers: {
           "Content-Type": "application/json",
@@ -83,12 +85,11 @@ const preventSubmit = async () => {
       }
     );
     response = data
-    if(response.message == "User registered successfully"){
-      isRegistered.value = "User registered successfully"
-      er.value.splice(0, er.value.length)
-      document.getElementById('reset_button')!.click()
-    }
+    isRegistered.value = response.message
+    document.getElementById('reset_button')!.click()
   } catch (error: any){
+    formData.value.Password = ''
+    formData.value.Password_confirmation = ''
     error.response.data.forEach((element: { description: string; }) => {
       er.value.push(element.description)
     });
