@@ -5,8 +5,8 @@ interface RegisterModel {
   LastName: string,
   PhoneNumber: string,
   DateOfBirth: string,
-  password: string,
-  password_confirmation: string
+  Password: string,
+  Password_confirmation: string
 }
 
 export type { RegisterModel }
