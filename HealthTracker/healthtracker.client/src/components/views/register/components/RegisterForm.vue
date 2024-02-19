@@ -5,7 +5,7 @@
     <p class="registered">
       {{ isRegistered }}
     </p>
-    <Vueform id="form" v-model="formData" :on-submit="preventSubmit" :display-errors="false" sync>
+    <Vueform id="form" v-model="formData" @submit="preventSubmit" :endpoint="false" :display-errors="false" sync>
       <GroupElement name="name" before="Name">
         <TextElement v-model="formData.FirstName" name="FirstName" 
                       placeholder="First Name" rules="required|max:100"/>
