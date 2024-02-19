@@ -13,4 +13,6 @@ Packages - FrontEnd:
  - vue-router
  - sass
  - --save-dev @types/vue
+ - npm i @vueform/vueform
+ - npm install --save axios vue-axios
  

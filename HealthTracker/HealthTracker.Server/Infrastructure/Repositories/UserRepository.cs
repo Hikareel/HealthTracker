@@ -26,9 +26,15 @@ namespace HealthTracker.Server.Infrastructure.Repositories
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto)
         {
+            var userExists = await _userManager.FindByEmailAsync(userDto.Email);
+            if (userExists != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "400", Description = $"E-mail '{userDto.Email}' is already taken." });
+            }
+
             var user = new User
             {
-                UserName = userDto.Email,
+                UserName = userDto.UserName,
                 Email = userDto.Email,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,

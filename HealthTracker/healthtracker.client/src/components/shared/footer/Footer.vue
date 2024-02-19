@@ -22,5 +22,9 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    @media (max-width: 550px) {
+        gap: 1rem;
+        flex-direction: column;
+      }
   }
 </style>
