@@ -2,12 +2,12 @@
   <main class="home-page">
     <Header title="Home" />
     <div class="main-view">
-      <HomeMainField @click="redirectorTo()" class="home-main-field"/>
-      <HomeMainField class="home-main-field"/>
-      <HomeMainField class="home-main-field"/>
-      <HomeMainField class="home-main-field"/>
-      <HomeMainField class="home-main-field"/>
-      <HomeMainField class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('Diary')" class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('Planner')" class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('Health')" class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('Goals')" class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('Community')" class="home-main-field"/>
+      <HomeMainField @click="redirectorTo('About')" class="home-main-field"/>
     </div>
 
   </main>
@@ -15,9 +15,12 @@
 <script lang="ts" setup>
 import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
+import { useRouter } from 'vue-router';
 
-function redirectorTo(){
-  console.log("click")
+const router = useRouter();
+
+function redirectorTo(url: string){
+  router.push({ name: url });
 }
 
 </script>
