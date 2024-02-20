@@ -2,12 +2,11 @@
   <main class="home-page">
     <Header title="Home" />
     <div class="main-view">
-      <HomeMainField @click="redirectorTo('Diary')" class="home-main-field"/>
-      <HomeMainField @click="redirectorTo('Planner')" class="home-main-field"/>
-      <HomeMainField @click="redirectorTo('Health')" class="home-main-field"/>
-      <HomeMainField @click="redirectorTo('Goals')" class="home-main-field"/>
-      <HomeMainField @click="redirectorTo('Community')" class="home-main-field"/>
-      <HomeMainField @click="redirectorTo('About')" class="home-main-field"/>
+      <div v-for="(link, index) in objectToArray(Links).slice(1)" :key="index">
+        <RouterLink :to="`${link.link}`">
+          <HomeMainField class="home-main-field"/>
+        </RouterLink>
+      </div>
     </div>
 
   </main>
@@ -15,14 +14,8 @@
 <script lang="ts" setup>
 import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
-function redirectorTo(url: string){
-  router.push({ name: url });
-}
-
+import { Links } from '../../shared/sidebar/data/sidebarLinks'
+const objectToArray = (obj: Object) => Object.values(obj)
 </script>
 <style scope>
 .home-main-field {
@@ -36,9 +29,11 @@ function redirectorTo(url: string){
 }
 
 .main-view {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
   text-align: center;
-  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
 }
 
 @media (max-width: 600px) {

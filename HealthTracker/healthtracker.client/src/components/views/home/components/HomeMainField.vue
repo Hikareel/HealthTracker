@@ -11,9 +11,11 @@
     </main>
 </template>
 
-<script>
+<script lang="ts" setup>
+
 </script>
-<style lang="scss" scope>
+
+<style scoped lang="scss">
 .border {
     padding: 10px;
     border-radius: 25px 5px;
@@ -25,8 +27,8 @@
 
 .main-box {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 400px;
+    height: 200px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
