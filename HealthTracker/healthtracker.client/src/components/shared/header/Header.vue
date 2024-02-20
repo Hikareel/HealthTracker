@@ -14,8 +14,13 @@ export default {
 </script>
 <style>
   header{
-    margin: 0 0 20px 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
     padding: 1rem;
+    z-index: 99;
     text-align: center;
+    background: #121414;
   }
 </style>

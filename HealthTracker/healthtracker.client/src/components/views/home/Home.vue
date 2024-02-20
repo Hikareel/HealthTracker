@@ -2,11 +2,10 @@
   <main class="home-page">
     <Header title="Home" />
     <div class="main-view">
-      <div v-for="(link, index) in objectToArray(Links).slice(1)" :key="index">
-        <RouterLink :to="`${link.link}`">
+        <RouterLink v-for="(link, index) in objectToArray(Links).slice(1)"
+                    :key="index" :to="`${link.link}`" class="segment">
           <HomeMainField class="home-main-field"/>
         </RouterLink>
-      </div>
     </div>
 
   </main>
@@ -27,8 +26,13 @@ const objectToArray = (obj: Object) => Object.values(obj)
 .home-main-field:click{
   cursor:progress;
 }
+.segment:hover{
+  background-color: transparent;
+  text-decoration: none;
+}
 
 .main-view {
+  padding-top: 4rem;
   display: flex;
   flex-wrap: wrap;
   margin: auto;
