@@ -18,8 +18,8 @@
     padding: 10px;
     border-radius: 25px 5px;
     border: 4px solid #000000;
-    -webkit-box-shadow:5px 5px 15px 5px #ffffff;
-    -moz-box-shadow:5px 5px 15px 5px #ffffff;
+    -webkit-box-shadow:5px 5px 15px 5px #808080;
+    -moz-box-shadow:5px 5px 15px 5px #808080;
     box-shadow:5px 5px 15px 5px #808080;
 }
 

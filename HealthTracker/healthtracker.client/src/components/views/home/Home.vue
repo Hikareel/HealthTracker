@@ -2,7 +2,7 @@
   <main class="home-page">
     <Header title="Home" />
     <div class="main-view">
-      <HomeMainField class="home-main-field"/>
+      <HomeMainField @click="redirectorTo()" class="home-main-field"/>
       <HomeMainField class="home-main-field"/>
       <HomeMainField class="home-main-field"/>
       <HomeMainField class="home-main-field"/>
@@ -15,10 +15,21 @@
 <script lang="ts" setup>
 import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
+
+function redirectorTo(){
+  console.log("click")
+}
+
 </script>
 <style scope>
 .home-main-field {
   margin: 4%;
+}
+.home-main-field:hover{
+  cursor:pointer;
+}
+.home-main-field:click{
+  cursor:progress;
 }
 
 .main-view {
