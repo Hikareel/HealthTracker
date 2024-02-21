@@ -1,5 +1,7 @@
 <template>
-    <p v-for="msg in er" class="error_msg">
+  <div class="register-main">
+    <div class="register-form">
+      <p v-for="msg in er" class="error_msg">
       {{ msg }}
     </p>
     <p class="registered">
@@ -7,25 +9,31 @@
     </p>
     <Vueform id="form" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false" :display-errors="false" sync>
       <GroupElement name="name" before="Name">
-        <TextElement name="FirstName" placeholder="First Name" rules="required|max:100"/>
-        <TextElement name="LastName" placeholder="Last Name" rules="required|max:100"/>
+        <TextElement name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{
+          default: 12,
+          sm: 6
+        }"/>
+        <TextElement name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{
+          default: 12,
+          sm: 6
+        }"/>
       </GroupElement>
       <GroupElement name="email_username">
-        <TextElement name="Email" label="Email" placeholder="user@domain.com" 
-                      input-type="email" rules="required|email"/>
+          <TextElement name="Email" label="Email" placeholder="user@domain.com" 
+                        input-type="email" rules="required|email"/>
+          <TextElement name="PhoneNumber" label="Phone nr." placeholder="123456789" 
+                          input-type="tel" rules="regex:/^(?:[0-9]{9})?$/"/>
+          <TextElement name="UserName" 
+                        label="Username" rules="required|max:100|min:3"/>
       </GroupElement>
-        <TextElement name="UserName" 
-                      label="Username" rules="required|max:100"/>
+        
       
-      <GroupElement name="dob_phone">
-        <DateElement name="DateOfBirth" label="Birth Date"
-                      display-format="MMMM DD, YYYY" rules="required"/>
-        <TextElement name="PhoneNumber" label="Phone nr." placeholder="123456789" 
-                      input-type="tel" rules="regex:/^(?:[0-9]{9})?$/"
-                      />
+      <GroupElement name="date">
+        <DateElement name="DateOfBirth" label="Birth Date" 
+                      display-format="MMMM DD, YYYY" rules="required|before:today"/>
       </GroupElement>
       <GroupElement name="password">
-        <TextElement info="Password and Password Confirmation must match" name="Password" label="Password" placeholder="Password" input-type="password" 
+        <TextElement info="Password and Confirm password must match" name="Password" label="Password" placeholder="Password" input-type="password" 
                       rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/"
                       :messages="{
                         regex: 'At least one character of type: alphanumeric, capital letter, number'
@@ -38,16 +46,28 @@
           name="reset" 
           button-label="Clear"
           type="reset"
+          align="right"
           :danger="true"
           :resets="true"
-          align="center"/>
+          :columns="{
+          default: 5,
+          sm: 5
+          }"
+          />
         <ButtonElement
           name="submit" 
           button-label="Register"
+          align="left"
           :submits="true"
-          align="center"/>
+          :columns="{
+          default: 7,
+          sm: 7
+          }"
+          />
       </GroupElement>
     </Vueform>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -104,7 +124,17 @@ const preventSubmit = async () => {
   max-width: 300px;
   margin: auto;
 }
-
+.register-main{
+  margin-top: rem;
+}
+.register-form{
+  display: block;
+  margin: auto;
+  background-color: white;
+  max-width: calc(300px + 6rem);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
 .error_msg {
   color: rgb(231, 48, 48);
   margin: auto;
