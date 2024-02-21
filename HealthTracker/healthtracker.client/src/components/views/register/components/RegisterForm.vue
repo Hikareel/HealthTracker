@@ -5,7 +5,7 @@
     <p class="registered">
       {{ isRegistered }}
     </p>
-    <Vueform id="form" v-model="formData" @submit="preventSubmit" :endpoint="false" :display-errors="false" sync>
+    <Vueform id="form" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false" :display-errors="false" sync>
       <GroupElement name="name" before="Name">
         <TextElement name="FirstName" placeholder="First Name" rules="required|max:100"/>
         <TextElement name="LastName" placeholder="Last Name" rules="required|max:100"/>
@@ -13,9 +13,10 @@
       <GroupElement name="email_username">
         <TextElement name="Email" label="Email" placeholder="user@domain.com" 
                       input-type="email" rules="required|email"/>
+      </GroupElement>
         <TextElement name="UserName" 
                       label="Username" rules="required|max:100"/>
-      </GroupElement>
+      
       <GroupElement name="dob_phone">
         <DateElement name="DateOfBirth" label="Birth Date"
                       display-format="MMMM DD, YYYY" rules="required"/>
@@ -24,19 +25,18 @@
                       />
       </GroupElement>
       <GroupElement name="password">
-        <TextElement name="Password" label="Password" input-type="password" 
+        <TextElement info="Password and Password Confirmation must match" name="Password" label="Password" placeholder="Password" input-type="password" 
                       rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/"
                       :messages="{
                         regex: 'At least one character of type: alphanumeric, capital letter, number'
                       }"/>
-        <TextElement name="Password_confirmation" 
-                      label="Confirm Password" input-type="password" rules="required"/>
+        <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password" rules="required"/>
       </GroupElement>
       <GroupElement name="controll">
         <ButtonElement
           id="reset_button"
           name="reset" 
-          button-label="Reset"
+          button-label="Clear"
           type="reset"
           :danger="true"
           :resets="true"
