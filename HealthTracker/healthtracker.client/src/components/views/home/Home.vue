@@ -14,11 +14,10 @@
 import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
 import { Links } from '../../shared/sidebar/data/sidebarLinks'
-//const objectToArray = (obj: Object) => Object.values(obj)
 </script>
 <style scope>
-.home-main-field {
-  margin: 4%;
+.segment{
+  margin: 1rem;
 }
 .home-main-field:hover{
   cursor:pointer;
@@ -32,10 +31,10 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
 }
 
 .main-view {
-  padding-top: 4rem;
+  padding-top: 5rem;
   display: flex;
   flex-wrap: wrap;
-  margin: auto;
+  margin-left: calc(2rem + 32px);
   text-align: center;
   justify-content: center;
 }

@@ -39,7 +39,7 @@ aside {
   min-height: 100vh;
   background-color: #aaa;
   padding: 1rem;
-  transition: 0.3s ease-out;
+  transition: width 0.3s ease-out;
   z-index: 999;
 
   .flex{
@@ -53,9 +53,9 @@ aside {
       top: 0;
       //align-self: center;
       margin-right: 0;
-      transition: 0.2s ease-out;
+      //transition: 0.2s ease-out;
       .menu-toggle{
-        transition: 0.5s ease-out;
+        //transition: 0.5s ease-out;
         background-color: #aaa;
         border: none;
         cursor: pointer;
@@ -89,7 +89,6 @@ aside {
       //align-items: left;
       //margin-bottom: 1rem;
       .menu-toggle-wrap{
-        transition: 0.5s ease-out;
         .menu-toggle{
           transform: scaleX(-1);
           transition: 0.5s ease-out;
@@ -107,9 +106,6 @@ aside {
   @media (max-width: 768px) {
     position:fixed;
     z-index: 999;
-    &.is-expanded{
-      width: 250px;
-    }
 
   }
 }

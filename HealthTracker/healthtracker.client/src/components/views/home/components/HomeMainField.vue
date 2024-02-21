@@ -1,5 +1,7 @@
 <template>
     <main>
+        <!-- <RouterLink v-for="(link, index) in Object.values(Links).slice(1)"
+                    :key="index" :to="`${link.link}`" class="segment"> -->
         <div class="border">
             <div class="main-box">
                 <div class="top-left">top-left</div>
@@ -17,21 +19,20 @@
 
 <style scoped lang="scss">
 .border {
-    padding: 10px;
+    padding: 20px;
     border-radius: 25px 5px;
+    width: 35rem;
+    height: 20rem;
     border: 4px solid #000000;
-    -webkit-box-shadow:5px 5px 15px 5px #808080;
-    -moz-box-shadow:5px 5px 15px 5px #808080;
-    box-shadow:5px 5px 15px 5px #808080;
+     -webkit-box-shadow:5px 5px 5px 5px #808080;
+     -moz-box-shadow:5px 5px 5px 5px #808080;
+     box-shadow:5px 5px 5px 5px #808080;
 }
 
 .main-box {
     position: relative;
-    width: 400px;
-    height: 200px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
 }
 
 .main-box>div {
