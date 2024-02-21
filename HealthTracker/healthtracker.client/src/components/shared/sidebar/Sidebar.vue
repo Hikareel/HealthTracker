@@ -50,12 +50,12 @@ aside {
     display: flex;
     flex-direction: column;
     .menu-toggle-wrap{
-      top: 0;
-      margin-right: 0;
+      margin: 0 -0.4rem;
       .menu-toggle{
         background-color: #aaa;
         border: none;
         cursor: pointer;
+        transition: 0.5s ease-out;
         .material-icons{
           font-size: 2rem;
           color: white;
@@ -79,7 +79,12 @@ aside {
   &.is-expanded{
     width: 14rem;
     .control{
+      display: flex;
+      flex-direction: column;
       .menu-toggle-wrap{
+        width: min-content;
+        right: 0;
+        align-self: flex-start;
         .menu-toggle{
           transform: scaleX(-1);
           transition: 0.5s ease-out;
