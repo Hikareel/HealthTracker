@@ -2,7 +2,7 @@
   <aside :class="`${is_expanded && 'is-expanded'}`">
     <div class="control">
       <div class="logo">
-          <img src="../../../assets/github.png" alt="Logo"/>
+          <img src="../../../assets/LogoHT.png" class="logo-img" alt="Logo"/>
       </div>
       <div class="menu-toggle-wrap">
         <button class="menu-toggle" @click="ToggleMenu">
@@ -32,13 +32,15 @@ const ToggleMenu = () => {
 </script>
 <style lang="scss" scoped>
 aside {
+  position: fixed;
   display: flex;
   flex-direction: column;
   width: calc(2rem + 32px);
   min-height: 100vh;
   background-color: #aaa;
   padding: 1rem;
-  transition: 0.2s ease-out;
+  transition: width 0.3s ease-out;
+  z-index: 999;
 
   .flex{
     flex: 1 1 0;
@@ -48,23 +50,25 @@ aside {
     display: flex;
     flex-direction: column;
     .menu-toggle-wrap{
-      top: 0;
-      align-self: center;
-      margin-right: 0;
-      transition: 0.2s ease-out;
+      margin: 0 -0.4rem;
       .menu-toggle{
-        transition: 0.5s ease-out;
         background-color: #aaa;
         border: none;
         cursor: pointer;
+        transition: 0.5s ease-out;
         .material-icons{
           font-size: 2rem;
           color: white;
         }
       }
     }
+
+    .logo-img{
+      width: 2rem;
+      margin: 0;
+    }
     .logo {
-      margin-bottom: 1rem;
+      text-align: center;
     }
   }
 
@@ -73,14 +77,14 @@ aside {
   }
 
   &.is-expanded{
-    width: 300px;
+    width: 14rem;
     .control{
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
       .menu-toggle-wrap{
-        transition: 0.5s ease-out;
+        width: min-content;
+        right: 0;
+        align-self: flex-start;
         .menu-toggle{
           transform: scaleX(-1);
           transition: 0.5s ease-out;
@@ -98,9 +102,6 @@ aside {
   @media (max-width: 768px) {
     position:fixed;
     z-index: 999;
-    &.is-expanded{
-      width: 250px;
-    }
 
   }
 }
