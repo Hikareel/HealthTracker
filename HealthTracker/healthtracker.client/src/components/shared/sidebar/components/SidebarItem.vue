@@ -15,39 +15,44 @@
   }>()
 </script>
 <style lang="scss">
-  aside{
-    .menu{
-      .item{
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        padding: 0.5rem 1.2rem;
-        .text{
-          display: none;
-        }
-        &:hover, &.router-link-exact-active{
-          .material-icons, .text{
-            color: greenyellow;
-          }
-        }
-        &.router-link-exact-active{
-          border-right: 5px solid  greenyellow;;
+aside{
+  .menu{
+    .item{
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+
+      &:hover, &.router-link-exact-active{
+        .material-icons, .text{
+          color: greenyellow;
         }
       }
-    }
-    .item .text{
-      opacity: 0;
-      transition: 0.5s ease;
-    }
-    &.is-expanded{
-      .menu{
-        .item .text{
-          display: flex;
-          opacity: 1;
-          padding-left: 1rem;
-          transition: 0.5s ease;
-        }
+
+      &.router-link-exact-active{
+        border-right: 5px solid greenyellow;
+      }
+
+      .text{
+        padding-left: 1rem;
+        transition: opacity 0.5s ease, font-size 0.35s ease;
+        font-size: 0;
+        opacity: 0;
       }
     }
   }
+
+  &.is-expanded{
+    .menu{
+      .item .text{
+        transition: font-size 0.5s ease;
+        padding-left: 1rem;
+        opacity: 1;
+        font-size: medium;
+      }
+    }
+  }
+}
+
+
 </style>

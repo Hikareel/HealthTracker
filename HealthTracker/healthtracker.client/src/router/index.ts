@@ -14,38 +14,47 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'Home',
       component: Home
     },
     {
       path: '/about',
+      name: 'About',
       component: About
     },
     {
       path: '/diary',
+      name: 'Diary',
       component: Diary
     },
     {
       path: '/planner',
+      name: 'Planner',
       component: TreningsPlanner
     },
     {
       path: '/health',
+      name: 'Health',
       component: Health
     },
     {
       path: '/goals',
+      name: 'Goals',
       component: Goals
     },
     {
       path: '/community',
+      name: 'Community',
       component: Community
     },
     {
       path: '/register',
+      name: 'Register',
       component: Register
     },
     {
       path: '/login',
+      name: 'Login',
       component: Login
     }
   ]

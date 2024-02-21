@@ -74,8 +74,8 @@ const preventSubmit = async () => {
   isRegistered.value = ''
   formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
   let response
-  try{
-    const {data} = await axios.post(
+  try {
+    const { data } = await axios.post(
       '/api/register',
       JSON.stringify(formData.value),
       {
@@ -87,7 +87,7 @@ const preventSubmit = async () => {
     response = data
     isRegistered.value = response.message
     document.getElementById('reset_button')!.click()
-  } catch (error: any){
+  } catch (error: any) {
     formData.value.Password = ''
     formData.value.Password_confirmation = ''
     error.response.data.forEach((element: { description: string; }) => {
@@ -98,20 +98,22 @@ const preventSubmit = async () => {
 </script>
 
 <style scoped>
-  #form{
-    display: flex;
-    flex-direction: column;
-    max-width: 300px;
-    margin: auto;
-  }
-  .error_msg{
-    color: rgb(231, 48, 48);
-    margin: auto;
-    max-width: 300px;
-  }
-  .registered{
-    color: rgb(101, 252, 0);
-    margin: auto;
-    max-width: 300px;
-  }
+#form {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: auto;
+}
+
+.error_msg {
+  color: rgb(231, 48, 48);
+  margin: auto;
+  max-width: 300px;
+}
+
+.registered {
+  color: rgb(101, 252, 0);
+  margin: auto;
+  max-width: 300px;
+}
 </style>
