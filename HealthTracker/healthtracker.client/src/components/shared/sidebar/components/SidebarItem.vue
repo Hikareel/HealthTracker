@@ -35,7 +35,7 @@ aside{
 
       .text{
         padding-left: 1rem;
-        transition: opacity 0.5s ease, font-size 0.5s ease;
+        transition: opacity 0.5s ease, font-size 0.35s ease;
         font-size: 0;
         opacity: 0;
       }
@@ -45,6 +45,7 @@ aside{
   &.is-expanded{
     .menu{
       .item .text{
+        transition: font-size 0.5s ease;
         padding-left: 1rem;
         opacity: 1;
         font-size: medium;

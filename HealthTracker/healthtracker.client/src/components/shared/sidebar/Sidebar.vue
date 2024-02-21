@@ -51,11 +51,8 @@ aside {
     flex-direction: column;
     .menu-toggle-wrap{
       top: 0;
-      //align-self: center;
       margin-right: 0;
-      //transition: 0.2s ease-out;
       .menu-toggle{
-        //transition: 0.5s ease-out;
         background-color: #aaa;
         border: none;
         cursor: pointer;
@@ -71,7 +68,6 @@ aside {
       margin: 0;
     }
     .logo {
-      //margin-bottom: 1rem;
       text-align: center;
     }
   }
@@ -81,13 +77,8 @@ aside {
   }
 
   &.is-expanded{
-    width: 300px;
+    width: 14rem;
     .control{
-      
-      //flex-direction: row;
-      //justify-content: space-between;
-      //align-items: left;
-      //margin-bottom: 1rem;
       .menu-toggle-wrap{
         .menu-toggle{
           transform: scaleX(-1);

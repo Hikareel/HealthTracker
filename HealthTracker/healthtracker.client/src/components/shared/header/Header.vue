@@ -15,7 +15,7 @@ export default {
 <style>
   header{
     top: 0;
-    left: 0;
+    left: calc(2rem + 32px);
     right: 0;
     position: fixed;
     padding: 1rem;
