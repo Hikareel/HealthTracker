@@ -2,7 +2,7 @@
   <main class="home-page">
     <Header title="Home" />
     <div class="main-view">
-        <RouterLink v-for="(link, index) in objectToArray(Links).slice(1)"
+        <RouterLink v-for="(link, index) in Object.values(Links).slice(1)"
                     :key="index" :to="`${link.link}`" class="segment">
           <HomeMainField class="home-main-field"/>
         </RouterLink>
@@ -14,7 +14,7 @@
 import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
 import { Links } from '../../shared/sidebar/data/sidebarLinks'
-const objectToArray = (obj: Object) => Object.values(obj)
+//const objectToArray = (obj: Object) => Object.values(obj)
 </script>
 <style scope>
 .home-main-field {
