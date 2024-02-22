@@ -1,7 +1,7 @@
 <template>
   <div class="register-main">
     <div class="register-form">
-      <p class="registration-label">Registration</p><i class='bi bi-pencil'></i>
+      <p class="registration-label">Registration</p>
       <p v-for="msg in er" class="error_msg">
         {{ msg }}
       </p>
@@ -9,58 +9,78 @@
         {{ isRegistered }}
       </p>
       <Vueform id="form" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false" :display-errors="false" sync>
-        <GroupElement name="name" before="Name">
-          <TextElement :addons="{ before: { template: `<i class='bi bi-pencil'></i>` } }" name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{ default: 6, sm: 6 }"/>
-
-          <TextElement name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{
-            default: 6,
-            sm: 6
-          }"/>
+        <GroupElement name="name" before="Name" :add-class="'name_el'">
+          <TextElement :addons="{ 
+              before: `<i class='bi bi-pencil-fill'></i>`
+            }" 
+          name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{ xs: 12, sm: 6 }"/>
+          <TextElement :addons="{ 
+              before: `<i class='bi bi-pencil-fill'></i>`
+            }" 
+            name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{ xs: 12, sm: 6 }"/>
         </GroupElement>
         <GroupElement name="email_username">
             <TextElement name="Email" label="Email" placeholder="user@domain.com" 
-                          input-type="email" rules="required|email"/>
+                          input-type="email" rules="required|email"
+                          :addons="{ 
+                            before: `<i class='bi bi-envelope-at-fill'></i>`
+                          }"/>
             <TextElement name="PhoneNumber" label="Phone nr." placeholder="123456789" 
-                            input-type="tel" rules="regex:/^(?:[0-9]{9})?$/"/>
-            <TextElement name="UserName" 
-                          label="Username" rules="required|max:100|min:3"/>
+                            input-type="tel" rules="regex:/^(?:[0-9]{9})?$/"
+                            :addons="{ 
+                              before: `<i class='bi bi-telephone-fill'></i>`
+                            }"/>
+            <TextElement name="UserName" placeholder="user_name"
+                          label="Username" rules="required|max:100|min:3"
+                          :addons="{ 
+                            before: `<i class='bi bi-person-fill'></i>`
+                          }"/>
         </GroupElement>
           
         
         <GroupElement name="date">
-          <DateElement name="DateOfBirth" label="Birth Date" 
-                        display-format="MMMM DD, YYYY" rules="required|before:today"/>
+          <DateElement name="DateOfBirth" label="Birth Date" placeholder="January 01, 2000"
+                        display-format="MMMM DD, YYYY" rules="required|before:today"
+                        :addons="{ 
+                          before: `<i class='bi bi-calendar3'></i>`
+                        }"/>
         </GroupElement>
         <GroupElement name="password">
           <TextElement info="Password and Confirm password must match" name="Password" label="Password" placeholder="Password" input-type="password" 
                         rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/"
                         :messages="{
                           regex: 'At least one character of type: alphanumeric, capital letter, number'
+                        }"
+                        :addons="{ 
+                          before: `<i class='bi bi-lock-fill'></i>`
+                        }" />
+          <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password" rules="required"
+                        :addons="{ 
+                          before: `<i class='bi bi-lock-fill'></i>`
                         }"/>
-          <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password" rules="required"/>
         </GroupElement>
         <GroupElement name="controll">
           <ButtonElement
             id="reset_button"
             name="reset" 
-            button-label="Clear"
+            button-label="<i class='bi bi-arrow-clockwise'></i>"
             type="reset"
-            align="right"
+            align="left"
             :danger="true"
             :resets="true"
             :columns="{
-            default: 5,
-            sm: 5
+              container: 1,
+              wrapper: 1
             }"
             />
           <ButtonElement
             name="submit" 
             button-label="Register"
-            align="left"
+            align="right"
             :submits="true"
             :columns="{
-            default: 7,
-            sm: 7
+              container: 11,
+              label: 10
             }"
             />
         </GroupElement>
@@ -121,40 +141,34 @@ const preventSubmit = async () => {
 #form {
   max-width: 300px;
   color: #000000;
+  margin-top: 1rem;
 }
 .registration-label{
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 26px;
-  letter-spacing: 0px;
-  word-spacing: 2px;
   color: #000000;
-  font-weight: 700;
-  text-decoration: none;
-  font-style: normal;
+  font-weight: 800;
   font-variant: small-caps;
-  text-transform: none;
-  text-shadow: 1px 0px 1px #CCCCCC;
-
 }
 .register-main{
-  width:100%;
+  min-width:fit-content;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .register-form{
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem;
   padding: 1rem 5rem 1rem 5rem;
   background-color:white;
   width: fit-content;
   border-radius: 50px;
-  border-bottom: 5px groove #8b8b8b;
-  border-top: 5px groove #8b8b8b;
-  border-width: 10px;
+  border: 2px solid #8b8b8b;
   box-shadow: 0 4px 30px rgba(216, 199, 199, 0.7);
+  @media (max-width: 550px) {
+    padding: 1rem 2rem 1rem 2rem;
+  }
 }
 .error_msg {
   color: rgb(209, 0, 0);
@@ -166,5 +180,12 @@ const preventSubmit = async () => {
   color: rgb(101, 252, 0);
   margin: auto;
   max-width: 300px;
+}
+
+.name_el{
+  @media (max-width: 550px) {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

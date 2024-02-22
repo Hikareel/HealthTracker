@@ -6,12 +6,12 @@ import Header from './components/shared/header/Header.vue'
 
 <template>
   <div class="main">
-    <Sidebar/>
+    <Sidebar />
     <div class="content">
-      <Header title="HealthTracker"/>
-      <RouterView v-slot="{Component}" class="view">
+      <Header title="HealthTracker" />
+      <RouterView v-slot="{Component}" >
         <Transition name="fade" mode="out-in">
-          <component :is="Component"/>
+          <component :is="Component" class="view"/>
         </Transition>
       </RouterView>
       <Footer />
@@ -22,21 +22,19 @@ import Header from './components/shared/header/Header.vue'
 <style scoped>
   .main{
     display: flex;
-  }
-  .content{
-    margin: auto;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    @media (max-width: 768px) {
-      margin-left: 4rem;
+    .content{
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      .view{
+        width: calc(100vw - 4rem);
+        margin-left: 4rem;
+        padding-top: 4rem;
+        min-height: calc(100vh - 20px - 4rem);
+      }
     }
   }
-  .view{
-    padding-top: 4rem;
-    padding-left: calc(2rem + 32px);
-    min-height: calc(100vh - 116px);
-  }
+
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;

@@ -33,11 +33,12 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
   flex-wrap: wrap;
   text-align: center;
   justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 600px) {
   .main-view {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 </style>
