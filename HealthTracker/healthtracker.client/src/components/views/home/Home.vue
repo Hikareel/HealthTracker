@@ -1,6 +1,5 @@
 <template>
   <main class="home-page">
-    <Header title="Home" />
     <div class="main-view">
         <RouterLink v-for="(link, index) in Object.values(Links).slice(1)"
                     :key="index" :to="`${link.link}`" class="segment">
@@ -11,7 +10,6 @@
   </main>
 </template>
 <script lang="ts" setup>
-import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
 import { Links } from '../../shared/sidebar/data/sidebarLinks'
 </script>
@@ -31,7 +29,7 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
 }
 
 .main-view {
-  padding-top: 5rem;
+  /* padding-top: 5rem; */
   display: flex;
   flex-wrap: wrap;
   margin-left: calc(2rem + 32px);

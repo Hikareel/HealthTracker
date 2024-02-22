@@ -18,9 +18,12 @@ export default {
     left: calc(2rem + 32px);
     right: 0;
     position: fixed;
-    padding: 1rem;
+    height: 4rem;
+    line-height: 4rem;
+    align-content: center;
     z-index: 99;
     text-align: center;
     background: #121414;
+    margin-bottom: 1px;
   }
 </style>

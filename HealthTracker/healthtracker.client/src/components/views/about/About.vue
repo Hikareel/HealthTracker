@@ -1,6 +1,5 @@
 <template>
   <main class="about-page">
-    <Header title="About"/>
     <p>This is a about page</p>
   </main>
 </template>
