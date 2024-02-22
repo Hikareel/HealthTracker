@@ -29,10 +29,8 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
 }
 
 .main-view {
-  /* padding-top: 5rem; */
   display: flex;
   flex-wrap: wrap;
-  margin-left: calc(2rem + 32px);
   text-align: center;
   justify-content: center;
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="register-main">
     <div class="register-form">
+      <p class="registration-label">Registration</p><i class='bi bi-pencil'></i>
       <p v-for="msg in er" class="error_msg">
         {{ msg }}
       </p>
@@ -9,12 +10,10 @@
       </p>
       <Vueform id="form" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false" :display-errors="false" sync>
         <GroupElement name="name" before="Name">
-          <TextElement name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{
-            default: 12,
-            sm: 6
-          }"/>
+          <TextElement :addons="{ before: { template: `<i class='bi bi-pencil'></i>` } }" name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{ default: 6, sm: 6 }"/>
+
           <TextElement name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{
-            default: 12,
+            default: 6,
             sm: 6
           }"/>
         </GroupElement>
@@ -75,6 +74,7 @@ import { ref } from 'vue';
 import type { RegisterModel } from '../data/registerDataModel';
 import axios from 'axios';
 
+
 const er = ref<string[]>([])
 const isRegistered = ref("")
 
@@ -119,24 +119,45 @@ const preventSubmit = async () => {
 
 <style scoped>
 #form {
-  display: flex;
-  flex-direction: column;
   max-width: 300px;
-  margin: auto;
+  color: #000000;
+}
+.registration-label{
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  letter-spacing: 0px;
+  word-spacing: 2px;
+  color: #000000;
+  font-weight: 700;
+  text-decoration: none;
+  font-style: normal;
+  font-variant: small-caps;
+  text-transform: none;
+  text-shadow: 1px 0px 1px #CCCCCC;
+
 }
 .register-main{
-  margin-top: 2rem;
+  width:100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .register-form{
-  display: block;
-  margin: auto;
-  background-color: white;
-  max-width: calc(300px + 6rem);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem 5rem 1rem 5rem;
+  background-color:white;
+  width: fit-content;
+  border-radius: 50px;
+  border-bottom: 5px groove #8b8b8b;
+  border-top: 5px groove #8b8b8b;
+  border-width: 10px;
+  box-shadow: 0 4px 30px rgba(216, 199, 199, 0.7);
 }
 .error_msg {
-  color: rgb(231, 48, 48);
+  color: rgb(209, 0, 0);
   margin: auto;
   max-width: 300px;
 }

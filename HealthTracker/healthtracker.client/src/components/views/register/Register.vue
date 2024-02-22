@@ -1,6 +1,6 @@
 <template>
   <main>
-    <RegisterForm class="register-form"/>
+    <RegisterForm/>
   </main>
 </template>
 <script lang="ts" setup>
