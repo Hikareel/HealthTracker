@@ -21,8 +21,8 @@
 .border {
     padding: 20px;
     border-radius: 25px 5px;
-    width: 35rem;
-    height: 20rem;
+    width: fit-content;
+    height: fit-content;
     border: 4px solid #000000;
      -webkit-box-shadow:5px 5px 5px 5px #808080;
      -moz-box-shadow:5px 5px 5px 5px #808080;

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import Footer from './components/shared/footer/Footer.vue'
 import Sidebar from './components/shared/sidebar/Sidebar.vue'
+import Header from './components/shared/header/Header.vue'
 </script>
 
 <template>
   <div class="main">
-    <Sidebar/>
+    <Sidebar />
     <div class="content">
-      <RouterView v-slot="{Component}" class="view">
+      <Header title="HealthTracker" />
+      <RouterView v-slot="{Component}" >
         <Transition name="fade" mode="out-in">
-          <component :is="Component"/>
+          <component :is="Component" class="view"/>
         </Transition>
       </RouterView>
       <Footer />
@@ -20,18 +22,19 @@ import Sidebar from './components/shared/sidebar/Sidebar.vue'
 <style scoped>
   .main{
     display: flex;
-  }
-  .content{
-    margin: 0 auto 0 auto;
-    width: 100vw;
-    flex-direction: column;
-    @media (max-width: 768px) {
-      margin-left: 4rem;
+    .content{
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      .view{
+        width: calc(100vw - 4rem);
+        margin-left: 4rem;
+        padding-top: 4rem;
+        min-height: calc(100vh - 20px - 4rem);
+      }
     }
   }
-  .view{
-    min-height: calc(100vh - 116px);
-  }
+
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;

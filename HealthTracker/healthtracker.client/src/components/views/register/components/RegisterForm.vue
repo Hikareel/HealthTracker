@@ -1,43 +1,99 @@
 <template>
-  <p v-for="msg in er" class="error_msg">
-    {{ msg }}
-  </p>
-  <p class="registered">
-    {{ isRegistered }}
-  </p>
-  <Vueform id="form" v-model="formData" @submit="preventSubmit" :endpoint="false" :display-errors="false" sync>
-    <GroupElement name="name" before="Name">
-      <TextElement name="FirstName" placeholder="First Name" rules="required|max:100" />
-      <TextElement name="LastName" placeholder="Last Name" rules="required|max:100" />
-    </GroupElement>
-    <GroupElement name="email_username">
-      <TextElement name="Email" label="Email" placeholder="user@domain.com" input-type="email" rules="required|email" />
-      <TextElement name="UserName" label="Username" rules="required|max:100" />
-    </GroupElement>
-    <GroupElement name="dob_phone">
-      <DateElement name="DateOfBirth" label="Birth Date" display-format="MMMM DD, YYYY" rules="required" />
-      <TextElement name="PhoneNumber" label="Phone nr." placeholder="123456789" input-type="tel"
-        rules="regex:/^(?:[0-9]{9})?$/" />
-    </GroupElement>
-    <GroupElement name="password">
-      <TextElement name="Password" label="Password" input-type="password"
-        rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/" :messages="{
-          regex: 'At least one character of type: alphanumeric, capital letter, number'
-        }" />
-      <TextElement name="Password_confirmation" label="Confirm Password" input-type="password" rules="required" />
-    </GroupElement>
-    <GroupElement name="controll">
-      <ButtonElement id="reset_button" name="reset" button-label="Reset" type="reset" :danger="true" :resets="true"
-        align="center" />
-      <ButtonElement name="submit" button-label="Register" :submits="true" align="center" />
-    </GroupElement>
-  </Vueform>
+  <div class="register-main">
+    <div class="register-form">
+      <p class="registration-label">Registration</p>
+      <p v-for="msg in er" class="error_msg">
+        {{ msg }}
+      </p>
+      <p class="registered">
+        {{ isRegistered }}
+      </p>
+      <Vueform id="form" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false" :display-errors="false" sync>
+        <GroupElement name="name" before="Name" :add-class="'name_el'">
+          <TextElement :addons="{ 
+              before: `<i class='bi bi-pencil-fill'></i>`
+            }" 
+          name="FirstName" placeholder="First Name" rules="required|max:100|min:3" :columns="{ xs: 12, sm: 6 }"/>
+          <TextElement :addons="{ 
+              before: `<i class='bi bi-pencil-fill'></i>`
+            }" 
+            name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{ xs: 12, sm: 6 }"/>
+        </GroupElement>
+        <GroupElement name="email_username">
+            <TextElement name="Email" label="Email" placeholder="user@domain.com" 
+                          input-type="email" rules="required|email"
+                          :addons="{ 
+                            before: `<i class='bi bi-envelope-at-fill'></i>`
+                          }"/>
+            <TextElement name="PhoneNumber" label="Phone nr." placeholder="123456789" 
+                            input-type="tel" rules="regex:/^(?:[0-9]{9})?$/"
+                            :addons="{ 
+                              before: `<i class='bi bi-telephone-fill'></i>`
+                            }"/>
+            <TextElement name="UserName" placeholder="user_name"
+                          label="Username" rules="required|max:100|min:3"
+                          :addons="{ 
+                            before: `<i class='bi bi-person-fill'></i>`
+                          }"/>
+        </GroupElement>
+          
+        
+        <GroupElement name="date">
+          <DateElement name="DateOfBirth" label="Birth Date" placeholder="January 01, 2000"
+                        display-format="MMMM DD, YYYY" rules="required|before:today"
+                        :addons="{ 
+                          before: `<i class='bi bi-calendar3'></i>`
+                        }"/>
+        </GroupElement>
+        <GroupElement name="password">
+          <TextElement info="Password and Confirm password must match" name="Password" label="Password" placeholder="Password" input-type="password" 
+                        rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/"
+                        :messages="{
+                          regex: 'At least one character of type: alphanumeric, capital letter, number'
+                        }"
+                        :addons="{ 
+                          before: `<i class='bi bi-lock-fill'></i>`
+                        }" />
+          <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password" rules="required"
+                        :addons="{ 
+                          before: `<i class='bi bi-lock-fill'></i>`
+                        }"/>
+        </GroupElement>
+        <GroupElement name="controll">
+          <ButtonElement
+            id="reset_button"
+            name="reset" 
+            button-label="<i class='bi bi-arrow-clockwise'></i>"
+            type="reset"
+            align="left"
+            :danger="true"
+            :resets="true"
+            :columns="{
+              container: 1,
+              wrapper: 1
+            }"
+            />
+          <ButtonElement
+            name="submit" 
+            button-label="Register"
+            align="right"
+            :submits="true"
+            :columns="{
+              container: 11,
+              label: 10
+            }"
+            />
+        </GroupElement>
+      </Vueform>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { RegisterModel } from '../data/registerDataModel';
 import axios from 'axios';
+
 
 const er = ref<string[]>([])
 const isRegistered = ref("")
@@ -83,14 +139,39 @@ const preventSubmit = async () => {
 
 <style scoped>
 #form {
-  display: flex;
-  flex-direction: column;
   max-width: 300px;
-  margin: auto;
+  color: #000000;
+  margin-top: 1rem;
 }
-
+.registration-label{
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  color: #000000;
+  font-weight: 800;
+  font-variant: small-caps;
+}
+.register-main{
+  min-width:fit-content;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.register-form{
+  margin: 1rem;
+  padding: 1rem 5rem 1rem 5rem;
+  background-color:white;
+  width: fit-content;
+  border-radius: 50px;
+  border: 2px solid #8b8b8b;
+  box-shadow: 0 4px 30px rgba(216, 199, 199, 0.7);
+  @media (max-width: 550px) {
+    padding: 1rem 2rem 1rem 2rem;
+  }
+}
 .error_msg {
-  color: rgb(231, 48, 48);
+  color: rgb(209, 0, 0);
   margin: auto;
   max-width: 300px;
 }
@@ -99,5 +180,12 @@ const preventSubmit = async () => {
   color: rgb(101, 252, 0);
   margin: auto;
   max-width: 300px;
+}
+
+.name_el{
+  @media (max-width: 550px) {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

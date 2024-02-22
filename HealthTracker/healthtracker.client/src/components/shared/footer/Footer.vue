@@ -11,11 +11,12 @@
 </script>
 <style lang="scss">
   footer{
-    height: 96px;
-    margin-top: 20px;
     display: flex;
-    justify-content: space-between;
+    padding: 20px;
     bottom: 0;
+    @media  (max-width: 550px){
+      margin-left: 4rem;
+    }
   }
   .social{
     margin: auto;
@@ -23,8 +24,8 @@
     align-items: center;
     justify-content: space-evenly;
     @media (max-width: 550px) {
-        gap: 1rem;
-        flex-direction: column;
-      }
+      gap: 1rem;
+      flex-direction: column;
+    }
   }
 </style>

@@ -7,6 +7,7 @@ import Vueform from '@vueform/vueform'
 import vueformConfig from './../vueform.config'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 createApp(App)
   .use(Vueform, vueformConfig)

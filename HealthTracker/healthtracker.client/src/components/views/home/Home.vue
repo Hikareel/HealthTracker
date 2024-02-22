@@ -1,6 +1,5 @@
 <template>
   <main class="home-page">
-    <Header title="Home" />
     <div class="main-view">
         <RouterLink v-for="(link, index) in Object.values(Links).slice(1)"
                     :key="index" :to="`${link.link}`" class="segment">
@@ -11,7 +10,6 @@
   </main>
 </template>
 <script lang="ts" setup>
-import Header from '../../shared/header/Header.vue'
 import HomeMainField from './components/HomeMainField.vue'
 import { Links } from '../../shared/sidebar/data/sidebarLinks'
 </script>
@@ -31,17 +29,16 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
 }
 
 .main-view {
-  padding-top: 5rem;
   display: flex;
   flex-wrap: wrap;
-  margin-left: calc(2rem + 32px);
   text-align: center;
   justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 600px) {
   .main-view {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 </style>

@@ -14,6 +14,8 @@
   "dependencies": {
     "@vueform/vueform": "^1.8.0",
     "axios": "^1.6.7",
+    "bootstrap-icons": "^1.11.3",
+    "bootstrap-vue": "^2.23.1",
     "vue": "^3.4.15",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.2.5"
