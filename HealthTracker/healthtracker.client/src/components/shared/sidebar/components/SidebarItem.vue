@@ -54,8 +54,6 @@ aside{
     }
   }
 }
-.material-icons{
-  width: 1rem;
-}
+
 
 </style>
