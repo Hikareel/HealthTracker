@@ -2,7 +2,7 @@
   <div class="register-main">
     <div class="register-form">
       <p class="registration-label">Registration</p>
-      <p v-for="msg in er" class="error_msg">
+      <p v-for="msg in er" class="error_msg" v-bind:key="msg">
         {{ msg }}
       </p>
       <p class="registered">
@@ -20,7 +20,7 @@
             name="LastName" placeholder="Last Name" rules="required|max:100|min:3" :columns="{ xs: 12, sm: 6 }"/>
         </GroupElement>
         <GroupElement name="email_username">
-            <TextElement name="Email" label="Email" placeholder="user@domain.com" 
+            <TextElement name="Email" label="Email" placeholder="user@example.com" 
                           input-type="email" rules="required|email"
                           :addons="{ 
                             before: `<i class='bi bi-envelope-at-fill'></i>`
@@ -151,17 +151,11 @@ const preventSubmit = async () => {
   font-weight: 800;
   font-variant: small-caps;
 }
-.register-main{
-  min-width:fit-content;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .register-form{
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   padding: 1rem 5rem 1rem 5rem;
-  background-color:white;
+  background-color:darkgrey;
   width: fit-content;
   border-radius: 50px;
   border: 2px solid #8b8b8b;

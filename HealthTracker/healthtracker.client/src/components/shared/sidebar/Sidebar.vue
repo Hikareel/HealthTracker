@@ -35,9 +35,9 @@ aside {
   position: fixed;
   display: flex;
   flex-direction: column;
-  width: calc(2rem + 32px);
+  width: calc(4rem);
   height: 100vh;
-  background-color: #aaa;
+  background-color: rgb(168, 124, 124);
   padding: 1rem;
   transition: width 0.3s ease-out;
   z-index: 999;
@@ -52,7 +52,7 @@ aside {
     .menu-toggle-wrap{
       margin: 0 -0.4rem;
       .menu-toggle{
-        background-color: #aaa;
+        background-color: rgb(168, 124, 124);
         border: none;
         cursor: pointer;
         transition: 0.5s ease-out;

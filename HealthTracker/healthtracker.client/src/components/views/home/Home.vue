@@ -1,10 +1,10 @@
 <template>
   <main class="home-page">
     <div class="main-view">
-        <RouterLink v-for="(link, index) in Object.values(Links).slice(1)"
-                    :key="index" :to="`${link.link}`" class="segment">
-          <HomeMainField class="home-main-field"/>
-        </RouterLink>
+      <RouterLink v-for="(link, index) in Object.values(Links).slice(1)" :key="index" :to="`${link.link}`"
+        class="segment">
+        <HomeMainField class="home-main-field" />
+      </RouterLink>
     </div>
 
   </main>
@@ -14,16 +14,19 @@ import HomeMainField from './components/HomeMainField.vue'
 import { Links } from '../../shared/sidebar/data/sidebarLinks'
 </script>
 <style scope>
-.segment{
+.segment {
   margin: 1rem;
 }
-.home-main-field:hover{
-  cursor:pointer;
+
+.home-main-field:hover {
+  cursor: pointer;
 }
-.home-main-field:click{
-  cursor:progress;
+
+.home-main-field:click {
+  cursor: progress;
 }
-.segment:hover{
+
+.segment:hover {
   background-color: transparent;
   text-decoration: none;
 }
@@ -40,5 +43,13 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
   .main-view {
     flex-direction: column;
   }
+}
+
+.home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  width: 100%;
 }
 </style>

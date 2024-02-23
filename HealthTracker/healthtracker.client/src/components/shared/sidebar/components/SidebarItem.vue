@@ -18,6 +18,7 @@
 aside{
   .menu{
     .item{
+      color: white;
       display: flex;
       align-items: center;
       text-decoration: none;
@@ -25,12 +26,12 @@ aside{
 
       &:hover, &.router-link-exact-active{
         .material-icons, .text{
-          color: greenyellow;
+          color:gold;
         }
       }
 
       &.router-link-exact-active{
-        border-right: 5px solid greenyellow;
+        border-right: 5px solid white;
       }
 
       .text{
