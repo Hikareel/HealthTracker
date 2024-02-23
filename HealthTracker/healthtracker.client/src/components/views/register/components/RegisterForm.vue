@@ -2,7 +2,7 @@
   <div class="register-main">
     <div class="register-form">
       <p class="registration-label">Registration</p>
-      <p v-for="msg in er" class="error_msg">
+      <p v-for="msg in er" class="error_msg" v-bind:key="msg">
         {{ msg }}
       </p>
       <p class="registered">

@@ -1,9 +1,10 @@
 <template>
   <main class="login-page">
-    <p>This is a login page</p>
+    <LoginForm/>
   </main>
 </template>
 <script lang="ts" setup>
+import LoginForm from './components/LoginForm.vue'
 </script>
 <style>
   
