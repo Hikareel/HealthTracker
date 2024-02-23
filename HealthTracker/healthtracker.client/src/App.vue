@@ -33,11 +33,12 @@ import Header from './components/shared/header/Header.vue'
         width: calc(100vw - 4rem);
         margin-left: 4rem;
         padding-top: 4rem;
-        min-height: calc(100vh - 20px - 4rem);
+        min-height: calc(100vh - 4rem);
       }
     }
   }
   .content{
+    top: 0;
     right:0;
   }
 

@@ -19,6 +19,7 @@ export default {
     right: 0;
     position: fixed;
     height: 4rem;
+    max-height: 4rem;
     line-height: 4rem;
     max-width: calc(100vw-4rem);
     align-content: center;

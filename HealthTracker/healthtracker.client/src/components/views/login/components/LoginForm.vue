@@ -23,11 +23,13 @@
                         }" />
                 </GroupElement>
                 <GroupElement name="controll">
-                    <ButtonElement  class="ButtonElement-class" name="submit" button-label="Login" align="center" :submits="true" full size="lg" :columns="{container: 12, label: 0, wrapper: 12}" />
+                    <ButtonElement class="ButtonElement-class" name="submit" button-label="Login" align="center"
+                        :submits="true" full size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
                 </GroupElement>
                 <GroupElement name="control2">
-                    <ButtonElement button-label="Forgot password?"  :columns="{default:6 }" full size="sm" secondary/>
-                    <ButtonElement href="/register" button-label="Register" :columns="{default:6 }" full size="sm" secondary/>
+                    <ButtonElement button-label="Forgot password?" :columns="{ default: 6 }" full size="sm" secondary />
+                    <ButtonElement href="/register" button-label="Register" :columns="{ default: 6 }" full size="sm"
+                        secondary />
                 </GroupElement>
             </Vueform>
         </div>
@@ -80,8 +82,8 @@ const preventSubmit = async () => {
     margin-top: 1rem;
 }
 
-.ButtonElement-class{
-    margin-top:1rem;
+.ButtonElement-class {
+    margin-top: 1rem;
 }
 
 .login-label {
@@ -100,6 +102,8 @@ const preventSubmit = async () => {
 }
 
 .login-form {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     padding: 1rem 5rem 2rem 5rem;
     background-color: rgb(182, 152, 152);
     border-radius: 1rem;
