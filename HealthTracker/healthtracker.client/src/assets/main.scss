@@ -1,4 +1,5 @@
-@import './base.css';
+@use 'base';
+@forward 'variables';
 
 #app {
   margin: 0 auto;

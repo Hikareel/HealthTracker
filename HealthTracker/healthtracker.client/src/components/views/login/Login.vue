@@ -6,7 +6,7 @@
 <script lang="ts" setup>
 import LoginForm from './components/LoginForm.vue'
 </script>
-<style>
+<style lang="scss" scoped>
 .login-page {
   display: flex;
   justify-content: center;
