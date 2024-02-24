@@ -7,8 +7,8 @@
         <p class="success">
             {{ isLogged }}
         </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false"
-            :display-errors="false" sync>
+        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+            :endpoint="false" :display-errors="false" sync>
             <GroupElement name="email_username">
                 <TextElement name="EmailUserName" label="Email or username" placeholder="user@example.com" rules="required"
                     :addons="{
@@ -22,13 +22,14 @@
                     }" />
             </GroupElement>
             <GroupElement name="controll">
-                <ButtonElement class="login-button" name="submit" button-label="Login" align="center" :submits="true"
-                    full size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
+                <ButtonElement class="login-button" name="submit" button-label="Login" align="center" :submits="true" full
+                    size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
             </GroupElement>
             <GroupElement name="control2">
-                <ButtonElement button-label="Forgot password?" :columns="{ default: 6 }" full size="sm" secondary />
-                <ButtonElement href="/register" button-label="Register" :columns="{ default: 6 }" full size="sm"
-                    secondary />
+                <ButtonElement name="forgot" button-type="anchor" href="/login/pass-reset" button-label="Forgot password?"
+                    :columns="{ default: 6 }" full size="sm" secondary />
+                <ButtonElement name="register" href="/register" button-label="Register" :columns="{ default: 6 }" full
+                    size="sm" secondary button-type="anchor" />
             </GroupElement>
         </Vueform>
     </div>
@@ -75,6 +76,7 @@ const preventSubmit = async () => {
 
 <style lang="scss" scoped>
 @use '@/assets/form';
+
 .login-button {
     margin-top: 1rem;
 }

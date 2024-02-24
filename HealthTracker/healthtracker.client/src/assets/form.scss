@@ -21,21 +21,21 @@
     font-variant: small-caps;
   }
 
-  .error {
-    color: v.$error-color;
+  .error, .success, .form-content{
     margin: auto;
     max-width: 300px;
+    margin-top: 1rem;
+  }
+
+  .error {
+    color: v.$error-color;
   }
 
   .success {
     color: v.$success-color;
-    margin: auto;
-    max-width: 300px;
   }
 
   .form-content {
-    max-width: 300px;
     color: #000000;
-    margin-top: 1rem;
   }
 }

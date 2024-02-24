@@ -39,7 +39,7 @@
       <GroupElement name="password">
         <TextElement info="Password and Confirm password must match" name="Password" label="Password"
           placeholder="Password" input-type="password"
-          rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/" 
+          rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/"
           :messages="{
             regex: 'At least one character of type: alphanumeric, capital letter, number'
           }" :addons="{
@@ -52,13 +52,13 @@
       </GroupElement>
       <GroupElement name="controll">
         <ButtonElement id="reset_button" name="reset" button-label="<i class='bi bi-arrow-clockwise'></i>" type="reset"
-          align="left" :danger="true" :resets="true" :columns="{
-            container: 1,
-            wrapper: 1
+          align="left" :danger="true" :resets="true" size="lg" :columns="{
+            container: 3,
+            wrapper: 3
           }" />
-        <ButtonElement name="submit" button-label="Register" align="right" :submits="true" :columns="{
-          container: 11,
-          label: 10
+        <ButtonElement name="submit" button-label="Register" align="right" :submits="true" full size="lg" :columns="{
+          container: 9,
+          label: 9
         }" />
       </GroupElement>
     </Vueform>

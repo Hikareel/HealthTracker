@@ -6,8 +6,10 @@ import TreningsPlanner from '../components/views/treningsPlanner/TreningsPlanner
 import Health from '../components/views/health/Health.vue'
 import Goals from '../components/views/goals/Goals.vue'
 import Community from '../components/views/community/Community.vue'
-import Register from '../components/views/register/Register.vue'
-import Login from '../components/views/login/Login.vue'
+import Register from '../components/views/account/register/Register.vue'
+import Login from '../components/views/account/login/Login.vue'
+import NewPass from '../components/views/account/new_pass/NewPass.vue'
+import PassReset from '../components/views/account/pass_reset/PassReset.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -56,6 +58,16 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/login/pass-reset',
+      name: 'Reset Password',
+      component: PassReset
+    },
+    {
+      path: '/login/new-pass',
+      name: 'New Password',
+      component: NewPass
     }
   ]
 })
