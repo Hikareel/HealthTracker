@@ -1,5 +1,5 @@
-interface passResetModel{
+interface PassResetModel{
   email: string
 }
 
-export type { passResetModel }
+export type { PassResetModel }

@@ -40,7 +40,7 @@ const formData = ref<PassResetModel>({
 
 const preventSubmit = async () => {
     er.value.splice(0, er.value.length);
-    isChanged.value = "";
+    isEmailSent.value = "";
     let response;
     try {
         const { data } = await axios.post(
