@@ -19,13 +19,15 @@ import Header from './components/shared/header/Header.vue'
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
   .main{
     overflow-x: hidden;
     background: rgb(37,32,32);
     background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%); 
     display: flex;
     .content{
+      top: 0;
+      right:0;
       margin: auto;
       display: flex;
       flex-direction: column;
@@ -37,15 +39,12 @@ import Header from './components/shared/header/Header.vue'
       }
     }
   }
-  .content{
-    top: 0;
-    right:0;
-  }
 
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
   }
+  
   .fade-enter-active,
   .fade-leave-active{
     transition: opacity 0.3s ease-out;

@@ -1,13 +1,13 @@
 <template>
-  <main class="login-page">
-    <LoginForm />
+  <main class="new-pass-page">
+    <NewPassForm />
   </main>
 </template>
 <script lang="ts" setup>
-import LoginForm from './components/LoginForm.vue'
+import NewPassForm from './components/NewPassForm.vue';
 </script>
-<style>
-.login-page {
+<style lang="scss" scoped>
+.new-pass-page {
   display: flex;
   justify-content: center;
   align-items: center;
