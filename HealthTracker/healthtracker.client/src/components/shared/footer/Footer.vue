@@ -11,8 +11,8 @@ import SocialLinks from './components/SocialLinks.vue'
 </script>
 <style lang="scss">
 footer {
-  left: 4rem;
   min-height: 4rem;
+  padding-left: 4rem;
   bottom: 0;
   right: 0;
   display: flex;

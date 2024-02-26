@@ -32,7 +32,7 @@ import { SocialLinks } from '../data/socialLinks'
     gap: 10px;
   }
   .social_links{
-    width: 500px;
+    width: 30rem;
     @media (max-width: 768px){
       width: 200px;
     }
