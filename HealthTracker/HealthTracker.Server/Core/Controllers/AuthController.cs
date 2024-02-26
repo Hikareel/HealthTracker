@@ -25,14 +25,13 @@ namespace HealthTracker.Server.Core.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var token = await _userRepository.LoginAsync(loginDto);
-
-            if (token != null)
+            var result = await _userRepository.LoginAsync(loginDto);
+            if (result.Succeeded)
             {
-                return Ok(new { Token = token });
+                return Ok(new { Token = _userRepository.GenerateJwtToken() });
             }
 
-            return Unauthorized();
+            return BadRequest(result.Errors);
         }
 
 

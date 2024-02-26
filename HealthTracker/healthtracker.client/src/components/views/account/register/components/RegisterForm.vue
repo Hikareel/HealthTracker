@@ -89,7 +89,6 @@ const preventSubmit = async () => {
   er.value.splice(0, er.value.length)
   isRegistered.value = ''
   formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
-  let response
   try {
     const { data } = await axios.post(
       '/api/register',
@@ -100,8 +99,7 @@ const preventSubmit = async () => {
         },
       }
     );
-    response = data
-    isRegistered.value = response.message
+    isRegistered.value = data.message
     document.getElementById('reset_button')!.click()
   } catch (error: any) {
     formData.value.Password = ''
