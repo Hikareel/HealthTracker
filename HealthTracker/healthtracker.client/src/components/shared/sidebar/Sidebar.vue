@@ -41,7 +41,9 @@ aside {
   padding: 1rem;
   transition: width 0.3s ease-out;
   z-index: 999;
-
+  @media (max-height: 505px){
+    overflow: scroll;
+  }
   .flex{
     flex: 1 1 0;
   }
