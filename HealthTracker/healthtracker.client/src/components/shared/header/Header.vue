@@ -27,5 +27,6 @@ export default {
     text-align: center;
     background: rgba(37,32,32,1);
     margin-bottom: 1px;
+    color:rgb(225, 225, 225)
   }
 </style>

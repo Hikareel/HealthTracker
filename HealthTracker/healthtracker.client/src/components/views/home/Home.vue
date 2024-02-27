@@ -1,28 +1,29 @@
 <template>
   <main class="home-page">
     <div class="main-view">
-      <RouterLink v-for="(link, index) in Object.values(Links).slice(1)" :key="index" :to="`${link.link}`"
-        class="segment">
-        <HomeMainField class="home-main-field" />
+      <RouterLink v-for="card in HomeCardData" :key="card.name" :to="card.link" class="segment">
+        <HomeCard class="home-main-card" :item="card" />
       </RouterLink>
     </div>
-
   </main>
 </template>
+
 <script lang="ts" setup>
-import HomeMainField from './components/HomeMainField.vue'
-import { Links } from '../../shared/sidebar/data/sidebarLinks'
+import HomeCard from './components/HomeCard.vue';
+import { HomeCardData } from './data/homeCardModel';
 </script>
+
+
 <style scope>
 .segment {
   margin: 1rem;
 }
 
-.home-main-field:hover {
+.home-main-card:hover {
   cursor: pointer;
 }
 
-.home-main-field:click {
+.home-main-card:click {
   cursor: progress;
 }
 
@@ -37,6 +38,7 @@ import { Links } from '../../shared/sidebar/data/sidebarLinks'
   text-align: center;
   justify-content: center;
   align-items: center;
+  margin-top: 1rem;
 }
 
 @media (max-width: 600px) {
