@@ -3,12 +3,12 @@ import { reactive } from "vue";
 //Pobierane z backendu.
 const CurrentMessages = reactive([
     {
-        message: "Message1",
+        message: "Message1 sadas dasdasd asd as da sd a da sd  d d       assssssssss",
         timeSend: "",
         isYours: true
     },
     {
-        message: "Message2",
+        message: "bardzo długie zdanie do przetestowaniesssssssssssssssssssssssssssssssssssssssssssssssssss bardzo długie zdanie do przetestowanie bardzo długie zdanie do przetestowanie bardzo długie zdanie do przetestowanie",
         timeSend: "",
         isYours: false
     },

@@ -49,15 +49,18 @@ import { CurrentMessages } from './data/currentMessages'
 
 .message {
   display: flex;
+  overflow-wrap: anywhere;
   margin-bottom: 10px;
   padding: 5px;
   border-radius: 10px;
   max-width: 60%;
+  width: fit-content;
   color: black;
 }
 
 .own-message {
   justify-content: end;
+  margin-left: auto;
   background-color: #dcf8c6;
 }
 
