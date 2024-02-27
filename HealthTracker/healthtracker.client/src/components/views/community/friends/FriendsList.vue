@@ -7,7 +7,6 @@
         <div class="friends-list">
             <FriendItem v-for="obj in FriendsData" :item="obj" :key="obj"/>
         </div>
-        
     </main>
 </template>
 <script lang="ts" setup>
