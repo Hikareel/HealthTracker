@@ -2,12 +2,12 @@
     <main>
         <div class="border">
             <div class="main-box">
-                <div class="title">{{ title }}</div>
-                <div class="description">{{ description }}</div>
+                <div class="title">{{ item.name }}</div>
+                <div class="description">{{ item.description }}</div>
                 <div class="main-box-content">
-                    <div class="content-label">{{ label }}</div>
+                    <div class="content-label">{{ item.label }}</div>
                     <div class="content-value">
-                        <div v-for="(val, index) in fieldValue" :key="index">{{ val }}</div>
+                        <div v-for="(val, index) in item.fieldValue" :key="index">{{ val }}</div>
                     </div>
                 </div>
             </div>
@@ -15,17 +15,15 @@
     </main>
 </template>
 
-<script lang="ts">
-export default {
-    props: {
-        title: String,
-        description: String,
-        label: String,
-        fieldValue: Array
-    }
-}
+<script setup lang="ts">
+import { defineProps } from 'vue'
+import type { HomeCardModel } from './../data/homeCardModel';
 
+const props = defineProps<{
+    item: HomeCardModel
+  }>()
 </script>
+
 
 <style scoped lang="scss">
 .border {
