@@ -24,21 +24,24 @@ import Chat from './chat/chat.vue'
 }
 
 .wall {
-  background-color: chocolate;
+  justify-content: center;
+  align-items: center;
 }
 
 .right-content {
-  right: 0;
+  display: grid;
+  grid-template-rows: 5fr 3fr;
+  gap: 1rem;
 }
 
 .friends-list {
-  display: flex;
   top: 0;
-
 }
 
 .chat {
-  display: flex;
+  margin-left: 1rem;
+  max-height: 5fr;
+
   bottom: 0;
 }
 </style>
