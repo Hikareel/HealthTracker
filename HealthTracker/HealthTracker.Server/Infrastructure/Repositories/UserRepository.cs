@@ -10,7 +10,8 @@ namespace HealthTracker.Server.Infrastructure.Repositories
     public interface IUserRepository
     {
         Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto);
-        Task<string> LoginAsync(LoginDto loginDto);
+        Task<IdentityResult> LoginAsync(LoginDto loginDto);
+        string GenerateJwtToken();
     }
     public class UserRepository : IUserRepository
     {
@@ -46,20 +47,32 @@ namespace HealthTracker.Server.Infrastructure.Repositories
             return await _userManager.CreateAsync(user, userDto.Password);
         }
 
-        public async Task<string> LoginAsync(LoginDto loginDto)
+        public async Task<IdentityResult> LoginAsync(LoginDto loginDto)
         {
-            var result = await _signInManager.PasswordSignInAsync(loginDto.UserName, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) != null ?
+                await _userManager.FindByNameAsync(loginDto.EmailUserName) : await _userManager.FindByEmailAsync(loginDto.EmailUserName);
+            if (user == null)
             {
-                var user = await _userManager.FindByNameAsync(loginDto.UserName);
-                return GenerateJwtToken(user);
+                return IdentityResult.Failed(new IdentityError { Code = "404", Description = $"Username or Email doesn\'t exists." });
+            }
+            else if (!user.EmailConfirmed)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "405", Description = $"Email is not confirmed. Please confirm before login." });
             }
 
-            return null;
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                return IdentityResult.Success;
+            }
+            else
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "406", Description = $"User wrong credentials" });
+
+            }
         }
 
-        private string GenerateJwtToken(User user)
+        public string GenerateJwtToken()
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

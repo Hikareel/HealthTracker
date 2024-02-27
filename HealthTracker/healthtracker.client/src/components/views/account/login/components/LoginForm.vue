@@ -22,6 +22,7 @@
                     }" />
             </GroupElement>
             <GroupElement name="controll">
+                <ButtonElement id="reset_button" name="reset" type="reset" :resets="true" hidden />
                 <ButtonElement class="login-button" name="submit" button-label="Login" align="center" :submits="true" full
                     size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
             </GroupElement>
@@ -39,6 +40,7 @@
 import { ref } from 'vue';
 import type { LoginModel } from '../data/loginDataModel';
 import axios from 'axios';
+import router from '../../../../../router'
 
 
 const er = ref<string[]>([])
@@ -52,7 +54,6 @@ const formData = ref<LoginModel>({
 const preventSubmit = async () => {
     er.value.splice(0, er.value.length)
     isLogged.value = ''
-    let response
     try {
         const { data } = await axios.post(
             '/api/login',
@@ -63,8 +64,11 @@ const preventSubmit = async () => {
                 },
             }
         );
-        response = data
-        isLogged.value = response.message
+        localStorage.setItem("token", data.token)
+        isLogged.value = "User is logged"
+        router.push('/').then(() =>{
+            window.location.reload()
+        });
     } catch (error: any) {
         formData.value.Password = ''
         error.response.data.forEach((element: { description: string; }) => {
