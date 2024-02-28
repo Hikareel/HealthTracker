@@ -1,12 +1,6 @@
 <template>
     <div class="form">
-        <p class="form-label">Login</p>
-        <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
-            {{ error }}
-        </p>
-        <p class="success">
-            {{ formNotification.success }}
-        </p>
+        <FormNotification formTitle="Login"/>
         <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="email_username">
@@ -39,9 +33,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { LoginModel } from '@/data/models/formDataModels';
-import { preventSubmit, formNotification, clearNotification } from '@/data/service/sendDataService';
-
-clearNotification()
+import FormNotification from '@/components/shared/FormNotification.vue'
+import { preventSubmit } from '@/data/service/sendDataService';
 
 const formData = ref<LoginModel>({
     EmailUserName: '',
@@ -50,9 +43,7 @@ const formData = ref<LoginModel>({
 
 const sendFormData = async () => {
     preventSubmit("/login", JSON.stringify(formData.value))
-    if(formNotification.value.success === ""){
-        formData.value.Password = ''
-    }
+    formData.value.Password = ''
 }
 </script>
 

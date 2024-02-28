@@ -1,12 +1,6 @@
 <template>
   <div class="form">
-    <p class="form-label">Registration</p>
-    <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
-      {{ error }}
-    </p>
-    <p class="success">
-      {{ formNotification.success }}
-    </p>
+    <FormNotification formTitle="Registration"/>
     <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false" :endpoint="false"
       :display-errors="false" sync>
       <GroupElement name="name" before="Name">
@@ -68,9 +62,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { RegisterModel } from '@/data/models/formDataModels';
-import { preventSubmit, formNotification, clearNotification } from '@/data/service/sendDataService'
-
-clearNotification()
+import FormNotification from '@/components/shared/FormNotification.vue'
+import { preventSubmit } from '@/data/service/sendDataService'
 
 const formData = ref<RegisterModel>({
   Email: "",
