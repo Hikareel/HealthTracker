@@ -1,13 +1,13 @@
 <template>
     <div class="form">
         <p class="form-label">Login</p>
-        <p v-for="msg in er" class="error" v-bind:key="msg">
-            {{ msg }}
+        <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
+            {{ error }}
         </p>
         <p class="success">
-            {{ isLogged }}
+            {{ formNotification.success }}
         </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+        <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="email_username">
                 <TextElement name="EmailUserName" label="Email or username" placeholder="user@example.com" rules="required"
@@ -38,37 +38,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { LoginModel } from '@/data/models/loginDataModel';
-import router from '../../../../../router'
-import { sendData, type responseModel } from '@/data/apiRequest/sendData';
+import type { LoginModel } from '@/data/models/formDataModels';
+import { preventSubmit, formNotification, clearNotification } from '@/data/apiRequest/sendDataService';
 
-
-const er = ref<string[]>([])
-const isLogged = ref("")
+clearNotification()
 
 const formData = ref<LoginModel>({
     EmailUserName: '',
     Password: '',
 });
 
-const preventSubmit = async () => {
-    er.value.splice(0, er.value.length)
-    isLogged.value = ''
-    let response: responseModel = await sendData(
-        "/login",
-        JSON.stringify(formData.value)
-    )
-    if(response.status){
-        localStorage.setItem("token", response.content)
-        isLogged.value = "User is logged"
-        router.push('/').then(() =>{
-            window.location.reload()
-        });
-    } else {
+const sendFormData = async () => {
+    preventSubmit("/login", JSON.stringify(formData.value))
+    if(formNotification.value.success === ""){
         formData.value.Password = ''
-        response.content.forEach((element: { description: string; }) => {
-            er.value.push(element.description)
-        });
     }
 }
 </script>

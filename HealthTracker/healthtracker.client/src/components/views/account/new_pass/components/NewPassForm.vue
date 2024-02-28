@@ -1,13 +1,13 @@
 <template>
     <div class="form">
         <p class="form-label">New Password</p>
-        <p v-for="msg in er" class="error" v-bind:key="msg">
-            {{ msg }}
+        <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
+            {{ error }}
         </p>
         <p class="success">
-            {{ isChanged }}
+            {{ formNotification.success }}
         </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+        <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="password">
                 <TextElement info="Password and Confirm password must match" name="Password" label="Password"
@@ -15,8 +15,8 @@
                     rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/" :messages="{
                         regex: 'At least one character of type: alphanumeric, capital letter, number'
                     }" :addons="{
-    before: `<i class='bi bi-lock-fill'></i>`
-}" />
+                        before: `<i class='bi bi-lock-fill'></i>`
+                    }" />
                 <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password"
                     rules="required" :addons="{
                         before: `<i class='bi bi-lock-fill'></i>`
@@ -35,35 +35,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { NewPassModel } from '@/data/models/newPassModel';
-import { sendData, type responseModel } from '@/data/apiRequest/sendData';
+import type { NewPassModel } from '@/data/models/formDataModels';
+import { preventSubmit, formNotification, clearNotification } from '@/data/apiRequest/sendDataService';
 
-
-const er = ref<string[]>([])
-const isChanged = ref("")
+clearNotification()
 
 const formData = ref<NewPassModel>({
     password: '',
     password_confirmation: '',
 });
 
-const preventSubmit = async () => {
-    er.value.splice(0, er.value.length)
-    isChanged.value = ''
-    let response: responseModel = await sendData(
-        "/new-pass",
-        JSON.stringify(formData.value)
-    )
-    if(response.status){
-        isChanged.value = response.content
-        document.getElementById('reset_button')!.click()
-    } else {
-        formData.value.password = ''
-        formData.value.password_confirmation = ''
-        response.content.forEach((element: { description: string; }) => {
-            er.value.push(element.description)
-        });
-    }
+const sendFormData = async () => {
+    preventSubmit("/new-pass", JSON.stringify(formData.value))
+    formData.value.password = ''
+    formData.value.password_confirmation = ''
 }
 </script>
 

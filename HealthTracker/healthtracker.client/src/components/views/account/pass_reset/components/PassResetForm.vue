@@ -1,13 +1,13 @@
 <template>
     <div class="form">
         <p class="form-label">Reset Password</p>
-        <p v-for="msg in er" class="error" v-bind:key="msg">
-            {{ msg }}
+        <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
+            {{ error }}
         </p>
         <p class="success">
-            {{ isEmailSent }}
+            {{ formNotification.success }}
         </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+        <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="password">
                 <TextElement name="Email" label="Email" placeholder="user@example.com" input-type="email" rules="required|email"
@@ -28,32 +28,18 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { PassResetModel } from "@/data/models/passResetModel";
-import { sendData, type responseModel } from '@/data/apiRequest/sendData';
+import type { PassResetModel } from "@/data/models/formDataModels";
+import { preventSubmit, formNotification, clearNotification } from '@/data/apiRequest/sendDataService'
 
-const er = ref<string[]>([]);
-const isEmailSent = ref("");
+clearNotification()
 
 const formData = ref<PassResetModel>({
     email: "",
 });
 
-const preventSubmit = async () => {
-    er.value.splice(0, er.value.length);
-    isEmailSent.value = "";
-    let response: responseModel = await sendData(
-        "/pass-reset",
-        JSON.stringify(formData.value)
-    )
-    if(response.status){
-        isEmailSent.value = response.content;
-        document.getElementById("reset_button")!.click();
-    } else {
-        formData.value.email = "";
-        response.content.forEach((element: { description: string }) => {
-            er.value.push(element.description);
-        });
-    }
+const sendFormData = async () => {
+    preventSubmit("/pass-reset", JSON.stringify(formData.value))
+    formData.value.email = "";
 };
 </script>
 

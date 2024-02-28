@@ -1,13 +1,13 @@
 <template>
   <div class="form">
     <p class="form-label">Registration</p>
-    <p v-for="error in notification.errors" class="error" v-bind:key="error">
+    <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
       {{ error }}
     </p>
     <p class="success">
-      {{ notification.success }}
+      {{ formNotification.success }}
     </p>
-    <Vueform class="form-content" v-model="formData" @submit="preventSubmit(notification)" :float-placeholders="false" :endpoint="false"
+    <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false" :endpoint="false"
       :display-errors="false" sync>
       <GroupElement name="name" before="Name">
         <TextElement :addons="{
@@ -67,45 +67,27 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { RegisterModel } from '@/data/models/registerDataModel';
-import { sendData, type responseModel, type formNotificationModel } from '@/data/apiRequest/sendData'
+import type { RegisterModel } from '@/data/models/formDataModels';
+import { preventSubmit, formNotification, clearNotification } from '@/data/apiRequest/sendDataService'
 
-const notification = ref<formNotificationModel>({
-  success: "",
-  errors: []
-})
+clearNotification()
 
 const formData = ref<RegisterModel>({
-  Email: '',
-  UserName: '',
-  FirstName: '',
-  LastName: '',
-  PhoneNumber: '',
-  DateOfBirth: '',
-  Password: '',
-  Password_confirmation: ''
+  Email: "",
+  UserName: "",
+  FirstName: "",
+  LastName: "",
+  PhoneNumber: "",
+  DateOfBirth: "",
+  Password: "",
+  Password_confirmation: ""
 });
 
-const preventSubmit = async (
-    notification: formNotificationModel
-) => {
-  notification.errors.splice(0, notification.errors.length)
-  notification.success = ''
+const sendFormData = async () => {
   formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
-  let response: responseModel = await sendData(
-    "/register",
-    JSON.stringify(formData.value)
-  )
-  if(response.status){
-    notification.success = response.content
-    document.getElementById('reset_button')!.click()
-  } else {
-    formData.value.Password = ''
-    formData.value.Password_confirmation = ''
-    response.content.forEach((element: { description: string; }) => {
-      notification.errors.push(element.description)
-    });
-  }
+  preventSubmit("/register", JSON.stringify(formData.value))
+  formData.value.Password = ""
+  formData.value.Password_confirmation = ""
 }
 </script>
 
