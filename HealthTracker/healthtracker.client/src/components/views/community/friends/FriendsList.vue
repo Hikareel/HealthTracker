@@ -1,11 +1,10 @@
 <template>
     <main class="friends">
         <div class="search">
-            <p>serach:</p>
-            <input>
+            <input placeholder="Search..." class="search-input">
         </div>
         <div class="friends-list">
-            <FriendItem v-for="obj in FriendsData" :item="obj" :key="obj"/>
+            <FriendItem v-for="obj in FriendsData" :item="obj" :key="obj" />
         </div>
     </main>
 </template>
@@ -13,11 +12,33 @@
 import FriendItem from './FriendItem.vue'
 import { FriendsData } from './data/friendModel'
 </script>
-<style>
+<style scope>
 .friends {
-    background-color: blue;
+    padding: 1rem;
+    justify-content:center;
+    text-align:center;
 }
-.friends-list{
 
+.friends-list {}
+.search{
+    
+}
+
+.search-input {
+    width: 10rem;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('/src/assets/search.svg');
+    background-position: center left+10px;
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 40px;
+    transition: width 0.4s ease-in-out;
+}
+
+.search-input:focus {
+    width: 90%;
 }
 </style>

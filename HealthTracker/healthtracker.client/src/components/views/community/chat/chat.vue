@@ -11,7 +11,7 @@
     </div>
 
     <div class="chat-input">
-      <input type="text" placeholder="Wpisz wiadomość..." />
+      <input type="text" placeholder="Write message..." />
       <button><i class='bi bi-send-fill'></i></button>
     </div>
   </main>
