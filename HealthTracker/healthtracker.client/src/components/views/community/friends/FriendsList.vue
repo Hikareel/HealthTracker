@@ -1,10 +1,10 @@
 <template>
-    <main class="friends">
+    <main class="main-list">
         <div class="search">
             <input placeholder="Search..." class="search-input">
         </div>
         <div class="friends-list">
-            <FriendItem v-for="obj in FriendsData" :item="obj" :key="obj" />
+            <FriendItem v-for="obj in FriendsData" :item="obj" :key="obj"/>
         </div>
     </main>
 </template>
@@ -13,22 +13,31 @@ import FriendItem from './FriendItem.vue'
 import { FriendsData } from './data/friendModel'
 </script>
 <style scope>
-.friends {
-    padding: 1rem;
-    justify-content:center;
+.main-list {
     text-align:center;
 }
 
-.friends-list {}
+.friends-list {
+    margin-top: 1rem;
+    max-height: 20rem;
+    overflow: auto; /* Zapewnia przewijanie */
+    -ms-overflow-style: none; /* Dla Internet Explorer 10+ */
+    scrollbar-width: none; /* Dla Firefox */
+}
+
+.friends-list::-webkit-scrollbar { 
+    display: none; /* Dla Safari i Chrome */
+}
+
 .search{
-    
+
 }
 
 .search-input {
     width: 10rem;
     box-sizing: border-box;
     border: 2px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 16px;
     background-color: white;
     background-image: url('/src/assets/search.svg');

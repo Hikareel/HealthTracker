@@ -13,6 +13,46 @@ const FriendsData = reactive([
     {
         firstname: "ppl3_first",
         secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
+    },
+    {
+        firstname: "ppl3_first",
+        secondname: "ppl3_second"
     }
 ])
 

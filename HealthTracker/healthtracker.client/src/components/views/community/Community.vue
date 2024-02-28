@@ -2,9 +2,10 @@
   <main class="community-page">
     <div class="wall">
       <!-- POSTs -->
+      <p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p><p>test</p>
     </div>
     <div class="right-content">
-      <FriendsList class="friends-list" />
+      <FriendsList />
       <Chat class="chat" />
     </div>
 
@@ -29,19 +30,18 @@ import Chat from './chat/chat.vue'
 }
 
 .right-content {
-  display: grid;
-  grid-template-rows: 5fr 3fr;
-  gap: 1rem;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100vh;
+  width: 25vw;
+  right:0;
 }
 
 .friends-list {
-  top: 0;
 }
 
 .chat {
-  margin-left: 1rem;
-  max-height: 5fr;
-
-  bottom: 0;
 }
 </style>
