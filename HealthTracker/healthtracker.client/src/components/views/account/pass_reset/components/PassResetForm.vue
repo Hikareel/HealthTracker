@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { PassResetModel } from "@/data/models/passResetModel";
-import axios from "axios";
+import { sendData, type responseModel } from '@/data/apiRequest/sendData';
 
 const er = ref<string[]>([]);
 const isEmailSent = ref("");
@@ -41,23 +41,16 @@ const formData = ref<PassResetModel>({
 const preventSubmit = async () => {
     er.value.splice(0, er.value.length);
     isEmailSent.value = "";
-    let response;
-    try {
-        const { data } = await axios.post(
-            "/api/register",
-            JSON.stringify(formData.value),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        response = data;
-        isEmailSent.value = response.message;
+    let response: responseModel = await sendData(
+        "/pass-reset",
+        JSON.stringify(formData.value)
+    )
+    if(response.status){
+        isEmailSent.value = response.content;
         document.getElementById("reset_button")!.click();
-    } catch (error: any) {
+    } else {
         formData.value.email = "";
-        error.response.data.forEach((element: { description: string }) => {
+        response.content.forEach((element: { description: string }) => {
             er.value.push(element.description);
         });
     }

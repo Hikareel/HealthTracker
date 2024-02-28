@@ -39,8 +39,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { LoginModel } from '@/data/models/loginDataModel';
-import axios from 'axios';
 import router from '../../../../../router'
+import { sendData, type responseModel } from '@/data/apiRequest/sendData';
 
 
 const er = ref<string[]>([])
@@ -54,24 +54,19 @@ const formData = ref<LoginModel>({
 const preventSubmit = async () => {
     er.value.splice(0, er.value.length)
     isLogged.value = ''
-    try {
-        const { data } = await axios.post(
-            '/api/login',
-            JSON.stringify(formData.value),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        localStorage.setItem("token", data.token)
+    let response: responseModel = await sendData(
+        "/login",
+        JSON.stringify(formData.value)
+    )
+    if(response.status){
+        localStorage.setItem("token", response.content)
         isLogged.value = "User is logged"
         router.push('/').then(() =>{
             window.location.reload()
         });
-    } catch (error: any) {
+    } else {
         formData.value.Password = ''
-        error.response.data.forEach((element: { description: string; }) => {
+        response.content.forEach((element: { description: string; }) => {
             er.value.push(element.description)
         });
     }

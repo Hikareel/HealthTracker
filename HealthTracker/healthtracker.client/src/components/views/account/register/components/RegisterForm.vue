@@ -68,8 +68,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { RegisterModel } from '@/data/models/registerDataModel';
-import axios from 'axios';
-
+import { sendData, type responseModel } from '@/data/apiRequest/sendData'
 
 const er = ref<string[]>([])
 const isRegistered = ref("")
@@ -89,22 +88,17 @@ const preventSubmit = async () => {
   er.value.splice(0, er.value.length)
   isRegistered.value = ''
   formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
-  try {
-    const { data } = await axios.post(
-      '/api/register',
-      JSON.stringify(formData.value),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    isRegistered.value = data.message
+  let response: responseModel = await sendData(
+    "/register",
+    JSON.stringify(formData.value)
+  )
+  if(response.status){
+    isRegistered.value = response.content
     document.getElementById('reset_button')!.click()
-  } catch (error: any) {
+  } else {
     formData.value.Password = ''
     formData.value.Password_confirmation = ''
-    error.response.data.forEach((element: { description: string; }) => {
+    response.content.forEach((element: { description: string; }) => {
       er.value.push(element.description)
     });
   }
