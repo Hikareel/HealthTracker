@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { NewPassModel } from '@/data/models/formDataModels';
-import { preventSubmit, formNotification, clearNotification } from '@/data/apiRequest/sendDataService';
+import { preventSubmit, formNotification, clearNotification } from '@/data/service/sendDataService';
 
 clearNotification()
 
