@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { NewPassModel } from '../data/newPassModel';
+import type { NewPassModel } from '@/data/models/newPassModel';
 import axios from 'axios';
 
 

@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import type { HomeCardModel } from './../data/homeCardModel';
+import type { HomeCardModel } from '@/data/models/homeCardModel';
 
 const props = defineProps<{
     item: HomeCardModel

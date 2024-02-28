@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { RegisterModel } from '../data/registerDataModel';
+import type { RegisterModel } from '@/data/models/registerDataModel';
 import axios from 'axios';
 
 

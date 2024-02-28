@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { LoginModel } from '../data/loginDataModel';
+import type { LoginModel } from '@/data/models/loginDataModel';
 import axios from 'axios';
 import router from '../../../../../router'
 

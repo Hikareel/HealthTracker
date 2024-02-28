@@ -9,7 +9,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import type { LinkItem } from '../data/sidebarLinks';
+  import type { LinkItem } from '@/data/models/sidebarLinks';
   const props = defineProps<{
     item: LinkItem
   }>()

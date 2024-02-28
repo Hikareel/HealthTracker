@@ -23,7 +23,7 @@
 </template>
 <script lang="ts" setup>
 import SidebarItem from "./components/SidebarItem.vue";
-import {Links, AuthLinks} from "./data/sidebarLinks";
+import {Links, AuthLinks} from "@/data/models/sidebarLinks";
 import { ref } from "vue";
 const is_expanded = ref(false)
 const ToggleMenu = () => {

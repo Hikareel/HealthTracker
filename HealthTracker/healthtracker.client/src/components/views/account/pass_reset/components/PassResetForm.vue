@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { PassResetModel } from "../data/passResetModel";
+import type { PassResetModel } from "@/data/models/passResetModel";
 import axios from "axios";
 
 const er = ref<string[]>([]);

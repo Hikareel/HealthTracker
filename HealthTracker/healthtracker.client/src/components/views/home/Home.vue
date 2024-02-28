@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import HomeCard from './components/HomeCard.vue';
-import { HomeCardData } from './data/homeCardModel';
+import { HomeCardData } from '@/data/models/homeCardModel';
 </script>
 
 
