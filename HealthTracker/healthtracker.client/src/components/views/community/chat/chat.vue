@@ -1,57 +1,164 @@
 <template>
   <main class="chat">
-    <div class="chat-header">
-      <p>Friend name: </p>
-    </div>
-    <div class="chat-messages">
-      <div v-for="message in CurrentMessages" :key="message.message"
-        :class="['message', message.isYours ? 'own-message' : 'received-message']">
-        {{ message.message }}
-      </div>
-    </div>
+    <div class="content" :class="`${is_expanded && 'is-expanded'}`">
 
-    <div class="chat-input">
-      <input type="text" placeholder="Write message..." />
-      <button><i class='bi bi-send-fill'></i></button>
+      <div class="chat-header">
+        <div class="menu-toggle-wrap">
+          <button class="menu-toggle" @click="ToggleMenu">
+            <span class="material-icons">
+              keyboard_double_arrow_right
+            </span>
+          </button>
+        </div>
+
+        <div class="chat-header-label">
+          <p>Friend</p>
+        </div>
+      </div>
+
+      <div class="chat-content">
+        <div class="notification">
+          <p>Notification</p>
+        </div>
+        <div class="chat-messinput">
+          <div class="chat-messages">
+            <div v-for="message in CurrentMessages" :key="message.message"
+              :class="['message', message.isYours ? 'own-message' : 'received-message']">
+              {{ message.message }}
+            </div>
+          </div>
+          <div class="chat-input">
+            <button><i class='bi bi-send-fill'></i></button>
+            <input type="text" placeholder="Write message..." />
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
 import { CurrentMessages } from './data/currentMessages'
+import { ref } from "vue";
+const is_expanded = ref(false)
+const ToggleMenu = () => {
+  is_expanded.value = !is_expanded.value
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.content {
+  background-color: rgb(168, 124, 124);
+  position: fixed;
+  right: calc(-25vw + 4rem);
+  width: 25vw;
+  height: 20rem;
+  transition: right 0.5s ease-out;
+
+  .chat-header {
+    height: 3rem;
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    grid-template-rows: 2rem;
+  }
+
+  .chat-content {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    transition: 0.5s ease-out;
+  }
+
+  .notification {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    writing-mode: vertical-rl;
+    grid-column: 1;
+    opacity: 1;
+    visibility: visible;
+    width: 4rem;
+    transition: width 0.5s ease-out, opacity 0.5s ease-out;
+  }
+
+  .menu-toggle-wrap {
+    top: 0;
+
+    .menu-toggle {
+      padding: 1rem;
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+      cursor: pointer;
+      transition: 0.5s ease-out;
+      transform: scaleX(-1);
+
+      .material-icons {
+        font-size: 2rem;
+        color: white;
+      }
+    }
+  }
+
+  &.is-expanded {
+    right: 0;
+  }
+
+  &.is-expanded .chat-content {
+    grid-template-columns: 0 1fr;
+  }
+
+  &.is-expanded .menu-toggle {
+    transform: scaleX(1);
+    transition: 0.5s ease-out;
+  }
+
+  &.is-expanded .notification {
+    transform: translateX(-100%);
+    transition: width 0.5s ease-out, opacity 0.5s ease-out;
+    transition: width 2.5s ease, opacity 2.5s ease;
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+  }
+}
+
 .chat {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 6fr 2fr;
-  background-color: red;
+  background-color: rgb(168, 124, 124);
   border-radius: 15px 0px 0px 15px;
 }
 
-.chat-header {
-  display: inline-grid;
+.chat-header-label {
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  font-size: 2rem;
   color: white;
-  text-align: center;
-  align-items: end;
+}
+
+.chat-messinput {
+  grid-column: 2 / 3;
+  padding-left: 1rem;
+  padding-top: 1rem;
 }
 
 .chat-messages {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #888 #f0f0f0;
-  height: 8rem;
-  margin: 1rem 1rem 0rem 1rem;
+  height: 11rem;
   padding: 5px;
-  background-color: grey;
+  border-radius: 10px 0 0 0;
+  background-color: rgb(199, 167, 167);
+  transition: 0.5s ease-out;
 }
 
 .message {
   display: flex;
   overflow-wrap: anywhere;
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 8px;
   border-radius: 10px;
   max-width: 60%;
   width: fit-content;
@@ -71,23 +178,29 @@ import { CurrentMessages } from './data/currentMessages'
 
 
 .chat-input {
+  background-color: rgb(199, 167, 167);
   display: flex;
-  margin-left: 1rem;
-  margin-bottom: 0.5rem;
-  margin-right: 1rem;
+  height: 2rem;
   gap: 2px;
+  border-radius: 10px;
 }
 
 .chat-input input {
-  flex-grow: 1;
-  height: 2rem;
+  width: 100%;
+  background-color: rgb(199, 167, 167);
+  border: none;
 }
 
 .chat-input button {
   cursor: pointer;
-  background-color: white;
-  height: 2rem;
+  background-color: rgb(199, 167, 167);
+  border: none;
   width: 2rem;
+  border-radius: 0 0 0 10px;
+}
+
+.chat-input button:hover {
+  border: 1px solid rgb(0, 182, 206);
 }
 
 .chat-messages::-webkit-scrollbar {

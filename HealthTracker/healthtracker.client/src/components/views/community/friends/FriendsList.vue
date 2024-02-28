@@ -20,13 +20,13 @@ import { FriendsData } from './data/friendModel'
 .friends-list {
     margin-top: 1rem;
     max-height: 20rem;
-    overflow: auto; /* Zapewnia przewijanie */
-    -ms-overflow-style: none; /* Dla Internet Explorer 10+ */
-    scrollbar-width: none; /* Dla Firefox */
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .friends-list::-webkit-scrollbar { 
-    display: none; /* Dla Safari i Chrome */
+    display: none;
 }
 
 .search{
