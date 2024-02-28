@@ -5,6 +5,11 @@ interface responseModel{
   content: any
 }
 
+interface formNotificationModel{
+  success: string,
+  errors: string[]
+}
+
 const sendData = async (
   endpoint: string,
   formData: string
@@ -33,4 +38,4 @@ const sendData = async (
   }
 
 export { sendData }
-export type { responseModel }
+export type { responseModel, formNotificationModel }
