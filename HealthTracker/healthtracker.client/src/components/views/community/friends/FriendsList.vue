@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import FriendItem from './FriendItem.vue'
-import { FriendsData } from './data/friendModel'
+import { FriendsData } from '@/data/models/friendModel'
 </script>
 
 <style lang="scss" scoped>

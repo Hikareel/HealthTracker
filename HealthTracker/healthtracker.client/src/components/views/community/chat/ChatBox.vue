@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { CurrentMessages } from './data/currentMessages'
+import { CurrentMessages } from '@/data/models/currentMessages'
 </script>
 
 <style lang="scss" scoped>

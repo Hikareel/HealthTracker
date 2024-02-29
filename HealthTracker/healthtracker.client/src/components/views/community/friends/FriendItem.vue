@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { FriendsModel } from './data/friendModel'
+import type { FriendsModel } from '@/data/models/friendModel'
 
 defineProps<{
   item: FriendsModel
