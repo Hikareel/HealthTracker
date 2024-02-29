@@ -7,19 +7,19 @@ interface responseModel{
   content: any
 }
 
-interface formNotificationModel{
+interface formStatusModel{
   success: string,
   errors: string[]
 }
 
-const formNotification = ref<formNotificationModel>({
+const formStatus = ref<formStatusModel>({
   success: "",
   errors: []
 })
 
-const clearNotification = () => {
-  formNotification.value.errors = []
-  formNotification.value.success = ""
+const clearFormStatus = () => {
+  formStatus.value.errors = []
+  formStatus.value.success = ""
 }
 
 const sendData = async (
@@ -53,24 +53,24 @@ const preventSubmit = async (
     endpoint: string,
     data: string
   ) => {
-    clearNotification()
+    clearFormStatus()
     let response: responseModel = await sendData(endpoint, data)
     if(response.status){
       if(endpoint == "/login"){
         localStorage.setItem("token", response.content)
-        formNotification.value.success = "User is logged"
+        formStatus.value.success = "User is logged"
         router.push('/').then(() =>{
             window.location.reload()
         });
       } else{
-        formNotification.value.success = response.content
+        formStatus.value.success = response.content
         document.getElementById('reset_button')!.click()
       }
     } else {
       response.content.forEach((element: { description: string; }) => {
-        formNotification.value.errors.push(element.description)
+        formStatus.value.errors.push(element.description)
       });
     }
   }
 
-export { preventSubmit, formNotification, clearNotification }
+export { preventSubmit, formStatus, clearFormStatus }

@@ -1,6 +1,6 @@
 <template>
     <div class="form">
-        <FormNotification formTitle="New Password"/>
+        <FormStatus formTitle="New Password"/>
         <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="password">
@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { NewPassModel } from '@/data/models/formDataModels';
-import FormNotification from '@/components/shared/FormNotification.vue'
+import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService';
 
 const formData = ref<NewPassModel>({

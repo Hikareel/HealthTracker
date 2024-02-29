@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <FormNotification formTitle="Registration"/>
+    <FormStatus formTitle="Registration"/>
     <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false" :endpoint="false"
       :display-errors="false" sync>
       <GroupElement name="name" before="Name">
@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { RegisterModel } from '@/data/models/formDataModels';
-import FormNotification from '@/components/shared/FormNotification.vue'
+import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService'
 
 const formData = ref<RegisterModel>({

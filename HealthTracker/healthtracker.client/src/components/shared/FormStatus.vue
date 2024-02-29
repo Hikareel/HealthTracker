@@ -1,18 +1,18 @@
 <template>
   <div>
     <p class="form-label">{{ formTitle }}</p>
-    <p v-for="error in formNotification.errors" class="error" v-bind:key="error">
+    <p v-for="error in formStatus.errors" class="error" v-bind:key="error">
       {{ error }}
     </p>
     <p class="success">
-      {{ formNotification.success }}
+      {{ formStatus.success }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { formNotification, clearNotification } from '@/data/service/sendDataService'
-clearNotification()
+import { formStatus, clearFormStatus } from '@/data/service/sendDataService'
+clearFormStatus()
 const props = defineProps<{
     formTitle: string
   }>()
