@@ -9,9 +9,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import type { LinkItem } from '../data/sidebarLinks';
+  import type { ILinkItem } from '@/data/models/sidebarLinks';
   const props = defineProps<{
-    item: LinkItem
+    item: ILinkItem
   }>()
 </script>
 <style lang="scss">

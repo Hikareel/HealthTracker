@@ -1,13 +1,7 @@
 <template>
   <div class="form">
-    <p class="form-label">Registration</p>
-    <p v-for="msg in er" class="error" v-bind:key="msg">
-      {{ msg }}
-    </p>
-    <p class="success">
-      {{ isRegistered }}
-    </p>
-    <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false" :endpoint="false"
+    <FormStatus formTitle="Registration"/>
+    <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false" :endpoint="false"
       :display-errors="false" sync>
       <GroupElement name="name" before="Name">
         <TextElement :addons="{
@@ -67,47 +61,26 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { RegisterModel } from '../data/registerDataModel';
-import axios from 'axios';
+import type { IRegisterModel } from '@/data/models/formDataModels';
+import FormStatus from '@/components/shared/FormStatus.vue'
+import { preventSubmit } from '@/data/service/sendDataService'
 
-
-const er = ref<string[]>([])
-const isRegistered = ref("")
-
-const formData = ref<RegisterModel>({
-  Email: '',
-  UserName: '',
-  FirstName: '',
-  LastName: '',
-  PhoneNumber: '',
-  DateOfBirth: '',
-  Password: '',
-  Password_confirmation: ''
+const formData = ref<IRegisterModel>({
+  Email: "",
+  UserName: "",
+  FirstName: "",
+  LastName: "",
+  PhoneNumber: "",
+  DateOfBirth: "",
+  Password: "",
+  Password_confirmation: ""
 });
 
-const preventSubmit = async () => {
-  er.value.splice(0, er.value.length)
-  isRegistered.value = ''
+const sendFormData = async () => {
   formData.value.DateOfBirth = new Date(formData.value.DateOfBirth).toISOString()
-  try {
-    const { data } = await axios.post(
-      '/api/register',
-      JSON.stringify(formData.value),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    isRegistered.value = data.message
-    document.getElementById('reset_button')!.click()
-  } catch (error: any) {
-    formData.value.Password = ''
-    formData.value.Password_confirmation = ''
-    error.response.data.forEach((element: { description: string; }) => {
-      er.value.push(element.description)
-    });
-  }
+  preventSubmit("/register", JSON.stringify(formData.value))
+  formData.value.Password = ""
+  formData.value.Password_confirmation = ""
 }
 </script>
 

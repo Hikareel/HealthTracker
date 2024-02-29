@@ -1,13 +1,7 @@
 <template>
     <div class="form">
-        <p class="form-label">New Password</p>
-        <p v-for="msg in er" class="error" v-bind:key="msg">
-            {{ msg }}
-        </p>
-        <p class="success">
-            {{ isChanged }}
-        </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+        <FormStatus formTitle="New Password"/>
+        <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="password">
                 <TextElement info="Password and Confirm password must match" name="Password" label="Password"
@@ -15,8 +9,8 @@
                     rules="required|confirmed|min:6|regex:/^(?=.*[^\w\d])(?=.*\d)(?=.*[A-Z]).+$/" :messages="{
                         regex: 'At least one character of type: alphanumeric, capital letter, number'
                     }" :addons="{
-    before: `<i class='bi bi-lock-fill'></i>`
-}" />
+                        before: `<i class='bi bi-lock-fill'></i>`
+                    }" />
                 <TextElement name="Password_confirmation" placeholder="Confirm password" input-type="password"
                     rules="required" :addons="{
                         before: `<i class='bi bi-lock-fill'></i>`
@@ -35,42 +29,19 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { NewPassModel } from '../data/newPassModel';
-import axios from 'axios';
+import type { INewPassModel } from '@/data/models/formDataModels';
+import FormStatus from '@/components/shared/FormStatus.vue'
+import { preventSubmit } from '@/data/service/sendDataService';
 
-
-const er = ref<string[]>([])
-const isChanged = ref("")
-
-const formData = ref<NewPassModel>({
+const formData = ref<INewPassModel>({
     password: '',
     password_confirmation: '',
 });
 
-const preventSubmit = async () => {
-    er.value.splice(0, er.value.length)
-    isChanged.value = ''
-    let response
-    try {
-        const { data } = await axios.post(
-            '/api/register',
-            JSON.stringify(formData.value),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        response = data
-        isChanged.value = response.message
-        document.getElementById('reset_button')!.click()
-    } catch (error: any) {
-        formData.value.password = ''
-        formData.value.password_confirmation = ''
-        error.response.data.forEach((element: { description: string; }) => {
-            er.value.push(element.description)
-        });
-    }
+const sendFormData = async () => {
+    preventSubmit("/new-pass", JSON.stringify(formData.value))
+    formData.value.password = ''
+    formData.value.password_confirmation = ''
 }
 </script>
 

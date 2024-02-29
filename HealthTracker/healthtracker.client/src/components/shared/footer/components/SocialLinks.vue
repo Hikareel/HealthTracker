@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { SocialLinks } from '../data/socialLinks'
+import { SocialLinks } from '@/data/models/socialLinks'
 </script>
 
 <style scoped>

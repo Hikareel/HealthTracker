@@ -39,11 +39,11 @@ const HomeCardData = reactive([
   },
 ])
 
-interface HomeCardModel {
+interface IHomeCardModel {
   name: string;
   description: string;
   label: string;
   fieldValue: string[],
 }
 export { HomeCardData };
-export type { HomeCardModel };
+export type { IHomeCardModel };

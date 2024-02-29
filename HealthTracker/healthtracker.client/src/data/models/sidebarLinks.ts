@@ -66,11 +66,11 @@ const AuthLinks = reactive({
   },
 })
 
-interface LinkItem{
+interface ILinkItem{
   name: String,
   link: String,
   icon: String,
   isHidden: boolean
 }
 export { Links, AuthLinks };
-export type { LinkItem };
+export type { ILinkItem };

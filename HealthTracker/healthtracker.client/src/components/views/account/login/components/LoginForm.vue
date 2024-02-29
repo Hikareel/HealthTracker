@@ -1,13 +1,7 @@
 <template>
     <div class="form">
-        <p class="form-label">Login</p>
-        <p v-for="msg in er" class="error" v-bind:key="msg">
-            {{ msg }}
-        </p>
-        <p class="success">
-            {{ isLogged }}
-        </p>
-        <Vueform class="form-content" v-model="formData" @submit="preventSubmit" :float-placeholders="false"
+        <FormStatus formTitle="Login"/>
+        <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
             <GroupElement name="email_username">
                 <TextElement name="EmailUserName" label="Email or username" placeholder="user@example.com" rules="required"
@@ -38,43 +32,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { LoginModel } from '../data/loginDataModel';
-import axios from 'axios';
-import router from '../../../../../router'
+import type { ILoginModel } from '@/data/models/formDataModels';
+import FormStatus from '@/components/shared/FormStatus.vue'
+import { preventSubmit } from '@/data/service/sendDataService';
 
-
-const er = ref<string[]>([])
-const isLogged = ref("")
-
-const formData = ref<LoginModel>({
+const formData = ref<ILoginModel>({
     EmailUserName: '',
     Password: '',
 });
 
-const preventSubmit = async () => {
-    er.value.splice(0, er.value.length)
-    isLogged.value = ''
-    try {
-        const { data } = await axios.post(
-            '/api/login',
-            JSON.stringify(formData.value),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        localStorage.setItem("token", data.token)
-        isLogged.value = "User is logged"
-        router.push('/').then(() =>{
-            window.location.reload()
-        });
-    } catch (error: any) {
-        formData.value.Password = ''
-        error.response.data.forEach((element: { description: string; }) => {
-            er.value.push(element.description)
-        });
-    }
+const sendFormData = async () => {
+    preventSubmit("/login", JSON.stringify(formData.value))
+    formData.value.Password = ''
 }
 </script>
 
