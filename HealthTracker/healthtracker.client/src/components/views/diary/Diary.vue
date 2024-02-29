@@ -3,9 +3,9 @@
     <p>This is a meals page</p>
   </main>
 </template>
-<script lang="ts" setup>
 
+<script lang="ts" setup>
 </script>
-<style>
-  
+
+<style lang="scss" scoped>
 </style>

@@ -8,52 +8,13 @@
     </p>
   </div>
 </template>
+
 <script lang="ts" setup>
-  import type { ILinkItem } from '@/data/models/sidebarLinks';
-  const props = defineProps<{
-    item: ILinkItem
-  }>()
+import type { ILinkItem } from '@/data/models/sidebarLinks';
+defineProps<{
+  item: ILinkItem
+}>()
 </script>
-<style lang="scss">
-aside{
-  .menu{
-    .item{
-      color: white;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      padding: 0.5rem 1.2rem;
 
-      &:hover, &.router-link-exact-active{
-        .material-icons, .text{
-          color:gold;
-        }
-      }
-
-      &.router-link-exact-active{
-        border-right: 5px solid white;
-      }
-
-      .text{
-        padding-left: 1rem;
-        transition: opacity 0.5s ease, font-size 0.35s ease;
-        font-size: 0;
-        opacity: 0;
-      }
-    }
-  }
-
-  &.is-expanded{
-    .menu{
-      .item .text{
-        transition: font-size 0.5s ease;
-        padding-left: 1rem;
-        opacity: 1;
-        font-size: medium;
-      }
-    }
-  }
-}
-
-
+<style lang="scss" scoped>
 </style>

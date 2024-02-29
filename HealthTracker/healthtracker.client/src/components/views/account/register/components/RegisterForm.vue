@@ -85,5 +85,4 @@ const sendFormData = async () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/form.scss';
 </style>

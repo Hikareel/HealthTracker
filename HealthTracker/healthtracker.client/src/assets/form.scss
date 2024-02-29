@@ -1,41 +1,42 @@
 @use "variables" as v;
-.form {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding: 1rem 5rem 2rem 5rem;
-  background-color: v.$form-bg;
-  border-radius: 50px;
-  border: 2px solid #8b8b8b;
-  box-shadow: 0 4px 30px rgba(216, 199, 199, 0.7);
-
-  @media (max-width: 550px) {
-    padding: 1rem 2rem 1rem 2rem;
-  }
-
-  .form-label {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 26px;
-    color: #000000;
-    font-weight: 800;
-    font-variant: small-caps;
-  }
-
-  .error, .success, .form-content{
-    margin: auto;
-    max-width: 300px;
+.form-page{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  width: 100%;
+  .form {
     margin-top: 1rem;
-  }
-
-  .error {
-    color: v.$error-color;
-  }
-
-  .success {
-    color: v.$success-color;
-  }
-
-  .form-content {
-    color: #000000;
+    margin-bottom: 1rem;
+    padding: 1rem 5rem 2rem 5rem;
+    background-color: v.$form-bg;
+    border-radius: 50px;
+    border: 2px solid #8b8b8b;
+    box-shadow: 0 4px 30px rgba(216, 199, 199, 0.7);
+    @media (max-width: 550px) {
+      padding: 1rem 2rem 1rem 2rem;
+    }
+    .form-label {
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 26px;
+      color: #000000;
+      font-weight: 800;
+      font-variant: small-caps;
+    }
+    .error, .success, .form-content{
+      margin: auto;
+      max-width: 300px;
+      margin-top: 1rem;
+    }
+    .error {
+      color: v.$error-color;
+    }
+    .success {
+      color: v.$success-color;
+    }
+    .form-content {
+      color: #000000;
+    }
   }
 }
