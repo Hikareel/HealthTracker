@@ -13,37 +13,21 @@
           <p>Friend</p>
         </div>
       </div>
-      <div class="chat-content">
-        <div class="notification">
-          <p>Notification</p>
-        </div>
-        <div class="chat-messinput">
-          <div class="chat-messages">
-            <div v-for="message in CurrentMessages" :key="message.message"
-              :class="['message', message.isYours ? 'own-message' : 'received-message']">
-              {{ message.message }}
-            </div>
-          </div>
-          <div class="chat-input">
-            <button><i class='bi bi-send-fill'></i></button>
-            <input type="text" placeholder="Write message..." />
-          </div>
-        </div>
-      </div>
+      <ChatBox />
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { CurrentMessages } from './data/currentMessages'
 import { ref } from "vue";
+import ChatBox from './ChatBox.vue'
 const is_expanded = ref(false)
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .chat {
   display: grid;
   grid-template-columns: 1fr;

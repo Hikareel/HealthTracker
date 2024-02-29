@@ -5,7 +5,7 @@
     </div>
     <div class="right-content">
       <FriendsList />
-      <Chat class="chat" />
+      <Chat />
     </div>
   </main>
 </template>
