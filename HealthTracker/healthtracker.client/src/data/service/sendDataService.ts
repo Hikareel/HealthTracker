@@ -22,6 +22,22 @@ const clearFormStatus = () => {
   formStatus.value.success = ""
 }
 
+const tasksForEndpoint = (
+  endpoint: string,
+  responseCentent: any
+) => {
+  if(endpoint == "/login"){
+    localStorage.setItem("token", responseCentent)
+    formStatus.value.success = "User is logged"
+    router.push('/').then(() =>{
+        window.location.reload()
+    });
+  } else{
+    formStatus.value.success = responseCentent
+    document.getElementById('reset_button')!.click()
+  }
+}
+
 const sendData = async (
     endpoint: string,
     postData: string
@@ -41,7 +57,10 @@ const sendData = async (
         }
       );
       result.status = true
-      result.content = data.message
+      if(endpoint == "/login")
+        result.content = data.token
+      else 
+        result.content = data.message
     } catch (error: any) {
       result.status = false
       result.content = error.response.data
@@ -56,16 +75,7 @@ const preventSubmit = async (
     clearFormStatus()
     let response: responseModel = await sendData(endpoint, data)
     if(response.status){
-      if(endpoint == "/login"){
-        localStorage.setItem("token", response.content)
-        formStatus.value.success = "User is logged"
-        router.push('/').then(() =>{
-            window.location.reload()
-        });
-      } else{
-        formStatus.value.success = response.content
-        document.getElementById('reset_button')!.click()
-      }
+      tasksForEndpoint(endpoint, response.content)
     } else {
       response.content.forEach((element: { description: string; }) => {
         formStatus.value.errors.push(element.description)
