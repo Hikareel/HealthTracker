@@ -32,11 +32,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { LoginModel } from '@/data/models/formDataModels';
+import type { ILoginModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService';
 
-const formData = ref<LoginModel>({
+const formData = ref<ILoginModel>({
     EmailUserName: '',
     Password: '',
 });

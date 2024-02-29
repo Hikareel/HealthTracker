@@ -2,17 +2,17 @@ import axios from 'axios';
 import router from '@/router'
 import { ref } from 'vue';
 
-interface responseModel{
+interface IResponseModel{
   status: boolean,
   content: any
 }
 
-interface formStatusModel{
+interface IFormStatusModel{
   success: string,
   errors: string[]
 }
 
-const formStatus = ref<formStatusModel>({
+const formStatus = ref<IFormStatusModel>({
   success: "",
   errors: []
 })
@@ -42,7 +42,7 @@ const sendData = async (
     endpoint: string,
     postData: string
   ) => {
-    const result: responseModel = {
+    const result: IResponseModel = {
       status: false,
       content: ""
     }
@@ -73,7 +73,7 @@ const preventSubmit = async (
     data: string
   ) => {
     clearFormStatus()
-    let response: responseModel = await sendData(endpoint, data)
+    let response: IResponseModel = await sendData(endpoint, data)
     if(response.status){
       tasksForEndpoint(endpoint, response.content)
     } else {

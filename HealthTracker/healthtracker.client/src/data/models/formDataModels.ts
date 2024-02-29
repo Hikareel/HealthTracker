@@ -1,18 +1,18 @@
-interface LoginModel {
+interface ILoginModel {
   EmailUserName: string,
   Password: string,
 }
 
-interface NewPassModel{
+interface INewPassModel{
   password: string,
   password_confirmation: string
 }
 
-interface PassResetModel{
+interface IPassResetModel{
   email: string
 }
 
-interface RegisterModel {
+interface IRegisterModel {
   Email: string,
   UserName: string,
   FirstName: string,
@@ -23,4 +23,4 @@ interface RegisterModel {
   Password_confirmation: string
 }
 
-export type { LoginModel, NewPassModel, PassResetModel, RegisterModel }
+export type { ILoginModel, INewPassModel, IPassResetModel, IRegisterModel }

@@ -22,11 +22,11 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { PassResetModel } from "@/data/models/formDataModels";
+import type { IPassResetModel } from "@/data/models/formDataModels";
 import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService'
 
-const formData = ref<PassResetModel>({
+const formData = ref<IPassResetModel>({
     email: "",
 });
 

@@ -29,11 +29,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { NewPassModel } from '@/data/models/formDataModels';
+import type { INewPassModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService';
 
-const formData = ref<NewPassModel>({
+const formData = ref<INewPassModel>({
     password: '',
     password_confirmation: '',
 });
