@@ -41,6 +41,7 @@ const ToggleMenu = () => {
     width: 25vw;
     height: 20rem;
     transition: right 0.5s ease-out;
+    border-radius: 1rem 0% 0% 1rem;
     .chat-header {
       height: 3rem;
       display: grid;
