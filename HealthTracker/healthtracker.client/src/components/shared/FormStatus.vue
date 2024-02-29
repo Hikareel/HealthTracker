@@ -13,9 +13,9 @@
 <script setup lang="ts">
 import { formStatus, clearFormStatus } from '@/data/service/sendDataService'
 clearFormStatus()
-const props = defineProps<{
-    formTitle: string
-  }>()
+defineProps<{
+  formTitle: string
+}>()
 </script>
 
 <style lang="scss" scoped>

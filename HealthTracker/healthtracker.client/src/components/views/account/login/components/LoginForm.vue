@@ -48,8 +48,6 @@ const sendFormData = async () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/form';
-
 .login-button {
     margin-top: 1rem;
 }

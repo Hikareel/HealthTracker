@@ -7,7 +7,6 @@
           <span class="link_name">{{ link.name }}</span>
         </a>
       </li>
-      
     </ul>
   </div>
 </template>
@@ -16,7 +15,12 @@
 import { SocialLinks } from '@/data/models/socialLinks'
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.social_links{
+  width: 30rem;
+  @media (max-width: 768px){
+    width: 200px;
+  }
   ul{
     display: flex;
     gap: 20px;
@@ -30,22 +34,19 @@ import { SocialLinks } from '@/data/models/socialLinks'
     display: grid;
     grid-template-columns: 0.2fr 1fr;
     gap: 10px;
-  }
-  .sl:hover{
-    color: gold;
-    background-color: transparent;
-  }
-  .sl:active{
-    color: blue;
-  }
-  .sl:hover .link_name,
-  .sl:active .link_name {
-    text-decoration: underline;
-  }
-  .social_links{
-    width: 30rem;
-    @media (max-width: 768px){
-      width: 200px;
+    &:hover{
+      color: gold;
+      background-color: transparent;
+      .link_name {
+        text-decoration: underline;
+      }
+    }
+    &:active{
+      color: blue;
+      .link_name {
+        text-decoration: underline;
+      }
     }
   }
+}
 </style>
