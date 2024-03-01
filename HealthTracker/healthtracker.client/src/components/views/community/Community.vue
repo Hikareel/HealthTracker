@@ -13,6 +13,7 @@
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
 import Chat from './chat/Chat.vue'
+
 </script>
 
 <style lang="scss" scoped>
