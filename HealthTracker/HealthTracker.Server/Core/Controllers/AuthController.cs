@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Text.Encodings.Web;
 
 
 namespace HealthTracker.Server.Core.Controllers
@@ -45,6 +46,17 @@ namespace HealthTracker.Server.Core.Controllers
                 return Ok(new { Message = "User registered successfully" });
             }
 
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("pass-reset")]
+        public async Task<IActionResult> PasswordReset([FromBody] PasswordReserDto passwordReserDto)
+        {
+            var result =await _userRepository.PasswordResetAsync(passwordReserDto);
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "User registered successfully" });
+            }
             return BadRequest(result.Errors);
         }
 

@@ -40,7 +40,6 @@
   <ItemGroup>
     <Folder Include="Core\Interfaces\" />
     <Folder Include="Core\Helpers\" />
-    <Folder Include="Core\Services\" />
     <Folder Include="Modules\Community\Controllers\" />
     <Folder Include="Modules\Community\DTOs\" />
     <Folder Include="Modules\Health\Controllers\" />
