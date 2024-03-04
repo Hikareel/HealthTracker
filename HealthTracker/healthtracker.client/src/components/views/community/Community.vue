@@ -45,7 +45,7 @@ import Chat from './chat/Chat.vue'
 
     .chat {
       flex-shrink: 0;
-
+      min-height: 20rem;
     }
   }
 
@@ -63,6 +63,20 @@ import Chat from './chat/Chat.vue'
   //     }
   //   }
   // }
+  @media (max-height: 550px) {
+    .right-content {
+      justify-content: center;
+      padding-top: 1rem;
+      .list {
+        display: none;
+      }
+
+      .chat {
+        top: 0;
+        min-height: calc(100vh - 8rem);
+      }
+    }
+  }
 
 
 }
