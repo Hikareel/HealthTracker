@@ -4,8 +4,8 @@
       <!-- POSTs -->
     </div>
     <div class="right-content">
-      <FriendsList />
-      <Chat />
+      <FriendsList class="list" />
+      <Chat class="chat" />
     </div>
   </main>
 </template>
@@ -22,18 +22,48 @@ import Chat from './chat/Chat.vue'
   grid-template-columns: 3fr 1fr;
   justify-items: stretch;
   align-items: stretch;
+
   .wall {
     justify-content: center;
     align-items: center;
+    width: calc(100vw - 4rem - 20rem);
   }
+
   .right-content {
-    position: fixed;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    height: 100vh;
-    width: 25vw;
-    right:0;
+    height: calc(100vh - 8rem);
+    width: 20rem;
+    position: fixed;
+    right: 0;
+    transition: width 0.3s ease-out;
+
+    .list {
+      flex-grow: 1;
+    }
+
+    .chat {
+      flex-shrink: 0;
+
+    }
   }
+
+  //Do zastanowienia poniższy komentarz \/
+  //1. Albo robimy jednego dużego Searchara z wyszukiwaniem znajomych i postów
+  //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
+
+  // @media (max-width: 768px),
+  // (max-height: 768px) {
+  //   .right-content {
+  //     justify-content: center;
+
+  //     .list {
+  //       display: none;
+  //     }
+  //   }
+  // }
+
+
 }
 </style>

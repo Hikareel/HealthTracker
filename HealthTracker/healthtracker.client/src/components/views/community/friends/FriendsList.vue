@@ -16,8 +16,13 @@ import { FriendsData } from '@/data/models/friendModel'
 
 <style lang="scss" scoped>
 .main-list {
-    text-align:center;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    overflow: hidden;
+    text-align: center;
     .search{
+        padding-top: 1rem;
         .search-input {
             width: 10rem;
             box-sizing: border-box;
@@ -26,8 +31,10 @@ import { FriendsData } from '@/data/models/friendModel'
             font-size: 16px;
             background-color: white;
             background-image: url('/src/assets/search.svg');
-            background-position: center left+10px;
+            background-position: center left 10px;
             background-repeat: no-repeat;
+            justify-content: center;
+            text-align: center;
             padding: 12px 20px 12px 40px;
             transition: width 0.4s ease-in-out;
             &:focus {
@@ -37,13 +44,13 @@ import { FriendsData } from '@/data/models/friendModel'
     }
     .friends-list {
         margin-top: 1rem;
-        max-height: 20rem;
-        overflow: auto;
+        overflow-y: auto;
         -ms-overflow-style: none;
         scrollbar-width: none;
         &::-webkit-scrollbar { 
             display: none;
         }
+        flex-grow: 1;
     }
 }
 </style>

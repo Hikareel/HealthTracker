@@ -2,60 +2,73 @@ aside {
   position: fixed;
   display: flex;
   flex-direction: column;
-  width: calc(4rem);
+  width: 4rem;
   height: 100vh;
   background-color: rgb(168, 124, 124);
   padding: 1rem;
   transition: width 0.3s ease-out;
   z-index: 999;
-  @media (max-height: 505px){
-    overflow: scroll;
-  }
-  .flex{
+  overflow-y: auto;
+
+  .flex {
     flex: 1 1 0;
   }
-  .control{
+
+  .control {
     display: flex;
     flex-direction: column;
-    .menu-toggle-wrap{
+
+    .menu-toggle-wrap {
       margin: 0 -0.4rem;
-      .menu-toggle{
+
+      .menu-toggle {
         background-color: rgb(168, 124, 124);
         border: none;
         cursor: pointer;
         transition: 0.5s ease-out;
-        .material-icons{
+
+        .material-icons {
           font-size: 2rem;
           color: white;
         }
       }
     }
-    .logo-img{
+
+    .logo-img {
       width: 2rem;
       margin: 0;
     }
+
     .logo {
       text-align: center;
     }
   }
-  .menu{
+
+  .menu {
     margin: 0 -1rem;
-    .sidebar_item{
-      .item{
+
+    .sidebar_item {
+      .item {
         color: white;
         display: flex;
         align-items: center;
         text-decoration: none;
         padding: 0.5rem 1.2rem;
-        &:hover, &.router-link-exact-active{
-          .material-icons, .text{
-            color:gold;
+
+        &:hover,
+        &.router-link-exact-active {
+
+          .material-icons,
+          .text {
+            color: gold;
           }
         }
-        &.router-link-exact-active{
+
+        &.router-link-exact-active {
           border-right: 5px solid white;
         }
-        .text{
+
+        .text {
           padding-left: 1rem;
           transition: opacity 0.5s ease, font-size 0.35s ease;
           font-size: 0;
@@ -64,25 +77,30 @@ aside {
       }
     }
   }
-  &.is-expanded{
+
+  &.is-expanded {
     width: 14rem;
-    .control{
+
+    .control {
       display: flex;
       flex-direction: column;
-      .menu-toggle-wrap{
+
+      .menu-toggle-wrap {
         width: min-content;
         right: 0;
         align-self: flex-start;
-        .menu-toggle{
+
+        .menu-toggle {
           transform: scaleX(-1);
           transition: 0.5s ease-out;
         }
       }
     }
-    .menu{
-      .sidebar_item{
-        .item{
-          .text{
+
+    .menu {
+      .sidebar_item {
+        .item {
+          .text {
             transition: font-size 0.5s ease;
             padding-left: 1rem;
             opacity: 1;
@@ -91,15 +109,18 @@ aside {
         }
       }
     }
-    .logo{
+
+    .logo {
       margin-bottom: auto;
     }
-    @media (max-width: 768px){
+
+    @media (max-width: 768px) {
       border-radius: 0 20px 20px 0;
     }
   }
+
   @media (max-width: 768px) {
-    position:fixed;
+    position: fixed;
     z-index: 999;
   }
 }
