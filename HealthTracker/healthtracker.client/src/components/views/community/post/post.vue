@@ -50,10 +50,13 @@ function toggleComments() {
 
 <style lang="scss" scoped>
 .post {
-  width: calc(100vw - 30rem);
+  width: calc(95vw - 4rem - 20rem);
+  max-width: 1200px; /* Przykładowa maksymalna szerokość */
+  margin: 1rem auto; /* Centrowanie w poziomie z marginesem na górze i na dole */
   border: 1px solid black;
   border-radius: 1rem;
   background-color: rgba(62, 50, 50, 1);
+
 
   .header {
     border-radius: 1rem 1rem 0 0;
@@ -95,6 +98,10 @@ function toggleComments() {
 
   .comment-section {
     padding: 1rem;
+  }
+
+  @media (max-height: 550px){
+    width: calc(95vw - 4rem - 4rem);
   }
 }
 </style>

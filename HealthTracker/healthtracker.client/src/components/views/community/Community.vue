@@ -72,6 +72,9 @@ import { PostData } from '@/data/models/postModels';
   //   }
   // }
   @media (max-height: 550px) {
+    .wall{
+      width: calc(100vw - 4rem - 4rem);
+    }
     .right-content {
       justify-content: center;
       padding-top: 1rem;
