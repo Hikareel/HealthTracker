@@ -10,7 +10,7 @@ const PostData = reactive([
     },
     {
         user: "user2",
-        markdownText: "# Hello world\n\nSome plain text"
+        markdownText: "# *Hello* world\nSome **plain** text"
 
     },
     {

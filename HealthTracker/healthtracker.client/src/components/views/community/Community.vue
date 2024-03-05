@@ -29,6 +29,9 @@ import { PostData } from '@/data/models/postModels';
   align-items: stretch;
 
   .wall {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     justify-content: center;
     align-items: center;
     width: calc(100vw - 4rem - 20rem);
