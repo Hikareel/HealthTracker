@@ -24,6 +24,8 @@ import Header from './components/shared/header/Header.vue'
     overflow-x: hidden;
     background: rgb(37,32,32);
     background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%); 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
     .content{
       top: 0;
