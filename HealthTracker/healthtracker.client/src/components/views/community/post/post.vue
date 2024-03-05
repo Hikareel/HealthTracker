@@ -9,15 +9,15 @@
         <div class="attachment"></div>
       </div>
       <div class="footer">
-        <button class="comment">
+        <button class="like">
           <i class="bi bi-hand-thumbs-up-fill"></i>
         </button>
-        <button class="like">
+        <button class="comment" @click="toggleComments">
           <i class='bi bi-send-fill'></i>
         </button>
       </div>
       <!--Show after click-->
-      <div class="comment-section">
+      <div class="comment-section" v-if="isCommentsVisible">
         <p>comment</p>
       </div>
     </div>
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
 import type { IPostModel } from '@/data/models/postModels';
@@ -35,41 +35,66 @@ const { item } = defineProps<{
 }>();
 
 const md = new MarkdownIt();
+const isCommentsVisible = ref(false);
 
 const safeHtml = computed(() => {
   const rawHtml = md.render(item.markdownText);
   return DOMPurify.sanitize(rawHtml);
 });
 
+function toggleComments() {
+  isCommentsVisible.value = !isCommentsVisible.value;
+}
+
 </script>
 
 <style lang="scss" scoped>
-
-.post{
+.post {
   width: calc(100vw - 30rem);
   border: 1px solid black;
   border-radius: 1rem;
-  .header{
+  background-color: rgba(62, 50, 50, 1);
+
+  .header {
     border-radius: 1rem 1rem 0 0;
-    padding: 0.25rem;
-    background-color: $error-color;
-  }
-  .main{
     padding: 0.5rem;
-    background-color: lightblue;
   }
-  .footer{
+
+  .main {
+    border-top: 2px solid rgb(73, 61, 61);
+    padding: 1rem;
+  }
+
+  .footer {
     border-radius: 0 0 1rem 1rem;
-    background-color: $form-bg;
     text-align: center;
     display: flex;
+    height: 1.5rem;
 
-    button{
+    button {
+      background-color: rgb(73, 61, 61);
+      color: white;
       width: 100%;
       border: none;
       border-radius: 1rem;
+
+      &:hover {
+        background-color: rgb(112, 112, 112);
+      }
     }
   }
-}
 
+  .footer button i {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .footer button:active i {
+    transform: scale(1.1);
+  }
+
+  .comment-section {
+    padding: 1rem;
+  }
+}
 </style>
