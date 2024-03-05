@@ -68,6 +68,7 @@ import { PostData } from '@/data/models/postModels';
     .right-content {
       justify-content: center;
       padding-top: 1rem;
+      width: 4rem;
       .list {
         display: none;
       }
