@@ -1,7 +1,6 @@
 import { reactive } from "vue";
 
 
-//Użycie DOMPurify do serializacji HTML'a wpisywanego przez użytkowników.
 const PostData = reactive([
     {
         user: "user1",

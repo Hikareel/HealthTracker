@@ -29,6 +29,7 @@ import { PostData } from '@/data/models/postModels';
   align-items: stretch;
 
   .wall {
+    padding-top:1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -60,17 +61,6 @@ import { PostData } from '@/data/models/postModels';
   //Do zastanowienia poniższy komentarz \/
   //1. Albo robimy jednego dużego Searchara z wyszukiwaniem znajomych i postów
   //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
-
-  // @media (max-width: 768px),
-  // (max-height: 768px) {
-  //   .right-content {
-  //     justify-content: center;
-
-  //     .list {
-  //       display: none;
-  //     }
-  //   }
-  // }
   @media (max-height: 550px) {
     .wall{
       width: calc(100vw - 4rem - 4rem);

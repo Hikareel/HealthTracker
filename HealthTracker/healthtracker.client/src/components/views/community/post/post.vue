@@ -51,8 +51,6 @@ function toggleComments() {
 <style lang="scss" scoped>
 .post {
   width: calc(95vw - 4rem - 20rem);
-  max-width: 1200px; /* Przykładowa maksymalna szerokość */
-  margin: 1rem auto; /* Centrowanie w poziomie z marginesem na górze i na dole */
   border: 1px solid black;
   border-radius: 1rem;
   background-color: rgba(62, 50, 50, 1);
