@@ -5,15 +5,18 @@ import { reactive } from "vue";
 const PostData = reactive([
     {
         user: "user1",
-        markdownText: "<h1>Hello world</h1></br>Some plain text"
+        markdownText: "# Hello world\n\nSome plain text"
+
     },
     {
         user: "user2",
-        markdownText: "<h1>Hello world</h1></br>Some plain text"
+        markdownText: "# Hello world\n\nSome plain text"
+
     },
     {
         user: "user3",
-        markdownText: "<h1>Hello world</h1></br>Some plain text"
+        markdownText: "# Hello world\n\nSome plain text"
+
     }
 ])
 

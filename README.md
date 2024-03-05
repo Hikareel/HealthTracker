@@ -16,3 +16,5 @@ Packages - FrontEnd:
  - npm i @vueform/vueform
  - npm install --save axios vue-axios
  - npm install bootstrap-icons
+ - npm install markdown-it
+ - npm install dompurify
