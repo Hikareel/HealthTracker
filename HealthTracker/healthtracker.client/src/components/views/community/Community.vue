@@ -2,6 +2,9 @@
   <main class="community-page">
     <div class="wall">
       <!-- POSTs -->
+      <div v-for="post in PostData">
+        <Post :item="post" />
+      </div> 
     </div>
     <div class="right-content">
       <FriendsList class="list" />
@@ -13,6 +16,8 @@
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
 import Chat from './chat/Chat.vue'
+import Post from './post/Post.vue'
+import { PostData } from '@/data/models/postModels';
 
 </script>
 
