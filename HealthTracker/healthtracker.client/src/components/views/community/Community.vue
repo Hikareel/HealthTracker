@@ -61,7 +61,7 @@ import { PostData } from '@/data/models/postModels';
   //Do zastanowienia poniższy komentarz \/
   //1. Albo robimy jednego dużego Searchara z wyszukiwaniem znajomych i postów
   //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
-  @media (max-height: 590px) {
+  @media (max-height: 590px), (max-width: 785px) {
     .wall{
       width: calc(100vw - 4rem - 4rem);
     }

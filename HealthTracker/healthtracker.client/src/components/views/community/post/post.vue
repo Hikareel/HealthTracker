@@ -98,7 +98,7 @@ function toggleComments() {
     padding: 1rem;
   }
 
-  @media (max-height: 590px){
+  @media (max-height: 590px), (max-width: 785px){
     width: calc(95vw - 4rem - 4rem);
   }
 }
