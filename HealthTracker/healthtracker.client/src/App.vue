@@ -9,24 +9,24 @@ import Header from './components/shared/header/Header.vue'
     <Sidebar />
     <Header title="HealthTracker" />
     <div class="content">
-      <RouterView v-slot="{Component}" >
+      <RouterView v-slot="{ Component }">
         <Transition name="fade" mode="out-in">
-          <component :is="Component" class="view"/>
+          <component :is="Component" class="view" />
         </Transition>
       </RouterView>
-      <Footer class="footer"/>
+      <Footer class="footer" />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-  .main {
+.main {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
-  background: rgb(37,32,32);
-  background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%);
+  background: rgb(37, 32, 32);
+  background: linear-gradient(135deg, rgba(37, 32, 32, 1) 0%, rgba(62, 50, 50, 1) 50%, rgba(126, 99, 99, 1) 100%);
   background-repeat: no-repeat;
   background-attachment: fixed;
 
@@ -45,12 +45,12 @@ import Header from './components/shared/header/Header.vue'
 }
 
 .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
-  
-  .fade-enter-active,
-  .fade-leave-active{
-    transition: opacity 0.3s ease-out;
-  }
-  </style>
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-out;
+}
+</style>

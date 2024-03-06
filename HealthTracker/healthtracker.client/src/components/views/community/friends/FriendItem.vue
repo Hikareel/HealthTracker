@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="friend-item">
-      <p>{{ item.firstname }} {{ item.secondname }}</p>
+      <p><i class="bi bi-person-circle"></i>  {{ item.firstname }} {{ item.secondname }}</p>
     </div>
   </main>
 </template>
@@ -16,8 +16,7 @@ defineProps<{
 
 <style lang="scss" scoped>
 .friend-item{
-  border-bottom: 1px solid black;
-  border-radius: 10px 0 0 0;
+  border-radius: 10px 0 0 10px;
   padding: 0.5rem;
   font-size: 16px;
   color: white;

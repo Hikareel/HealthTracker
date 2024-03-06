@@ -18,6 +18,7 @@ import { FriendsData } from '@/data/models/friendModel'
     max-height: 100vh;
     overflow: hidden;
     text-align: center;
+    border-bottom: 1px solid white;
     .friends-list {
         margin-top: 1rem;
         overflow-y: auto;

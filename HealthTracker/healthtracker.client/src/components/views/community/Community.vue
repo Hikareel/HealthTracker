@@ -6,11 +6,11 @@
         <div class="search">
           <input placeholder="Search..." class="search-input">
         </div>
-        <div class="wall-body">
-          <!-- POSTs -->
-          <div v-for="post in PostData">
-            <Post :item="post" />
-          </div>
+      </div>
+      <div class="wall-body">
+        <!-- POSTs -->
+        <div v-for="post in PostData">
+          <Post :item="post" class="post"/>
         </div>
       </div>
     </div>
@@ -40,36 +40,47 @@ import { PostData } from '@/data/models/postModels';
   align-items: stretch;
 
   .wall {
-    padding-top: 1rem;
     display: flex;
     flex-direction: column;
     grid-column: 1;
-    justify-content: center;
+    // height:  100%;
+    padding: 1rem;
     align-items: center;
 
+
     .wall-header{
-      //TODO
+      border-bottom: 1px solid white;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      background-color: inherit;
+      z-index: 10;
     }
     .wall-body{
-      //TODO
+      overflow-y:scroll;
+      overflow-x: hidden;
+      flex: 1;
+
+      .post{
+        margin:1rem 2rem 1rem 2rem;
+      }
     }
   }
 
   .right-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    grid-column: 2;
+    height: 100%;
     right: 0;
     transition: width 0.3s ease-out;
 
-    .list {
-      flex-grow: 1;
+    .list{
+      height:50%;
+      padding-bottom: 0.5rem;
     }
-
-    .chat {
-      flex-shrink: 0;
-
+    .chat{
+      padding-top: 0.5rem;
+      height:50%;
     }
   }
 
@@ -77,10 +88,11 @@ import { PostData } from '@/data/models/postModels';
     display: flex;
     grid-row: 1;
     grid-column: 1;
-    padding-top: 1rem;
+    padding: 1rem;
     justify-content: center;
     align-items: center;
     height: fit-content;
+    
 
     .search-input {
       width: 10rem;
@@ -108,13 +120,6 @@ import { PostData } from '@/data/models/postModels';
   //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
   @media (max-height: 590px),
   (max-width: 785px) {
-    .search {
-      // width: calc(100vw - 4rem - 4rem);
-    }
-
-    .wall {
-      // width: calc(100vw - 4rem - 4rem);
-    }
 
     .right-content {
       justify-content: center;
@@ -123,11 +128,6 @@ import { PostData } from '@/data/models/postModels';
 
       .list {
         display: none;
-      }
-
-      .chat {
-        top: 0;
-        // min-height: calc(100vh - 8rem);
       }
     }
   }

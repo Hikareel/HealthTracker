@@ -4,7 +4,7 @@
       <p>Notification</p>
     </div>
     <div class="chat-messinput">
-      <div class="chat-messages">
+      <div class="messages">
         <div v-for="message in CurrentMessages" :key="message.message"
           :class="['message', message.isYours ? 'own-message' : 'received-message']">
           {{ message.message }}
