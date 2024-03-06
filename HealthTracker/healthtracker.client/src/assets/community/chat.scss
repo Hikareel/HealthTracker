@@ -134,14 +134,22 @@
             border: none;
             width: 3.5rem;
             border-radius: 1.5rem;
-            transition: transform 0.2s ease;
+
             &:hover{
               background-color: rgb(182, 152, 152);
             }
             &:active{
               background-color: rgb(182, 152, 152);
-              transform: scale(1.2);
             }
+          }
+
+          button i {
+            display: inline-block;
+            transition: transform 0.3s ease;
+          }
+        
+          button:active i {
+            transform: scale(1.5);
           }
 
           input {

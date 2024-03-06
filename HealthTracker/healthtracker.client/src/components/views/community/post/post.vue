@@ -13,7 +13,7 @@
           <i class="bi bi-hand-thumbs-up-fill"></i>
         </button>
         <button class="comment" @click="toggleComments">
-          <i class='bi bi-send-fill'></i>
+          <i class='bi bi-chat-dots-fill'></i>
         </button>
       </div>
       <!--Show after click-->

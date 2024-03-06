@@ -7,42 +7,44 @@ import Header from './components/shared/header/Header.vue'
 <template>
   <div class="main">
     <Sidebar />
+    <Header title="HealthTracker" />
     <div class="content">
-      <Header title="HealthTracker" />
       <RouterView v-slot="{Component}" >
         <Transition name="fade" mode="out-in">
           <component :is="Component" class="view"/>
         </Transition>
       </RouterView>
-      <Footer />
+      <Footer class="footer"/>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-  .main{
-    overflow-x: hidden;
-    background: rgb(37,32,32);
-    background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%); 
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  .main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: rgb(37,32,32);
+  background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  .content {
     display: flex;
-    .content{
-      top: 0;
-      right:0;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      .view{
-        width: calc(100vw - 4rem);
-        margin-left: 4rem;
-        padding-top: 4rem;
-        min-height: calc(100vh - 4rem);
-      }
-    }
+    flex-direction: column;
+    flex: 1;
+    padding-top: 4rem;
+    padding-left: 4rem;
+    overflow-y: auto;
   }
 
-  .fade-enter-from,
+  .footer {
+    margin-top: auto;
+  }
+}
+
+.fade-enter-from,
   .fade-leave-to {
     opacity: 0;
   }
@@ -51,4 +53,4 @@ import Header from './components/shared/header/Header.vue'
   .fade-leave-active{
     transition: opacity 0.3s ease-out;
   }
-</style>
+  </style>
