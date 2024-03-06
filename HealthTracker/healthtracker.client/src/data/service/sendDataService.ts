@@ -1,16 +1,7 @@
 import axios from 'axios';
 import router from '@/router'
 import { ref } from 'vue';
-
-interface IResponseModel{
-  status: boolean,
-  content: any
-}
-
-interface IFormStatusModel{
-  success: string,
-  errors: string[]
-}
+import type { IFormStatusModel, IResponseModel} from '../models/formDataModels'
 
 const formStatus = ref<IFormStatusModel>({
   success: "",

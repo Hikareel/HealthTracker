@@ -1,3 +1,12 @@
+interface IResponseModel{
+  status: boolean,
+  content: any
+}
+
+interface IFormStatusModel{
+  success: string,
+  errors: string[]
+}
 interface ILoginModel {
   EmailUserName: string,
   Password: string,
@@ -23,4 +32,4 @@ interface IRegisterModel {
   Password_confirmation: string
 }
 
-export type { ILoginModel, INewPassModel, IPassResetModel, IRegisterModel }
+export type { ILoginModel, INewPassModel, IPassResetModel, IRegisterModel, IResponseModel, IFormStatusModel }
