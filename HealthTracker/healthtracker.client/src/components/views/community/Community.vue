@@ -6,6 +6,13 @@
         <div class="search">
           <input placeholder="Search..." class="search-input">
         </div>
+        <div class="friends-button">
+          <button class="menu-toggle" @click="ToggleMenu">
+            <span class="material-icons">
+              keyboard_double_arrow_down
+            </span>
+          </button>
+        </div>
       </div>
       <div class="wall-body">
         <!-- POSTs -->
@@ -28,7 +35,12 @@ import FriendsList from './friends/FriendsList.vue'
 import Chat from './chat/Chat.vue'
 import Post from './post/Post.vue'
 import { PostData } from '@/data/models/postModels';
+import { ref } from "vue";
 
+const is_expanded = ref(false)
+const ToggleMenu = () => {
+  is_expanded.value = !is_expanded.value
+}
 </script>
 
 <style lang="scss" scoped>
@@ -48,8 +60,8 @@ import { PostData } from '@/data/models/postModels';
     width: 80%;
     height: 100%;
 
-
     .wall-header {
+      display: flex;
       grid-row: 1;
       grid-column: 1;
       border-bottom: 1px solid #d3d3d3;
@@ -69,6 +81,7 @@ import { PostData } from '@/data/models/postModels';
         justify-content: center;
         align-items: center;
         height: 100%;
+        width: 100%;
 
         .search-input {
           height: 100%;
@@ -89,6 +102,17 @@ import { PostData } from '@/data/models/postModels';
           &:focus {
             width: 90%;
           }
+        }
+      }
+
+      .friends-button {
+        display: none;
+        justify-content: center;
+        align-content: center;
+
+        .friends-button button {
+          height: fit-content;
+          width: fit-content;
         }
       }
     }
@@ -138,6 +162,12 @@ import { PostData } from '@/data/models/postModels';
   (max-width: 785px) {
     .wall {
       width: 100%;
+
+      .wall-header {
+        .friends-button {
+          display: flex;
+        }
+      }
     }
 
     .right-content {
