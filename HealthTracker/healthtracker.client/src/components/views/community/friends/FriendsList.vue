@@ -15,7 +15,7 @@ import { FriendsData } from '@/data/models/friendModel'
 .main-list {
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
+    height: 100vh;
     overflow: hidden;
     text-align: center;
     border-bottom: 1px solid white;

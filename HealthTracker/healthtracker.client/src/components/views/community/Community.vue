@@ -9,8 +9,8 @@
       </div>
       <div class="wall-body">
         <!-- POSTs -->
-        <div v-for="post in PostData">
-          <Post :item="post" class="post"/>
+        <div v-for="post in PostData" class="posts">
+          <Post :item="post" />
         </div>
       </div>
     </div>
@@ -33,9 +33,10 @@ import { PostData } from '@/data/models/postModels';
 
 <style lang="scss" scoped>
 .community-page {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 3fr 1fr;
+  position: fixed;
+  display: flex;
+  height: calc(100% - 4rem);
+  width: calc(100% - 4rem);
   justify-items: stretch;
   align-items: stretch;
 
@@ -43,75 +44,92 @@ import { PostData } from '@/data/models/postModels';
     display: flex;
     flex-direction: column;
     grid-column: 1;
-    // height:  100%;
-    padding: 1rem;
     align-items: center;
+    width: 80%;
+    height: 100%;
 
 
-    .wall-header{
+    .wall-header {
+      grid-row: 1;
+      grid-column: 1;
       border-bottom: 1px solid white;
       width: 100%;
+      height: 10%;
       position: sticky;
       top: 0;
       background-color: inherit;
       z-index: 10;
-    }
-    .wall-body{
-      overflow-y:scroll;
-      overflow-x: hidden;
-      flex: 1;
+      align-content: center;
 
-      .post{
-        margin:1rem 2rem 1rem 2rem;
+      .search {
+        display: flex;
+        grid-row: 1;
+        grid-column: 1;
+        padding: 0.5rem;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        .search-input {
+          height: 100%;
+          width: 35%;
+          box-sizing: border-box;
+          border: 2px solid #ccc;
+          border-radius: 8px;
+          font-size: 16px;
+          background-color: white;
+          background-image: url('/src/assets/search.svg');
+          background-position: center left 10px;
+          background-repeat: no-repeat;
+          justify-content: center;
+          text-align: center;
+          padding: 12px 20px 12px 40px;
+          transition: width 0.4s ease-in-out;
+
+          &:focus {
+            width: 90%;
+          }
+        }
+      }
+    }
+
+    .wall-body {
+      grid-row: 2;
+      grid-column: 1;
+      height: 90%;
+      width: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+
+      .posts {
+        display: flex;
+        width: 100%;
+        justify-content: center;
       }
     }
   }
 
   .right-content {
+    top: 0;
+    width: 25%;
     display: flex;
+    justify-content: space-between;
     flex-direction: column;
     height: 100%;
     right: 0;
     transition: width 0.3s ease-out;
 
-    .list{
-      height:50%;
+    .list {
       padding-bottom: 0.5rem;
+      max-height: 50%;
+      flex-grow: 0;
+
     }
-    .chat{
+
+    .chat {
+      flex-grow: 1;
+      flex-shrink: 0;
       padding-top: 0.5rem;
-      height:50%;
-    }
-  }
-
-  .search {
-    display: flex;
-    grid-row: 1;
-    grid-column: 1;
-    padding: 1rem;
-    justify-content: center;
-    align-items: center;
-    height: fit-content;
-    
-
-    .search-input {
-      width: 10rem;
-      box-sizing: border-box;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      background-color: white;
-      background-image: url('/src/assets/search.svg');
-      background-position: center left 10px;
-      background-repeat: no-repeat;
-      justify-content: center;
-      text-align: center;
-      padding: 12px 20px 12px 40px;
-      transition: width 0.4s ease-in-out;
-
-      &:focus {
-        width: 90%;
-      }
     }
   }
 
@@ -120,18 +138,13 @@ import { PostData } from '@/data/models/postModels';
   //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
   @media (max-height: 590px),
   (max-width: 785px) {
+    .wall {
+      width: 100%;
+    }
 
     .right-content {
-      justify-content: center;
-      padding-top: 1rem;
-      width: 4rem;
-
-      .list {
-        display: none;
-      }
+      display: none;
     }
   }
-
-
 }
 </style>
