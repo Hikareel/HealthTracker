@@ -28,6 +28,7 @@ import { FriendsData } from '@/data/models/friendModel'
         height: 1px;
         background-color: #d3d3d3;
         bottom: 0;
+        margin-top: 0.5rem;
       }
 
     .friends-list {
