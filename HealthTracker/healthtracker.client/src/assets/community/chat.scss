@@ -2,15 +2,16 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 6fr;
-  border-radius: 15px 0px 0px 15px;
+  border-radius: 15px 0 0 0;
 
   .content {
     background-color: rgb(168, 124, 124);
     position: fixed;
     right: calc(-20rem + 4rem);
+    bottom: 0;
     max-width: 20rem;
     transition: right 0.5s ease-out;
-    border-radius: 1rem 0% 0% 1rem;
+    border-radius: 1rem 0 0 0;
 
     .chat-header {
       height: 4rem;
@@ -126,7 +127,7 @@
           display: flex;
           height: 3rem;
           gap: 2px;
-          border-radius: 10px;
+          background-color: rgb(199, 167, 167);
 
           button {
             cursor: pointer;

@@ -121,15 +121,13 @@ import { PostData } from '@/data/models/postModels';
 
     .list {
       padding-bottom: 0.5rem;
-      max-height: 50%;
-      flex-grow: 0;
+      flex-grow: 1;
 
     }
 
     .chat {
-      flex-grow: 1;
       flex-shrink: 0;
-      padding-top: 0.5rem;
+      height: 20rem;
     }
   }
 

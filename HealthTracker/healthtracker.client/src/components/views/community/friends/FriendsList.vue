@@ -13,9 +13,10 @@ import { FriendsData } from '@/data/models/friendModel'
 
 <style lang="scss" scoped>
 .main-list {
+    margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
     text-align: center;
     border-bottom: 1px solid white;
