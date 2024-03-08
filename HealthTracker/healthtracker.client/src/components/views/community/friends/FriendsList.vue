@@ -19,7 +19,17 @@ import { FriendsData } from '@/data/models/friendModel'
     height: 100%;
     overflow: hidden;
     text-align: center;
-    border-bottom: 1px solid white;
+
+    &::after {
+        content: '';
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+        height: 1px;
+        background-color: #d3d3d3;
+        bottom: 0;
+      }
+
     .friends-list {
         margin-top: 1rem;
         overflow-y: auto;

@@ -52,7 +52,7 @@ import { PostData } from '@/data/models/postModels';
     .wall-header {
       grid-row: 1;
       grid-column: 1;
-      border-bottom: 1px solid white;
+      border-bottom: 1px solid #d3d3d3;
       width: 100%;
       height: 10%;
       position: sticky;
