@@ -109,11 +109,13 @@ const ToggleMobile = () => {
           }
         }
       }
-
+      
       .friends-button {
         display: none;
         justify-content: center;
         align-content: center;
+        flex-wrap: wrap; 
+        padding: 0.5rem;
 
         .friends-button button {
           height: fit-content;
