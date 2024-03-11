@@ -13,7 +13,13 @@
           <p>Friend</p>
         </div>
       </div>
-      <ChatBox />
+      <div class="chat-content">
+        <div class="notification">
+          <p>Notification</p>
+        </div>
+        <ChatBox />
+      </div>
+
     </div>
   </main>
 </template>

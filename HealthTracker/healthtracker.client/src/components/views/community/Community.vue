@@ -1,18 +1,22 @@
 <template>
   <main class="community-page">
 
-    <div class="wall">
+    <div class="wall" :class="`${is_mobile_expanded && 'is_mobile_expanded'}`">
       <div class="wall-header">
         <div class="search">
           <input placeholder="Search..." class="search-input">
         </div>
         <div class="friends-button">
-          <button class="menu-toggle" @click="ToggleMenu">
+          <button class="menu-toggle" @click="ToggleMobile">
             <span class="material-icons">
               keyboard_double_arrow_down
             </span>
           </button>
         </div>
+      </div>
+      <div class="mobile-expander">
+        <FriendsList class="list-mobile" />
+        <ChatBox class="chat-mobile" />
       </div>
       <div class="wall-body">
         <!-- POSTs -->
@@ -33,13 +37,14 @@
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
 import Chat from './chat/Chat.vue'
+import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { PostData } from '@/data/models/postModels';
 import { ref } from "vue";
 
-const is_expanded = ref(false)
-const ToggleMenu = () => {
-  is_expanded.value = !is_expanded.value
+const is_mobile_expanded = ref(false)
+const ToggleMobile = () => {
+  is_mobile_expanded.value = !is_mobile_expanded.value
 }
 </script>
 
@@ -114,21 +119,61 @@ const ToggleMenu = () => {
           height: fit-content;
           width: fit-content;
         }
+        .menu-toggle{
+          .material-icons{
+            transition: 0.5s ease-out;
+          }
+        }
+      }
+    }
+
+    .mobile-expander {
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: height 0.5s ease, opacity 0.5s ease;
+
+      .list-mobile{
+        height: 50%;
+        margin-bottom: 0;
+      } 
+      
+      .chat-mobile {
+        height: 50%;
       }
     }
 
     .wall-body {
       grid-row: 2;
       grid-column: 1;
-      height: 90%;
+      height: 100%;
       width: 100%;
       overflow-y: scroll;
       overflow-x: hidden;
+      transition: height 0.5s ease-out;
 
       .posts {
         display: flex;
         width: 100%;
         justify-content: center;
+      }
+    }
+
+    &.is_mobile_expanded {
+      .mobile-expander {
+        height: 100%;
+        opacity: 1;
+        transition: 0.7s ease-in;
+      }
+
+      .wall-body {
+        height: 0;
+        transition: height 0.7s ease-in;
+      }
+
+      .wall-header .friends-button .menu-toggle .material-icons {
+        transform: scaleY(-1);
+        transition: 0.5s ease-out;
       }
     }
   }
@@ -146,7 +191,6 @@ const ToggleMenu = () => {
     .list {
       padding-bottom: 0.5rem;
       flex-grow: 1;
-
     }
 
     .chat {
@@ -155,9 +199,6 @@ const ToggleMenu = () => {
     }
   }
 
-  //Do zastanowienia poniższy komentarz \/
-  //1. Albo robimy jednego dużego Searchara z wyszukiwaniem znajomych i postów
-  //2. Albo ukrywamy jakoś listę zanjomych i ją wysuwamy po wciśnięciu przycisku
   @media (max-height: 590px),
   (max-width: 785px) {
     .wall {
