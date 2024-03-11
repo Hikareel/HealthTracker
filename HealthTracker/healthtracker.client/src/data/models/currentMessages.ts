@@ -16,6 +16,21 @@ const CurrentMessages = reactive([
         message: "Message3",
         timeSend: "",
         isYours: true
+    },
+    {
+        message: "Message3",
+        timeSend: "",
+        isYours: true
+    },
+    {
+        message: "Message3",
+        timeSend: "",
+        isYours: true
+    },
+    {
+        message: "Message3asdasdddddddddddddddddddddd asd sssssssssssssssssssssssssssssssssssssssssssa das dasd",
+        timeSend: "",
+        isYours: false
     }
 ])
 
