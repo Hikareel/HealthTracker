@@ -11,6 +11,7 @@ import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
 import Logout from '../components/views/account/logout.vue'
+import AddWorkout from '../components/views/treningsPlanner/components/WorkoutForm.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -34,6 +35,11 @@ const router = createRouter({
       path: '/planner',
       name: 'Planner',
       component: TreningsPlanner
+    },
+    {
+      path: '/planner/add-workout',
+      name: 'AddWorkout',
+      component: AddWorkout
     },
     {
       path: '/health',
