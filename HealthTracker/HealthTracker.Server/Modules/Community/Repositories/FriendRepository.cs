@@ -10,7 +10,6 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     public interface IFriendRepository
     {
         Task<FriendshipListDTO> GetFriendList(int id);
-        Task<FriendshipListDTO> GetFriend(int id);
     }
 
     public class FriendRepository : IFriendRepository
@@ -41,20 +40,5 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             return new FriendshipListDTO { Friends = friends };
         }
 
-        public async Task<FriendDTO?> GetFriend(int id)
-        {
-            var friend = await _context.User
-                .Select(f => new FriendDTO
-                {
-                    UserId = f.Id,
-                    FirstName = f.FirstName,
-                    LastName = f.LastName
-                })
-                .FirstOrDefaultAsync();
-
-            var res = _context.Friendship.Where(f => (f.User1Id == id && f.User2Id == friend.UserId) || (f.User2Id == id && f.User1Id == friend.UserId)).Any();
-
-            return res ? friend : null;
-        }
     }
 }

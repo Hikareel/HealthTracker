@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
-    [Route("friendship")]
+    [Route("api")]
     [ApiController]
     public class FriendshipController : ControllerBase
     {
@@ -17,12 +17,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         // GET: api/<FriendshipController>
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<FriendshipListDTO>> GetFriendList(int userId)
+        [HttpGet("users/{id}/friends")]
+        public async Task<ActionResult<FriendshipListDTO>> GetFriendList(int id)
         {
             try
             {
-                var friendsListDto = await _friendRepository.GetFriendList(userId);
+                var friendsListDto = await _friendRepository.GetFriendList(id);
                 if (friendsListDto == null || friendsListDto.Friends.Count == 0)
                 {
                     return NotFound();
@@ -35,42 +35,24 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<FriendshipListDTO>> GetFriend(int userId)
-        {
-            try
-            {
-                var friendDto = await _friendRepository.GetFriend(userId);
-                if (friendDto == null)
-                {
-                    return NotFound();
-                }
-                return Ok(friendDto);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
+        //// POST newFriend
+        //[HttpPost]
+        //public void Post([FromBody] string value)
+        //{
 
-        // POST newFriend
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
+        //}
 
-        }
+        //// PUT change freindship status
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
 
-        // PUT change freindship status
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
+        //}
 
-        }
-
-        // DELETE api/<FriendshipController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //// DELETE api/<FriendshipController>/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }

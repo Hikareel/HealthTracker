@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
 using HealthTracker.Server.Infrastructure.Repositories;
+using HealthTracker.Server.Modules.Community.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,8 @@ builder.Services.Configure<SignInOptions>(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IFriendRepository, FriendRepository>();
 
 builder.Services.AddAuthorization();
 
