@@ -22,7 +22,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             var messages = await _context.Message
                 .Where(m => (m.UserIdFrom == userFrom && m.UserIdTo == userTo) || (m.UserIdFrom == userTo && m.UserIdTo == userFrom))
-                .OrderBy(m => m.SendTime)
+                .OrderByDescending(m => m.SendTime)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToListAsync();

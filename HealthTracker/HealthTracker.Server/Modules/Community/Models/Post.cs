@@ -6,6 +6,10 @@ namespace HealthTracker.Server.Modules.Community.Models
 {
     public class Post
     {
+        public Post()
+        {
+            DateOfCreate = DateTime.UtcNow;
+        }
         public int Id { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
