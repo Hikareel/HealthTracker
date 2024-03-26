@@ -1,5 +1,4 @@
-﻿using HealthTracker.Server.Infrastructure.Repositories;
-using HealthTracker.Server.Modules.Community.DTOs;
+﻿using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.EntityFrameworkCore;
 using HealthTracker.Server.Infrastrucure.Data;

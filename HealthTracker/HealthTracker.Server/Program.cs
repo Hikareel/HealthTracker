@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
-using HealthTracker.Server.Infrastructure.Repositories;
 using HealthTracker.Server.Modules.Community.Repositories;
+using HealthTracker.Server.Core.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

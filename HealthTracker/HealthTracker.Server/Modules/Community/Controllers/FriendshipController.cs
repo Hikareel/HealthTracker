@@ -17,13 +17,13 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             _friendRepository = friendRepository;
         }
 
-        [HttpGet("users/{id}/friends")]
-        public async Task<ActionResult<List<FriendDTO>>> GetFriendList(int id)
+        [HttpGet("users/{userId}/friends")]
+        public async Task<ActionResult<List<FriendDTO>>> GetFriendList(int userId)
         {
             try
             {
                 var friendsListDto = await _friendRepository.GetFriendList(userId);
-                if (friendsListDto == null || friendsListDto.Friends.Count == 0)
+                if (friendsListDto == null || friendsListDto.Count == 0)
                 {
                     return NotFound("Freinds not found.");
                 }
