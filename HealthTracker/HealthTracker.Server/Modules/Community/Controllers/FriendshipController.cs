@@ -18,7 +18,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         // GET: api/<FriendshipController>
         [HttpGet("users/{id}/friends")]
-        public async Task<ActionResult<FriendshipListDTO>> GetFriendList(int id)
+        public async Task<ActionResult<List<FriendDTO>>> GetFriendList(int id)
         {
             try
             {

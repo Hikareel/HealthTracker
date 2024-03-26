@@ -15,7 +15,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     /// </summary>
     public interface IFriendRepository
     {
-        Task<FriendshipListDTO> GetFriendList(int id);
+        Task<List<FriendDTO>> GetFriendList(int id);
         Task CreateFriendshipRequest(int userId, int freindId);
         Task ChangeFriendshipStatus(int userId, int friendId, bool isAccepted);
     }
@@ -61,7 +61,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<FriendshipListDTO> GetFriendList(int id)
+        public async Task<List<FriendDTO>> GetFriendList(int id)
         {
             Status status = await _statusRepository.GetStatus("Accepted");
             var friends = await _context.Friendship
@@ -80,7 +80,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 })
                 .ToListAsync();
 
-            return new FriendshipListDTO { Friends = friends };
+            return friends;
         }
 
     }
