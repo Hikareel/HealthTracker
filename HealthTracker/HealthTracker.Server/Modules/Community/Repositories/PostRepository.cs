@@ -18,9 +18,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     public class PostRepository : IPostRepository
     {
         private readonly ApplicationDbContext _context;
-        public PostRepository(ApplicationDbContext context)
+        private readonly IStatusRepository _statusRepository;
+        public PostRepository(ApplicationDbContext context, IStatusRepository statusRepository)
         {
             _context = context;
+            _statusRepository = statusRepository;
         }
 
         public async Task<PostDTO> CreatePost(PostDTO postDTO)
@@ -51,8 +53,10 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber)
         {
+            Status status = await _statusRepository.GetStatus("Accepted");
             var friends = await _context.Friendship
-                .Where(f => f.User1Id == UserId || f.User2Id == UserId) //Status!
+                .Where(f => f.User1Id == UserId || f.User2Id == UserId)
+                .Where(f => f.StatusId == status.Id)
                 .Select(f => new
                 {
                     User = f.User1Id == UserId ? f.User2 : f.User1
