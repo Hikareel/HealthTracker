@@ -22,7 +22,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             var result = await _postRepository.CreatePost(postDTO);
             if (result != null) 
             {
-                return Ok();
+                return Ok(result);
             }
             else
             {

@@ -35,19 +35,35 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        //// POST newFriend
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
+        // POST newFriend
+        [HttpPost("users/{userId}/friends/{friendId}")]
+        public async Task<ActionResult<bool>> FriendshipRequest(int userId, int friendId)
+        {
+            try
+            {
+                await _friendRepository.CreateFriendshipRequest(userId, friendId);
+                return true;
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
-        //}
-
-        //// PUT change freindship status
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-
-        //}
+        // PUT change friendship status
+        [HttpPut("users/{userId}/friends/{friendId}/{isAccepted}")]
+        public async Task<ActionResult<bool>> Put(int userId, int friendId, bool isAccepted)
+        {
+            try
+            {
+                await _friendRepository.ChangeFriendshipStatus(userId, friendId, isAccepted);
+                return true;
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         //// DELETE api/<FriendshipController>/5
         //[HttpDelete("{id}")]

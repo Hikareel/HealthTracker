@@ -1,6 +1,8 @@
 ﻿using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
+using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
@@ -17,9 +19,30 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _context = context;
         }
 
-        public Task<PostDTO> CreatePost(PostDTO postDTO)
+        public async Task<PostDTO> CreatePost(PostDTO postDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var post = new Post()
+                {
+                    Content = postDTO.Content,
+                    UserId = postDTO.UserId
+                };
+
+                await _context.Post.AddAsync(post);
+                await _context.SaveChangesAsync();
+                return new PostDTO()
+                {
+                    Content = post.Content,
+                    UserId = post.UserId,
+                };
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+            
         }
 
         public async Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber)
