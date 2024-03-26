@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
-    public interface IChatRepository
+    public interface IChatRepository 
     {
         Task<ChatMessagesDTO> GetMessages(int userFrom, int userTo, int pageNumber, int pageSize);
         Task SendMessage(SendMessageDTO sendMessageDTO);
