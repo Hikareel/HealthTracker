@@ -3,6 +3,7 @@ using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.ComponentModel.Design;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
@@ -10,6 +11,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     {
         Task<PostDTO> CreatePost(PostDTO postDTO);
         Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber);
+        Task CreateComment(int? parentCommentId, CommentDTO commentDTO);
+        Task<List<CommentDTO>> GetCommentByPostId(int postId);
+        Task DeleteComment(int commentId);
     }
     public class PostRepository : IPostRepository
     {
@@ -42,7 +46,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
                 return null;
             }
-            
+
         }
 
         public async Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber)
@@ -77,5 +81,54 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 Posts = posts
             };
         }
+
+        public async Task CreateComment(int? parentCommentId, CommentDTO commentDTO)
+        {
+            await _context.Comment.AddAsync(new Comment()
+            {
+                Content = commentDTO.Content,
+                UserId = commentDTO.UserId,
+                PostId = commentDTO.PostId,
+                ParentCommentId = parentCommentId.HasValue ? parentCommentId : null,
+            });
+            await _context.SaveChangesAsync();
+        }
+
+        //W przyszłości dodać paginację dla dużej ilości komentarzy!
+        public async Task<List<CommentDTO>> GetCommentByPostId(int postId)
+        {
+            var result = await _context.Comment.Where(line => line.PostId == postId)
+                .Select(f => new CommentDTO()
+                {
+                    Content = f.Content,
+                    UserId = f.UserId,
+                    PostId = f.PostId,
+                    ParentCommentId = f.ParentCommentId.HasValue ? f.ParentCommentId : null,
+                })
+                .ToListAsync();
+            return result;
+        }
+
+        public async Task DeleteComment(int commentId)
+        {
+            var comment = await _context.Comment.FindAsync(commentId);
+            if (comment != null)
+            {
+                await DeleteChildComments(comment.Id);
+                _context.Comment.Remove(comment);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task DeleteChildComments(int parentId)
+        {
+            var childComments = await _context.Comment.Where(c => c.ParentCommentId == parentId).ToListAsync();
+            foreach (var child in childComments)
+            {
+                await DeleteChildComments(child.Id);
+            }
+            _context.Comment.RemoveRange(childComments);
+        }
+
     }
 }

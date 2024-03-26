@@ -6,39 +6,36 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class ChatController : Controller
+    public class ChatController : ControllerBase
     {
         private readonly IChatRepository _chatRepository;
-        private const int pageSize = 10;
         public ChatController(IChatRepository chatRepository)
         {
             _chatRepository = chatRepository;
         }
 
         [HttpPost("users/messages")]
-        public async Task<ActionResult<SendMessageDTO>> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
+        public async Task<ActionResult> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
         {
-
-            var result = await _chatRepository.SendMessage(sendMessageDTO);
-
-            if (result)
+            try
             {
-                return Ok();
+                await _chatRepository.SendMessage(sendMessageDTO);
+                return Created();
             }
-            else
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
-
+            
         }
 
-        [HttpGet("users/{userId}/{friendId}/{pageNumber}")]
-        public async Task<ActionResult<ChatMessagesDTO>> GetMessages(int userId, int friendId, int pageNumber)
+        [HttpGet("users/messages/{userFrom}/{userTo}")]
+        public async Task<ActionResult<ChatMessagesDTO>> GetMessages(int userFrom, int userTo, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
 
             try
             {
-                var messagestDto = await _chatRepository.GetMessages(userId, friendId, pageNumber, pageSize);
+                var messagestDto = await _chatRepository.GetMessages(userFrom, userTo, pageNumber, pageSize);
                 if (messagestDto == null)
                 {
                     return NotFound();

@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
-    public interface IChatRepository
+    public interface IChatRepository 
     {
-        Task<ChatMessagesDTO> GetMessages(int userTo, int userFrom, int pageNumber, int pageSize);
-        Task<bool> SendMessage(SendMessageDTO sendMessageDTO);
+        Task<ChatMessagesDTO> GetMessages(int userFrom, int userTo, int pageNumber, int pageSize);
+        Task SendMessage(SendMessageDTO sendMessageDTO);
     }
     public class ChatRepository : IChatRepository
     {
@@ -18,37 +18,36 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             _context = context;
         }
-        public async Task<ChatMessagesDTO> GetMessages(int userTo, int userFrom, int pageNumber, int pageSize)
+        public async Task<ChatMessagesDTO> GetMessages(int userFrom, int userTo, int pageNumber, int pageSize)
         {
             var messages = await _context.Message
                 .Where(m => (m.UserIdFrom == userFrom && m.UserIdTo == userTo) || (m.UserIdFrom == userTo && m.UserIdTo == userFrom))
                 .OrderByDescending(m => m.SendTime)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
+                .Select(m => new MessageDTO
+                {
+                    IsUserMessage = userFrom == m.UserIdFrom ? true : false,
+                    Text = m.Text,
+                })
                 .ToListAsync();
 
-            return messages == null ? new ChatMessagesDTO() : new ChatMessagesDTO { UserTo = userTo, UserFrom = userFrom, Messages = messages, CurrentLastMessageId = messages.Last().Id };
+            return new ChatMessagesDTO { UserTo = userTo, UserFrom = userFrom, Messages = messages };
 
         }
 
-        public async Task<bool> SendMessage(SendMessageDTO sendMessageDTO)
+        public async Task SendMessage(SendMessageDTO sendMessageDTO)
         {
-            try
+
+            var mess = new Message()
             {
-                var mess = new Message()
-                {
-                    UserIdFrom = sendMessageDTO.UserIdFrom,
-                    UserIdTo = sendMessageDTO.UserIdTo,
-                    Text = sendMessageDTO.Text,
-                };
-                await _context.Message.AddAsync(mess);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+                UserIdFrom = sendMessageDTO.UserIdFrom,
+                UserIdTo = sendMessageDTO.UserIdTo,
+                Text = sendMessageDTO.Text,
+            };
+            await _context.Message.AddAsync(mess);
+            await _context.SaveChangesAsync();
+
         }
     }
 }

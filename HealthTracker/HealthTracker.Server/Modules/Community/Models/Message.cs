@@ -11,6 +11,7 @@ namespace HealthTracker.Server.Modules.Community.Models
         {
             SendTime = DateTime.UtcNow;
         }
+
         public int Id { get; set; }
         [ForeignKey("UserIdTo")]
         public User UserTo { get; set; }
@@ -18,7 +19,7 @@ namespace HealthTracker.Server.Modules.Community.Models
         public User UserFrom { get; set; }
         public int UserIdTo { get; set; }
         public int UserIdFrom { get; set; }
-        public string Text { get; set; }
+        public required string Text { get; set; }
         public DateTime SendTime { get; set; }
     }
 }
