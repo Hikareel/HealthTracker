@@ -2,6 +2,6 @@
 {
     public class FriendshipListDTO
     {
-        public List<FriendDTO> Friends;
+        public List<FriendDTO> Friends { get; set; } = new List<FriendDTO>();
     }
 }

@@ -18,13 +18,14 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<FriendshipListDTO> GetFriendList(int id);
         Task CreateFriendshipRequest(int userId, int freindId);
         Task ChangeFriendshipStatus(int userId, int friendId, bool isAccepted);
+        Task DeleteFriendship(int userId, int friendId);
     }
 
-    public class FriendRepository : IFriendRepository
+    public class FriendshipRepository : IFriendRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly IStatusRepository _statusRepository;
-        public FriendRepository(ApplicationDbContext context, IStatusRepository statusRepository)
+        public FriendshipRepository(ApplicationDbContext context, IStatusRepository statusRepository)
         {
             _context = context;
             _statusRepository = statusRepository;
@@ -56,6 +57,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             foreach(var item in friendship)
             {
                 item.Status = status;
+                item.DateOfStart = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();
@@ -81,6 +83,16 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .ToListAsync();
 
             return new FriendshipListDTO { Friends = friends };
+        }
+
+        public async Task DeleteFriendship(int userId, int friendId)
+        {
+            var friendships = await _context.Friendship
+                .Where(f => (f.User1Id == userId && f.User2Id == friendId) || (f.User2Id == userId && f.User1Id == friendId))
+                .ToListAsync();
+
+            _context.Friendship.RemoveRange(friendships);
+            await _context.SaveChangesAsync();
         }
 
     }
