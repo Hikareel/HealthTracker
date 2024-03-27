@@ -1,4 +1,5 @@
 ﻿using HealthTracker.Server.Modules.Community.DTOs;
+using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,46 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             _friendRepository = friendRepository;
         }
 
+        [HttpPost("users/{userId}/friends/{friendId}")]
+        public async Task<ActionResult> FriendshipRequest(int userId, int friendId)
+        {
+            try
+            {
+                var result = await _friendRepository.CreateFriendshipRequest(userId, friendId);
+                
+                if (result != null)
+                {
+                    return CreatedAtAction(nameof(GetFriendship), new { friendshipId = result.Id }, result);
+                }
+                else
+                {
+                    return BadRequest("Friend couldn't be created because the user or friend does not exist.");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpGet("users/friends/{friendshipId}")]
+        public async Task<ActionResult<FriendshipDTO>> GetFriendship(int friendshipId)
+        {
+            try
+            {
+                var friendship = await _friendRepository.GetFriendship(friendshipId);
+                if (friendship == null)
+                {
+                    return NotFound("Friend not found.");
+                }
+                return Ok(friendship);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
         [HttpGet("users/{userId}/friends")]
         public async Task<ActionResult<List<FriendDTO>>> GetFriendList(int userId)
         {
@@ -28,20 +69,6 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                     return NotFound("Freinds not found.");
                 }
                 return Ok(friendsListDto);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
-        [HttpPost("users/{userId}/friends/{friendId}")]
-        public async Task<ActionResult> FriendshipRequest(int userId, int friendId)
-        {
-            try
-            {
-                await _friendRepository.CreateFriendshipRequest(userId, friendId);
-                return Created();
             }
             catch (Exception)
             {

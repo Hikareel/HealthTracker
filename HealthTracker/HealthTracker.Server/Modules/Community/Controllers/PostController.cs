@@ -30,7 +30,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 }
                 else
                 {
-                    return BadRequest("Post couldn't be created besause the user does not exist.");
+                    return BadRequest("Post couldn't be created because the user does not exist.");
                 }
             }
             catch (Exception)

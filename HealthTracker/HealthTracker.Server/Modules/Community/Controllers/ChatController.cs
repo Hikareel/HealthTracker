@@ -16,7 +16,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpPost("users/messages")]
-        public async Task<ActionResult> SendMessage([FromBody] CreateMessageDTO sendMessageDTO)
+        public async Task<ActionResult> CreateMessage([FromBody] CreateMessageDTO sendMessageDTO)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 }
                 else
                 {
-                    return NotFound("Post couldn't be created.");
+                    return BadRequest("Post couldn't be created because one of the users does not exist.");
                 }
             }
             catch (Exception)
@@ -70,7 +70,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("Messages not found.");
                 }
                 
             }

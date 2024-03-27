@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Core.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Linq;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
@@ -15,7 +16,8 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     public interface IFriendRepository
     {
         Task<List<FriendDTO>> GetFriendList(int id);
-        Task CreateFriendshipRequest(int userId, int freindId);
+        Task<CreateFriendshipDTO> CreateFriendshipRequest(int userId, int freindId);
+        Task<FriendshipDTO> GetFriendship(int friendshipId);
         Task ChangeFriendshipStatus(int userId, int friendId, bool isAccepted);
         Task DeleteFriendship(int userId, int friendId);
     }
@@ -29,21 +31,62 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _context = context;
             _statusRepository = statusRepository;
         }
-
-        public async Task CreateFriendshipRequest(int userId, int freindId)
+        //Jeśli już jest to albo usuwasz poprzedni i tworzysz nowy albo zmieniasz status albo jeszcze inaczej - do przegadania i zaimplementowania
+        //Aktualnie friendshipy się dublują. Trzeba poprawić.
+        public async Task<CreateFriendshipDTO> CreateFriendshipRequest(int userId, int freindId)
         {
-            Status status = await _statusRepository.GetStatus("RequestSend");
-
-            var friendship = new Friendship()
+            try
             {
-                User1Id = userId,
-                User2Id = freindId,
-                StatusId = status.Id,
-                DateOfStart = null
-            };
+                Status status = await _statusRepository.GetStatus("RequestSend");
 
-            await _context.Friendship.AddAsync(friendship);
-            await _context.SaveChangesAsync();
+                var friendship = new Friendship()
+                {
+                    User1Id = userId,
+                    User2Id = freindId,
+                    StatusId = status.Id,
+                    DateOfStart = null
+                };
+
+                await _context.Friendship.AddAsync(friendship);
+                await _context.SaveChangesAsync();
+
+                return new CreateFriendshipDTO() 
+                { 
+                    DateOfStart = friendship.DateOfStart, 
+                    Id = friendship.Id, 
+                    StatusId = friendship.StatusId, 
+                    User1Id = friendship.User1Id, 
+                    User2Id = friendship.User2Id 
+                };
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
+
+        public async Task<FriendshipDTO> GetFriendship(int friendshipId)
+        {
+            try
+            {
+                var friendship = await _context.Friendship
+                    .Where(line => line.Id == friendshipId)
+                    .Select(f => new FriendshipDTO() 
+                    {
+                        User1Id = f.User1Id,
+                        User2Id = f.User2Id,
+                        StatusId = f.StatusId,
+                        DateOfStart = f.DateOfStart
+                    })
+                    .FirstOrDefaultAsync();
+
+                return friendship;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public async Task ChangeFriendshipStatus(int userId, int friendId, bool isAccepted)
@@ -53,7 +96,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             var friendship = await _context.Friendship
                 .Where(f => (f.User1Id == userId && f.User2Id == friendId) || (f.User2Id == userId && f.User1Id == friendId))
                 .ToListAsync();
-            foreach(var item in friendship)
+            foreach (var item in friendship)
             {
                 item.Status = status;
                 item.DateOfStart = DateTime.UtcNow;
