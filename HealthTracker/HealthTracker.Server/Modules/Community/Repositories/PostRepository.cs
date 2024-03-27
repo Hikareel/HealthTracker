@@ -9,10 +9,12 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 {
     public interface IPostRepository
     {
-        Task<PostDTO> CreatePost(PostDTO postDTO);
+        Task<PostDTO> CreatePost(CreatePostDTO postDTO);
+        Task<PostDTO> GetPost(int postId);
         Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber);
-        Task CreateComment(int? parentCommentId, CommentDTO commentDTO);
-        Task<List<CommentDTO>> GetCommentByPostId(int postId);
+        Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
+        Task<CommentDTO> GetComment(int commentId);
+        Task<List<CommentDTO>> GetCommentsByPostId(int postId);
         Task DeleteComment(int commentId);
     }
     public class PostRepository : IPostRepository
@@ -25,7 +27,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _statusRepository = statusRepository;
         }
 
-        public async Task<PostDTO> CreatePost(PostDTO postDTO)
+        public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
             try
             {
@@ -39,7 +41,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 await _context.SaveChangesAsync();
                 return new PostDTO()
                 {
+                    Id = post.Id,
                     Content = post.Content,
+                    DateOfCreate = post.DateOfCreate,
                     UserId = post.UserId,
                 };
             }
@@ -49,6 +53,22 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 return null;
             }
 
+        }
+
+        public async Task<PostDTO> GetPost(int postId)
+        {
+            var post = await _context.Post
+                .Where(post => post.Id == postId)
+                .Select(u => new PostDTO
+                {
+                    Id = u.Id,
+                    UserId = u.UserId,
+                    Content = u.Content,
+                    DateOfCreate = u.DateOfCreate
+                })
+                .FirstOrDefaultAsync();
+
+            return post;
         }
 
         public async Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber)
@@ -86,24 +106,59 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             };
         }
 
-        public async Task CreateComment(int? parentCommentId, CommentDTO commentDTO)
+        public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
         {
-            await _context.Comment.AddAsync(new Comment()
+            try
             {
-                Content = commentDTO.Content,
-                UserId = commentDTO.UserId,
-                PostId = commentDTO.PostId,
-                ParentCommentId = parentCommentId.HasValue ? parentCommentId : null,
-            });
-            await _context.SaveChangesAsync();
+                var comment = new Comment()
+                {
+                    Content = commentDTO.Content,
+                    UserId = commentDTO.UserId,
+                    PostId = commentDTO.PostId,
+                    ParentCommentId = parentCommentId.HasValue ? parentCommentId : null,
+                };
+                await _context.Comment.AddAsync(comment);
+                await _context.SaveChangesAsync();
+
+                return new CommentDTO()
+                {
+                    Content = comment.Content,
+                    Id = comment.Id,
+                    ParentCommentId = comment.ParentCommentId,
+                    PostId = comment.PostId,
+                    UserId = comment.UserId,
+                };
+            }
+            catch(Exception)
+            {
+                return null;
+            }
+            
+        }
+
+        public async Task<CommentDTO> GetComment(int commentId)
+        {
+            var comment = await _context.Comment
+                .Where(line => line.Id == commentId)
+                .Select(u => new CommentDTO()
+                {
+                    Content = u.Content,
+                    Id = u.Id,
+                    ParentCommentId = u.ParentCommentId.HasValue ? u.ParentCommentId : null,
+                    PostId = u.PostId,
+                    UserId = u.UserId
+                })
+                .FirstOrDefaultAsync();
+            return comment;
         }
 
         //W przyszłości dodać paginację dla dużej ilości komentarzy!
-        public async Task<List<CommentDTO>> GetCommentByPostId(int postId)
+        public async Task<List<CommentDTO>> GetCommentsByPostId(int postId)
         {
             var result = await _context.Comment.Where(line => line.PostId == postId)
                 .Select(f => new CommentDTO()
                 {
+                    Id = f.Id,
                     Content = f.Content,
                     UserId = f.UserId,
                     PostId = f.PostId,

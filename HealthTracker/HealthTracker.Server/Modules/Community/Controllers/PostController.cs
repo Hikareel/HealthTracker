@@ -1,6 +1,9 @@
 ﻿using HealthTracker.Server.Modules.Community.DTOs;
+using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
+
+//Do zastanowienia czy oddzielić komentarze od postów (repozytorium i kontroler)
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
@@ -16,17 +19,47 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
 
         [HttpPost("users/posts")]
-        public async Task<ActionResult> CreatePost([FromBody] PostDTO postDTO)
+        public async Task<ActionResult<PostDTO>> CreatePost([FromBody] CreatePostDTO postDTO)
         {
-            var result = await _postRepository.CreatePost(postDTO);
-            if (result != null)
+            try
             {
-                return Ok(); //Zamienić później na CreatedAtAction()
+                var result = await _postRepository.CreatePost(postDTO);
+                if (result != null)
+                {
+                    return CreatedAtAction(nameof(GetPost), new { postId = result.Id }, result);
+                }
+                else
+                {
+                    return BadRequest("Post couldn't be created besause the user does not exist.");
+                }
             }
-            else
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
+            
+        }
+
+        [HttpGet("users/posts/{postId}")]
+        public async Task<ActionResult<PostDTO>> GetPost(int postId)
+        {
+            try
+            {
+                var result = await _postRepository.GetPost(postId);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound("Post not found.");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+
         }
 
         [HttpGet("users/{userId}/posts")]
@@ -51,13 +84,21 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             
         }
 
-        [HttpPost("users/posts/comment/{parentCommentId?}")]
-        public async Task<ActionResult> CreateComment(int? parentCommentId, [FromBody] CommentDTO commentDTO)
+        [HttpPost("users/posts/comments/{parentCommentId?}")]
+        [HttpPost("users/posts/comments")]
+        public async Task<ActionResult> CreateComment(int? parentCommentId, [FromBody] CreateCommentDTO commentDTO)
         {
             try
             {
-                await _postRepository.CreateComment(parentCommentId, commentDTO);
-                return Ok();
+                var result = await _postRepository.CreateComment(parentCommentId, commentDTO);
+                if (result != null)
+                {
+                    return CreatedAtAction(nameof(GetComment), new { commentId = result.Id }, result);
+                }
+                else
+                {
+                    return BadRequest("Comment couldn't be created because the user or post does not exist.");
+                }
             }
             catch (Exception)
             {
@@ -65,13 +106,20 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpDelete("users/posts/comment/{commentId}")]
-        public async Task<ActionResult> DeleteComment(int commentId)
+        [HttpGet("users/posts/comments/{commentId}")]
+        public async Task<ActionResult<CommentDTO>> GetComment(int commentId)
         {
             try
             {
-                await _postRepository.DeleteComment(commentId);
-                return Ok();
+                var result = await _postRepository.GetComment(commentId);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound("Comment not found.");
+                }
             }
             catch (Exception)
             {
@@ -79,13 +127,13 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpGet("users/posts/comment/{postId}")]
-        public async Task<ActionResult<List<CommentDTO>>> GetCommentByPostId(int postId)
+        [HttpGet("users/posts/{postId}/comments")]
+        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int postId)
         {
             try
             {
-                var result = await _postRepository.GetCommentByPostId(postId);
-                if(result != null)
+                var result = await _postRepository.GetCommentsByPostId(postId);
+                if (result != null)
                 {
                     return Ok(result);
                 }
@@ -99,6 +147,22 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
+        [HttpDelete("users/posts/comments/{commentId}")]
+        public async Task<ActionResult> DeleteComment(int commentId)
+        {
+            try
+            {
+                await _postRepository.DeleteComment(commentId);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        
 
 
 
