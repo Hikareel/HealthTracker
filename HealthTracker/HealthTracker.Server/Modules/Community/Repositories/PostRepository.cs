@@ -87,7 +87,25 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
         {
-            //Sprawdzanie czy komentarz (parentCommentId) i użytykownik istnieją!
+            if (parentCommentId.HasValue)
+            {
+                var parentComment = await GetComment(parentCommentId.Value);
+                if(parentComment == null)
+                {
+                    throw new Exception("Can't find parent comment.");
+                }
+            }
+            
+            if(!await _context.User.AnyAsync(line => line.Id == commentDTO.UserId))
+            {
+                throw new Exception("Can't find user.");
+            }
+
+            if (!await _context.Post.AnyAsync(line => line.Id == commentDTO.PostId))
+            {
+                throw new Exception("Can't find post.");
+            }
+
             var comment = _mapper.Map<Comment>(commentDTO);
             comment.ParentCommentId = parentCommentId;
 
