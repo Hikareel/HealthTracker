@@ -27,20 +27,13 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<MessageDTO> CreateMessage(CreateMessageDTO sendMessageDTO)
         {
-            try
-            {
-                var mess = _mapper.Map<Message>(sendMessageDTO);
+            //Sprawdzenie czy użytkownicy istnieją!
+            var mess = _mapper.Map<Message>(sendMessageDTO);
 
-                await _context.Message.AddAsync(mess);
-                await _context.SaveChangesAsync();
+            await _context.Message.AddAsync(mess);
+            await _context.SaveChangesAsync();
 
-                return _mapper.Map<MessageDTO>(mess);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-            
+            return _mapper.Map<MessageDTO>(mess);           
         }
 
         public async Task<MessageDTO> GetMessage(int Id)

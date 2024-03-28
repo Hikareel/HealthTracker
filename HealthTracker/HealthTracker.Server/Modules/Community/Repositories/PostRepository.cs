@@ -34,21 +34,13 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
-            try
-            {
-                var post = _mapper.Map<Post>(postDTO);
+            //Sprawdzanie czy użytkownik istnieje!
+            var post = _mapper.Map<Post>(postDTO);
 
-                await _context.Post.AddAsync(post);
-                await _context.SaveChangesAsync();
+            await _context.Post.AddAsync(post);
+            await _context.SaveChangesAsync();
 
-                return _mapper.Map<PostDTO>(post);
-            }
-            catch (Exception)
-            {
-
-                return null;
-            }
-
+            return _mapper.Map<PostDTO>(post);
         }
 
         public async Task<PostDTO> GetPost(int postId)
@@ -56,7 +48,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             var post = await _context.Post
                 .FirstOrDefaultAsync(p => p.Id == postId);
 
-            if(post == null)
+            if (post == null)
             {
                 return null;
             }
@@ -95,21 +87,14 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
         {
-            try
-            {
-                var comment = _mapper.Map<Comment>(commentDTO);
-                comment.ParentCommentId = parentCommentId;
+            //Sprawdzanie czy komentarz (parentCommentId) i użytykownik istnieją!
+            var comment = _mapper.Map<Comment>(commentDTO);
+            comment.ParentCommentId = parentCommentId;
 
-                await _context.Comment.AddAsync(comment);
-                await _context.SaveChangesAsync();
+            await _context.Comment.AddAsync(comment);
+            await _context.SaveChangesAsync();
 
-                return _mapper.Map<CommentDTO>(comment);
-            }
-            catch(Exception)
-            {
-                return null;
-            }
-            
+            return _mapper.Map<CommentDTO>(comment);
         }
 
         public async Task<CommentDTO> GetComment(int commentId)
