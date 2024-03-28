@@ -18,12 +18,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             _friendRepository = friendRepository;
         }
 
-        [HttpPost("users/{userId}/friends/{friendId}")]
-        public async Task<ActionResult> FriendshipRequest(int userId, int friendId)
+        [HttpPost("users/friends/")]
+        public async Task<ActionResult> FriendshipCreate([FromBody] CreateFriendshipDTO createFriendshipDTO)
         {
             try
             {
-                var result = await _friendRepository.CreateFriendshipRequest(userId, friendId);
+                var result = await _friendRepository.CreateFriendshipRequest(createFriendshipDTO);
                 
                 if (result != null)
                 {
@@ -33,6 +33,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 {
                     return BadRequest("Friend couldn't be created because the user or friend does not exist.");
                 }
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, ex.Message);
             }
             catch (Exception)
             {
@@ -66,7 +70,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var friendsListDto = await _friendRepository.GetFriendList(userId);
                 if (friendsListDto == null || friendsListDto.Count == 0)
                 {
-                    return NotFound("Freinds not found.");
+                    return Ok("Friends not found.");
                 }
                 return Ok(friendsListDto);
             }
@@ -76,7 +80,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpPut("users/{userId}/friends/{friendId}/status")]
+        [HttpPut("users/{userId}/friends/{friendId}/accept")]
         public async Task<ActionResult> ChangeFriendshipStatus(int userId, int friendId, [FromQuery] bool isAccepted)
         {
             try
