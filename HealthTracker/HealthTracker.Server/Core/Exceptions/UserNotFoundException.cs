@@ -1,0 +1,18 @@
+﻿namespace HealthTracker.Server.Core.Exceptions
+{
+    /// <summary>
+    /// Represents an error when a user cannot be found.
+    /// </summary>
+    public class UserNotFoundException : Exception
+    {
+        public UserNotFoundException() 
+            : base("User not found!")
+        {
+        }
+        public UserNotFoundException(string message)
+            : base($"User not found: {message}")
+        {
+
+        }
+    }
+}

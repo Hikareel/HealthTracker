@@ -11,6 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\Services\**" />
+    <Content Remove="Core\Services\**" />
+    <EmbeddedResource Remove="Core\Services\**" />
+    <None Remove="Core\Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.2" />
@@ -26,6 +34,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
@@ -40,9 +49,6 @@
   <ItemGroup>
     <Folder Include="Core\Interfaces\" />
     <Folder Include="Core\Helpers\" />
-    <Folder Include="Core\Services\" />
-    <Folder Include="Modules\Community\Controllers\" />
-    <Folder Include="Modules\Community\DTOs\" />
     <Folder Include="Modules\Health\Controllers\" />
     <Folder Include="Modules\Health\DTOs\" />
     <Folder Include="Modules\Meals\Controllers\" />
