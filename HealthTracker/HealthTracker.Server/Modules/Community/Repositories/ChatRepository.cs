@@ -1,4 +1,6 @@
-﻿using HealthTracker.Server.Infrastrucure.Data;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -16,31 +18,23 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     public class ChatRepository : IChatRepository
     {
         private readonly ApplicationDbContext _context;
-        public ChatRepository(ApplicationDbContext context)
+        private readonly IMapper _mapper;
+        public ChatRepository(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<MessageDTO> CreateMessage(CreateMessageDTO sendMessageDTO)
         {
             try
             {
-                var mess = new Message()
-                {
-                    UserIdFrom = sendMessageDTO.UserIdFrom,
-                    UserIdTo = sendMessageDTO.UserIdTo,
-                    Text = sendMessageDTO.Text,
-                };
+                var mess = _mapper.Map<Message>(sendMessageDTO);
+
                 await _context.Message.AddAsync(mess);
                 await _context.SaveChangesAsync();
 
-                return new MessageDTO()
-                {
-                    Id = mess.Id,
-                    UserIdFrom = mess.UserIdFrom,
-                    UserIdTo = mess.UserIdTo,
-                    Text = mess.Text
-                };
+                return _mapper.Map<MessageDTO>(mess);
             }
             catch (Exception)
             {
@@ -53,13 +47,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             var message = await _context.Message
                 .Where(line => line.Id == Id)
-                .Select(u => new MessageDTO() 
-                {
-                    Id = u.Id,
-                    UserIdFrom = u.UserIdFrom,
-                    UserIdTo = u.UserIdTo,
-                    Text = u.Text
-                })
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
 
             return message;
@@ -72,13 +60,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .OrderByDescending(m => m.SendTime)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
-                .Select(m => new MessageDTO
-                {
-                    Id = m.Id,
-                    UserIdFrom = m.UserIdFrom,
-                    UserIdTo = m.UserIdTo,
-                    Text = m.Text
-                })
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return messages;
