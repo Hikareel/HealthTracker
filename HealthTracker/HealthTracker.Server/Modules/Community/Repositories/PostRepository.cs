@@ -1,4 +1,6 @@
-﻿using HealthTracker.Server.Infrastrucure.Data;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,10 +22,13 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     public class PostRepository : IPostRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
         private readonly IStatusRepository _statusRepository;
-        public PostRepository(ApplicationDbContext context, IStatusRepository statusRepository)
+
+        public PostRepository(ApplicationDbContext context, IMapper mapper, IStatusRepository statusRepository)
         {
             _context = context;
+            _mapper = mapper;
             _statusRepository = statusRepository;
         }
 
@@ -31,21 +36,12 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             try
             {
-                var post = new Post()
-                {
-                    Content = postDTO.Content,
-                    UserId = postDTO.UserId
-                };
+                var post = _mapper.Map<Post>(postDTO);
 
                 await _context.Post.AddAsync(post);
                 await _context.SaveChangesAsync();
-                return new PostDTO()
-                {
-                    Id = post.Id,
-                    Content = post.Content,
-                    DateOfCreate = post.DateOfCreate,
-                    UserId = post.UserId,
-                };
+
+                return _mapper.Map<PostDTO>(post);
             }
             catch (Exception)
             {
@@ -58,50 +54,41 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         public async Task<PostDTO> GetPost(int postId)
         {
             var post = await _context.Post
-                .Where(post => post.Id == postId)
-                .Select(u => new PostDTO
-                {
-                    Id = u.Id,
-                    UserId = u.UserId,
-                    Content = u.Content,
-                    DateOfCreate = u.DateOfCreate
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(p => p.Id == postId);
 
-            return post;
+            if(post == null)
+            {
+                return null;
+            }
+
+            var postDto = _mapper.Map<PostDTO>(post);
+
+            return postDto;
         }
 
-        public async Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber)
+        public async Task<PostListDTO> GetPosts(int userId, int pageSize, int pageNumber)
         {
             Status status = await _statusRepository.GetStatus("Accepted");
-            var friends = await _context.Friendship
-                .Where(f => f.User1Id == UserId || f.User2Id == UserId)
+            var friendIds = await _context.Friendship
+                .Where(f => f.User1Id == userId || f.User2Id == userId)
                 .Where(f => f.StatusId == status.Id)
-                .Select(f => new
-                {
-                    User = f.User1Id == UserId ? f.User2 : f.User1
-                })
+                .Select(f => f.User1Id == userId ? f.User2Id : f.User1Id)
                 .Distinct()
-                .Select(u => u.User.Id)
                 .ToListAsync();
 
-            var posts = await _context.Post
-                .Where(post => friends.Contains(post.UserId))
-                .Select(u => new PostDTO
-                {
-                    UserId = u.UserId,
-                    Content = u.Content,
-                    DateOfCreate = u.DateOfCreate
-                })
-                .OrderByDescending(u => u.DateOfCreate)
+            var postsQuery = _context.Post
+                .Where(post => friendIds.Contains(post.UserId))
+                .OrderByDescending(post => post.DateOfCreate);
+
+            var posts = await postsQuery
+                .ProjectTo<PostDTO>(_mapper.ConfigurationProvider)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToListAsync();
 
-
             return new PostListDTO
             {
-                UserId = UserId,
+                UserId = userId,
                 Posts = posts
             };
         }
@@ -110,24 +97,13 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             try
             {
-                var comment = new Comment()
-                {
-                    Content = commentDTO.Content,
-                    UserId = commentDTO.UserId,
-                    PostId = commentDTO.PostId,
-                    ParentCommentId = parentCommentId.HasValue ? parentCommentId : null,
-                };
+                var comment = _mapper.Map<Comment>(commentDTO);
+                comment.ParentCommentId = parentCommentId;
+
                 await _context.Comment.AddAsync(comment);
                 await _context.SaveChangesAsync();
 
-                return new CommentDTO()
-                {
-                    Content = comment.Content,
-                    Id = comment.Id,
-                    ParentCommentId = comment.ParentCommentId,
-                    PostId = comment.PostId,
-                    UserId = comment.UserId,
-                };
+                return _mapper.Map<CommentDTO>(comment);
             }
             catch(Exception)
             {
@@ -140,15 +116,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         {
             var comment = await _context.Comment
                 .Where(line => line.Id == commentId)
-                .Select(u => new CommentDTO()
-                {
-                    Content = u.Content,
-                    Id = u.Id,
-                    ParentCommentId = u.ParentCommentId.HasValue ? u.ParentCommentId : null,
-                    PostId = u.PostId,
-                    UserId = u.UserId
-                })
+                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
+
             return comment;
         }
 
@@ -156,15 +126,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         public async Task<List<CommentDTO>> GetCommentsByPostId(int postId)
         {
             var result = await _context.Comment.Where(line => line.PostId == postId)
-                .Select(f => new CommentDTO()
-                {
-                    Id = f.Id,
-                    Content = f.Content,
-                    UserId = f.UserId,
-                    PostId = f.PostId,
-                    ParentCommentId = f.ParentCommentId.HasValue ? f.ParentCommentId : null,
-                })
+                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
             return result;
         }
 

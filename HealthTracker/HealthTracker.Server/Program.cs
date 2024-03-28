@@ -10,6 +10,8 @@ using System.Configuration;
 using System.Text;
 using HealthTracker.Server.Modules.Community.Repositories;
 using HealthTracker.Server.Core.Repositories;
+using AutoMapper;
+using HealthTracker.Server.Modules.Community.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,8 +40,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = false,
@@ -60,6 +61,10 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(FriendshipProfile));
+builder.Services.AddAutoMapper(typeof(PostProfile));
 
 var app = builder.Build();
 

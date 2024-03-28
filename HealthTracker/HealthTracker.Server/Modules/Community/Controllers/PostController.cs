@@ -62,7 +62,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         }
 
-        [HttpGet("users/{userId}/posts")]
+        [HttpGet("users/{userId}/wall/posts")]
         public async Task<ActionResult<PostListDTO>> GetPosts(int userId,[FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             try
@@ -126,7 +126,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
-
+        //Tu może zmienić zwracanego jsona, aby zwracał zagnieżdżone komentarze dzieci
         [HttpGet("users/posts/{postId}/comments")]
         public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int postId)
         {
