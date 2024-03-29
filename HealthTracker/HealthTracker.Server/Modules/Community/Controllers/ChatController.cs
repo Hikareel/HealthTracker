@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Models;
+﻿using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _chatRepository.CreateMessage(sendMessageDTO);
-                if (result != null)
-                {
-                    return CreatedAtAction(nameof(GetMessage), new { messageId = result.Id }, result);
-                }
-                else
-                {
-                    return BadRequest("Post couldn't be created because one of the users does not exist.");
-                }
+                return CreatedAtAction(nameof(GetMessage), new { messageId = result.Id }, result);
+
+            }
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
@@ -42,15 +41,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _chatRepository.GetMessage(messageId);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Message not found.");
-                }
-                
+                return Ok(result);
+
+            }
+            catch(MessageNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -64,15 +60,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _chatRepository.GetMessages(userFrom, userTo, pageNumber, pageSize);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Messages not found.");
-                }
-                
+                return Ok(result);
+            }
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {

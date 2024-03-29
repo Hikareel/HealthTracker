@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Modules.Community.DTOs;
+﻿using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,17 +25,14 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _friendRepository.CreateFriendshipRequest(createFriendshipDTO);
-                
-                if (result != null)
-                {
-                    return CreatedAtAction(nameof(GetFriendship), new { friendshipId = result.Id }, result);
-                }
-                else
-                {
-                    return BadRequest("Friend couldn't be created because the user or friend does not exist.");
-                }
+                return CreatedAtAction(nameof(GetFriendship), new { friendshipId = result.Id }, result);
+
             }
-            catch (InvalidOperationException ex)
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (FriendshipAlreadyExistsException ex)
             {
                 return StatusCode(409, ex.Message);
             }
@@ -50,11 +48,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var friendship = await _friendRepository.GetFriendship(friendshipId);
-                if (friendship == null)
-                {
-                    return NotFound("Friend not found.");
-                }
                 return Ok(friendship);
+            }
+            catch(FriendshipNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -68,11 +66,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var friendsListDto = await _friendRepository.GetFriendList(userId);
-                if (friendsListDto == null || friendsListDto.Count == 0)
-                {
-                    return Ok("Friends not found.");
-                }
                 return Ok(friendsListDto);
+            }
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
@@ -88,6 +86,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 await _friendRepository.ChangeFriendshipStatus(userId, friendId, isAccepted);
                 return NoContent();
             }
+            catch (Exception ex) when (ex is UserNotFoundException || ex is FriendshipNotFoundException)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
@@ -101,6 +103,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 await _friendRepository.DeleteFriendship(userId, friendId);
                 return NoContent();
+            }
+            catch(FriendshipNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
@@ -34,7 +35,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
-            //Sprawdzanie czy użytkownik istnieje!
+            if (!await _context.User.AnyAsync(line => line.Id == postDTO.UserId))
+            {
+                throw new UserNotFoundException();
+            }
+
             var post = _mapper.Map<Post>(postDTO);
 
             await _context.Post.AddAsync(post);
@@ -48,18 +53,18 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             var post = await _context.Post
                 .FirstOrDefaultAsync(p => p.Id == postId);
 
-            if (post == null)
-            {
-                return null;
-            }
-
             var postDto = _mapper.Map<PostDTO>(post);
 
-            return postDto;
+            return postDto ?? throw new PostNotFoundException();
         }
 
         public async Task<PostListDTO> GetPosts(int userId, int pageSize, int pageNumber)
         {
+            if (!await _context.User.AnyAsync(line => line.Id == userId))
+            {
+                throw new UserNotFoundException();
+            }
+
             Status status = await _statusRepository.GetStatus("Accepted");
             var friendIds = await _context.Friendship
                 .Where(f => f.User1Id == userId || f.User2Id == userId)
@@ -90,20 +95,20 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             if (parentCommentId.HasValue)
             {
                 var parentComment = await GetComment(parentCommentId.Value);
-                if(parentComment == null)
+                if (parentComment == null)
                 {
-                    throw new Exception("Can't find parent comment.");
+                    throw new CommentNotFoundException();
                 }
             }
-            
-            if(!await _context.User.AnyAsync(line => line.Id == commentDTO.UserId))
+
+            if (!await _context.User.AnyAsync(line => line.Id == commentDTO.UserId))
             {
-                throw new Exception("Can't find user.");
+                throw new UserNotFoundException();
             }
 
             if (!await _context.Post.AnyAsync(line => line.Id == commentDTO.PostId))
             {
-                throw new Exception("Can't find post.");
+                throw new PostNotFoundException();
             }
 
             var comment = _mapper.Map<Comment>(commentDTO);
@@ -122,7 +127,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
 
-            return comment;
+            return comment ?? throw new CommentNotFoundException();
         }
 
         //W przyszłości dodać paginację dla dużej ilości komentarzy!
@@ -143,6 +148,10 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 await DeleteChildComments(comment.Id);
                 _context.Comment.Remove(comment);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new CommentNotFoundException();
             }
         }
 

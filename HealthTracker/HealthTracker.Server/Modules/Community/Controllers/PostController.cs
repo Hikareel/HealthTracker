@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Modules.Community.DTOs;
+﻿using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -24,20 +25,17 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _postRepository.CreatePost(postDTO);
-                if (result != null)
-                {
-                    return CreatedAtAction(nameof(GetPost), new { postId = result.Id }, result);
-                }
-                else
-                {
-                    return BadRequest("Post couldn't be created because the user does not exist.");
-                }
+                return CreatedAtAction(nameof(GetPost), new { postId = result.Id }, result);
+            }
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
-            
+
         }
 
         [HttpGet("users/posts/{postId}")]
@@ -46,14 +44,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _postRepository.GetPost(postId);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Post not found.");
-                }
+                return Ok(result);
+            }
+            catch (PostNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -63,42 +58,38 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpGet("users/{userId}/wall/posts")]
-        public async Task<ActionResult<PostListDTO>> GetPosts(int userId,[FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PostListDTO>> GetPosts(int userId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             try
             {
                 var result = await _postRepository.GetPosts(userId, pageSize, pageNumber);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Post not found.");
-                }
+                return Ok(result);
+
             }
-            catch (Exception) 
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
-            
+
         }
 
-        [HttpPost("users/posts/comments/{parentCommentId?}")]
+        [HttpPost("users/posts/comments/{parentCommentId}")]
         [HttpPost("users/posts/comments")]
         public async Task<ActionResult> CreateComment(int? parentCommentId, [FromBody] CreateCommentDTO commentDTO)
         {
             try
             {
                 var result = await _postRepository.CreateComment(parentCommentId, commentDTO);
-                if (result != null)
-                {
-                    return CreatedAtAction(nameof(GetComment), new { commentId = result.Id }, result);
-                }
-                else
-                {
-                    return BadRequest("Comment couldn't be created because the user or post does not exist.");
-                }
+                return CreatedAtAction(nameof(GetComment), new { commentId = result.Id }, result);
+
+            }
+            catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
@@ -112,20 +103,18 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _postRepository.GetComment(commentId);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Comment not found.");
-                }
+                return Ok(result);
+            }
+            catch (CommentNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
         }
+
         //Tu może zmienić zwracanego jsona, aby zwracał zagnieżdżone komentarze dzieci
         [HttpGet("users/posts/{postId}/comments")]
         public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int postId)
@@ -133,14 +122,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             try
             {
                 var result = await _postRepository.GetCommentsByPostId(postId);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound("Comments not found.");
-                }
+                return Ok(result);
             }
             catch (Exception)
             {
@@ -156,14 +138,15 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 await _postRepository.DeleteComment(commentId);
                 return Ok();
             }
+            catch (CommentNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
         }
-
-        
-
 
 
     }
