@@ -12,6 +12,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
     {
         Task<GoalDTO> CreateGoal(CreateGoalDTO createGoalDTO);
         Task<GoalDTO> GetGoal(int id);
+        Task<GoalDTO> ChangeGoalStatus(ChangeGoalDTO changeGoalDTO);
         Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO);
         Task<GoalTypeDTO> GetGoalType(int id);
     }
@@ -48,6 +49,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return _mapper.Map<GoalDTO>(result);
         }
+
         public async Task<GoalDTO> GetGoal(int id)
         {
             var goal = await _context.Goal
@@ -57,6 +59,28 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
             return goal ?? throw new GoalNotFoundException();
         }
 
+        public async Task<GoalDTO> ChangeGoalStatus(ChangeGoalDTO changeGoalDTO)
+        {
+            var goal = await _context.Goal.FindAsync(changeGoalDTO.Id);
+            
+            if (goal == null)
+            {
+                throw new GoalNotFoundException();
+            }
+
+            goal.GoalTypeId = changeGoalDTO.GoalTypeId ?? goal.GoalTypeId;
+            goal.Content = changeGoalDTO.Content ?? goal.Content;
+            goal.DateOfEnd = changeGoalDTO.DateOfEnd ?? goal.DateOfEnd;
+            goal.IsDone = changeGoalDTO.IsDone ?? goal.IsDone;
+
+            await _context.SaveChangesAsync();        
+
+            return _mapper.Map<GoalDTO>(goal);
+        }
+
+
+
+
         public async Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO)
         {
             var result = _mapper.Map<GoalType>(createGoalTypeDTO);
@@ -65,6 +89,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return _mapper.Map<GoalTypeDTO>(result);
         }
+
         public async Task<GoalTypeDTO> GetGoalType(int id)
         {
             var goaltype = await _context.GoalType
@@ -74,5 +99,6 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return goaltype ?? throw new GoalTypeNotFoundException();
         }
+
     }
 }

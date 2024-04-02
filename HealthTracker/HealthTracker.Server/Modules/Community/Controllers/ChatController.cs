@@ -3,6 +3,7 @@ using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
@@ -24,6 +25,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _chatRepository.CreateMessage(sendMessageDTO);
                 return CreatedAtAction(nameof(GetMessage), new { messageId = result.Id }, result);
 
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
             {
