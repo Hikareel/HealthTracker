@@ -47,16 +47,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\Exceptions\PhysicalActivity\" />
     <Folder Include="Core\Interfaces\" />
     <Folder Include="Core\Helpers\" />
     <Folder Include="Modules\Health\Controllers\" />
     <Folder Include="Modules\Health\DTOs\" />
     <Folder Include="Modules\Meals\Controllers\" />
     <Folder Include="Modules\Meals\DTOs\" />
-    <Folder Include="Modules\PhysicalActivity\Controllers\" />
-    <Folder Include="Modules\PhysicalActivity\DTOs\" />
-    <Folder Include="Modules\PhysicalActivity\Helpers\" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,8 @@ using HealthTracker.Server.Modules.Community.Repositories;
 using HealthTracker.Server.Core.Repositories;
 using AutoMapper;
 using HealthTracker.Server.Modules.Community.Helpers;
+using HealthTracker.Server.Modules.PhysicalActivity.Repository;
+using HealthTracker.Server.Modules.PhysicalActivity.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,12 +61,14 @@ builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IFriendRepository, FriendshipRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<IGoalRepository, GoalRepository>();
 
 builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
+builder.Services.AddAutoMapper(typeof(GoalProfile));
 
 var app = builder.Build();
 
