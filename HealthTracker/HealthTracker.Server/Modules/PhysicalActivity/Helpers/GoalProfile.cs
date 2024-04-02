@@ -11,8 +11,8 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Helpers
             CreateMap<CreateGoalDTO, Goal>();
             CreateMap<Goal, GoalDTO>();
 
-
             CreateMap<CreateGoalTypeDTO, GoalType>();
+            CreateMap<GoalType, GoalTypeDTO>();
         }
     }
 }

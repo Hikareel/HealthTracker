@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
@@ -10,7 +11,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
     public interface IGoalRepository
     {
         Task<GoalDTO> CreateGoal(CreateGoalDTO createGoalDTO);
-        Task<GoalType> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO);
+        Task<GoalDTO> GetGoal(int id);
+        Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO);
+        Task<GoalTypeDTO> GetGoalType(int id);
     }
     public class GoalRepository : IGoalRepository
     {
@@ -45,14 +48,31 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return _mapper.Map<GoalDTO>(result);
         }
+        public async Task<GoalDTO> GetGoal(int id)
+        {
+            var goal = await _context.Goal
+                .Where(line => line.Id == id)
+                .ProjectTo<GoalDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+            return goal ?? throw new GoalNotFoundException();
+        }
 
-        public async Task<GoalType> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO)
+        public async Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO)
         {
             var result = _mapper.Map<GoalType>(createGoalTypeDTO);
             await _context.GoalType.AddAsync(result);
             await _context.SaveChangesAsync();
 
-            return result;
+            return _mapper.Map<GoalTypeDTO>(result);
+        }
+        public async Task<GoalTypeDTO> GetGoalType(int id)
+        {
+            var goaltype = await _context.GoalType
+                .Where(line => line.Id == id)
+                .ProjectTo<GoalTypeDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+
+            return goaltype ?? throw new GoalTypeNotFoundException();
         }
     }
 }
