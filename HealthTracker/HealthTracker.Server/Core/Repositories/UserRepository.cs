@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace HealthTracker.Server.Infrastructure.Repositories
+namespace HealthTracker.Server.Core.Repositories
 {
     public interface IUserRepository
     {
