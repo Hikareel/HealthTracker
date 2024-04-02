@@ -47,6 +47,10 @@ namespace HealthTracker.Server.Infrastrucure.Data
                 .WithMany()
                 .HasForeignKey(f => f.User2Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Status>()
+                .HasIndex(s => s.Name)
+                .IsUnique();
         }
 
     }

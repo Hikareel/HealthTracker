@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.2" />
@@ -38,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Core\Exceptions\PhysicalActivity\" />
     <Folder Include="Core\Interfaces\" />
     <Folder Include="Core\Helpers\" />
     <Folder Include="Core\Services\" />
@@ -49,6 +51,7 @@
     <Folder Include="Modules\Meals\DTOs\" />
     <Folder Include="Modules\PhysicalActivity\Controllers\" />
     <Folder Include="Modules\PhysicalActivity\DTOs\" />
+    <Folder Include="Modules\PhysicalActivity\Helpers\" />
   </ItemGroup>
 
 </Project>

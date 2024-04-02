@@ -1,6 +1,6 @@
 ﻿using HealthTracker.Server.Core.DTOs;
 using HealthTracker.Server.Core.Models;
-using HealthTracker.Server.Infrastructure.Repositories;
+using HealthTracker.Server.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
