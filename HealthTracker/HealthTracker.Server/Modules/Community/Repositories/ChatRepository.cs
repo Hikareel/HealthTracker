@@ -46,7 +46,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         public async Task<MessageDTO> GetMessage(int id)
         {
             var message = await _context.Message
-                .Where(line => line.Id == Id)
+                .Where(line => line.Id == id)
                 .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
 

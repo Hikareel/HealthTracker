@@ -14,6 +14,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
     {
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
         Task<PostDTO> GetPost(int postId);
+        Task DeletePost(int postId);
         Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber);
         Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
         Task<CommentDTO> GetComment(int commentId);
@@ -56,6 +57,21 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             var postDto = _mapper.Map<PostDTO>(post);
 
             return postDto ?? throw new PostNotFoundException();
+        }
+
+        public async Task DeletePost(int postId)
+        {
+            var post = await _context.Post.FindAsync(postId);
+            
+            if (post == null)
+            {
+                throw new PostNotFoundException();
+            }
+
+            _context.Post.Remove(post);
+
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task<PostListDTO> GetPosts(int userId, int pageSize, int pageNumber)

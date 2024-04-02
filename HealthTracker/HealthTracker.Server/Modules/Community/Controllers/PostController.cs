@@ -57,6 +57,24 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         }
 
+        [HttpDelete("users/posts/{postId}")]
+        public async Task<ActionResult> DeletePost(int postId)
+        {
+            try
+            {
+                await _postRepository.DeletePost(postId);
+                return Ok();
+            }
+            catch(PostNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
         [HttpGet("users/{userId}/wall/posts")]
         public async Task<ActionResult<PostListDTO>> GetPosts(int userId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
