@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
 using HealthTracker.Server.Core.Repositories;
+using HealthTracker.Server.Modules.PhysicalActivity.Repository;
+using HealthTracker.Server.Modules.PhysicalActivity.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,10 @@ builder.Services.Configure<SignInOptions>(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+
+builder.Services.AddAutoMapper(typeof(GoalProfile));
+
 
 builder.Services.AddAuthorization();
 
