@@ -58,6 +58,23 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+        [HttpGet("users/{userId}/goals")]
+        public async Task<ActionResult<List<GoalDTO>>> GetUsersGoals(int userId)
+        {
+            try
+            {
+                var result = await _goalRepository.GetUsersGoals(userId);
+                return Ok(result);
+            }
+            catch(UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
 
         [HttpPut("users/goals")]
         public async Task<ActionResult<GoalDTO>> ChangeGoalStatus([FromBody] ChangeGoalDTO changeGoalDTO)
@@ -80,7 +97,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
-
+        [HttpDelete("users/goals/{goalId}")]
         public async Task<ActionResult> DeleteGoal(int goalId)
         {
             try
@@ -133,6 +150,20 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
                 return StatusCode(500, "Internal server error.");
             }
 
+        }
+
+        [HttpGet("users/goals/types")]
+        public async Task<ActionResult<List<GoalTypeDTO>>> GetGoalTypes([FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var result = await _goalRepository.GetGoalTypes(pageNumber, pageSize);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
         }
 
 

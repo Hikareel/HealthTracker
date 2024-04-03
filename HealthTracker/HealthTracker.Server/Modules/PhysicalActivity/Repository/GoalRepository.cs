@@ -14,10 +14,12 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
     {
         Task<GoalDTO> CreateGoal(CreateGoalDTO createGoalDTO);
         Task<GoalDTO> GetGoal(int id);
+        Task<List<GoalDTO>> GetUsersGoals(int userId);
         Task<GoalDTO> ChangeGoalStatus(ChangeGoalDTO changeGoalDTO);
         Task DeleteGoal(int goalId);
         Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO);
         Task<GoalTypeDTO> GetGoalType(int id);
+        Task<List<GoalTypeDTO>> GetGoalTypes(int pageNumber, int pageSize);
     }
     public class GoalRepository : IGoalRepository
     {
@@ -37,7 +39,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             if(!user)
             {
-                throw new Exception("User Not Found"); //Zamienić później na UserNotFoundException()
+                throw new UserNotFoundException();
             }
             if (!goaltype)
             {
@@ -60,6 +62,23 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
                 .ProjectTo<GoalDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
             return goal ?? throw new GoalNotFoundException();
+        }
+
+        public async Task<List<GoalDTO>> GetUsersGoals(int userId)
+        {
+            var user = await _context.User.AnyAsync(line => line.Id == userId);
+
+            if (!user)
+            {
+                throw new UserNotFoundException(userId);
+            }
+
+            var goals = await _context.Goal
+                .Where(line => line.UserId == userId)
+                .ProjectTo<GoalDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return goals;
         }
 
         public async Task<GoalDTO> ChangeGoalStatus(ChangeGoalDTO changeGoalDTO)
@@ -116,6 +135,15 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
             return goaltype ?? throw new GoalTypeNotFoundException();
         }
 
+        public async Task<List<GoalTypeDTO>> GetGoalTypes(int pageNumber, int pageSize)
+        {
+            var goaltypes = await _context.GoalType
+                .ProjectTo<GoalTypeDTO>(_mapper.ConfigurationProvider)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
+            return goaltypes;
+        }
     }
 }
