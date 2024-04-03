@@ -73,6 +73,7 @@ builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 builder.Services.AddAutoMapper(typeof(GoalProfile));
 builder.Services.AddAutoMapper(typeof(ExerciseProfile));
+builder.Services.AddAutoMapper(typeof(WorkoutProfile));
 
 var app = builder.Build();
 
