@@ -62,6 +62,9 @@ builder.Services.AddScoped<IFriendRepository, FriendshipRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IExerciseInWorkoutRepository, ExerciseInWorkoutRepository>();
+builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
 builder.Services.AddAuthorization();
 
@@ -69,6 +72,7 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 builder.Services.AddAutoMapper(typeof(GoalProfile));
+builder.Services.AddAutoMapper(typeof(ExerciseProfile));
 
 var app = builder.Build();
 

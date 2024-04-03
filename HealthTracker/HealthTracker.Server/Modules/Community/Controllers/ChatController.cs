@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Exceptions.Community;
+﻿using HealthTracker.Server.Core.Exceptions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Repositories;
