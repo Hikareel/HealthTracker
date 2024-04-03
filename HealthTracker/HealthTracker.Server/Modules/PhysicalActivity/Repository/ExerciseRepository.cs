@@ -8,6 +8,7 @@ using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 {
@@ -15,8 +16,10 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
     {
         Task<ExerciseDTO> CreateExercise(CreateExerciseDTO createExerciseDTO);
         Task<ExerciseDTO> GetExercise(int id);
+        Task DeleteExercise(int id);
         Task<ExerciseTypeDTO> CreateExerciseType(CreateExerciseTypeDTO createExerciseTypeDTO);
         Task<ExerciseTypeDTO> GetExerciseType(int id);
+        Task DeleteExerciseType(int id);
     }
     public class ExerciseRepository : IExerciseRepository
     {
@@ -74,6 +77,34 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
                 .FirstOrDefaultAsync(line => line.Id == id);
 
             return result ?? throw new ExerciseTypeNotFoundException();
+        }
+
+        public async Task DeleteExercise(int id)
+        {
+            var exercise = await _context.Exercise
+                .FirstOrDefaultAsync(line => line.Id == id);
+
+            if (exercise == null)
+            {
+                throw new ExerciseNotFoundException();
+            }
+
+            _context.Exercise.Remove(exercise);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteExerciseType(int id)
+        {
+            var exercisetype = await _context.ExerciseType
+                .FirstOrDefaultAsync(line => line.Id == id);
+
+            if (exercisetype == null)
+            {
+                throw new ExerciseTypeNotFoundException();
+            }
+
+            _context.ExerciseType.Remove(exercisetype);
+            await _context.SaveChangesAsync();
         }
     }
 }

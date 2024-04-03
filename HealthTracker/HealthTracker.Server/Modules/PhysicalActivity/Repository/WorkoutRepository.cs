@@ -15,6 +15,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
     {
         Task<WorkoutDTO> CreateWorkout(CreateWorkoutDTO createWorkoutDTO);
         Task<WorkoutDTO> GetWorkout(int id);
+        Task DeleteWorkout(int id);
     }
     public class WorkoutRepository : IWorkoutRepository
     {
@@ -53,5 +54,21 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return workout ?? throw new WorkoutNotFoundException();
         }
+
+        public async Task DeleteWorkout(int id)
+        {
+            var workout = await _context.Workout.FirstOrDefaultAsync(line => line.Id == id);
+
+            if (workout == null)
+            {
+                throw new WorkoutNotFoundException();
+            }
+
+            _context.Workout.Remove(workout);
+            await _context.SaveChangesAsync();
+        }
+
+
+
     }
 }

@@ -57,6 +57,25 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
+        [HttpDelete("exercise/{id}")]
+        public async Task<ActionResult> DeleteExercise(int id)
+        {
+            try
+            {
+                await _exerciseRepository.DeleteExercise(id);
+                return Ok();
+            }
+            catch (ExerciseNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+
         [HttpPut("exercise/type")]
         public async Task<ActionResult> CreateExerciseType([FromBody] CreateExerciseTypeDTO createExerciseTypeDTO)
         {
@@ -92,5 +111,24 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
+        [HttpDelete("exercise/type/{id}")]
+        public async Task<ActionResult> DeleteExerciseType(int id)
+        {
+            try
+            {
+                await _exerciseRepository.DeleteExerciseType(id);
+                return Ok();
+            }
+            catch (ExerciseTypeNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
     }
 }

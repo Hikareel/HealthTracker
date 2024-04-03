@@ -56,6 +56,22 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
-        
+        [HttpDelete("users/workouts/{id}")]
+        public async Task<ActionResult> DeleteWorkout(int id)
+        {
+            try
+            {
+                await _workoutRepository.DeleteWorkout(id);
+                return Ok();
+            }
+            catch (WorkoutNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
     }
 }
