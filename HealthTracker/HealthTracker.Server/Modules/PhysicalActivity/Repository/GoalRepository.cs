@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
+using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
@@ -13,6 +15,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
         Task<GoalDTO> CreateGoal(CreateGoalDTO createGoalDTO);
         Task<GoalDTO> GetGoal(int id);
         Task<GoalDTO> ChangeGoalStatus(ChangeGoalDTO changeGoalDTO);
+        Task DeleteGoal(int goalId);
         Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO);
         Task<GoalTypeDTO> GetGoalType(int id);
     }
@@ -78,7 +81,20 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
             return _mapper.Map<GoalDTO>(goal);
         }
 
+        public async Task DeleteGoal(int goalId)
+        {
+            var goal = await _context.Goal
+                .Where(f => f.Id == goalId)
+                .FirstOrDefaultAsync();
 
+            if (goal == null)
+            {
+                throw new GoalNotFoundException();
+            }
+
+            _context.Goal.Remove(goal);
+            await _context.SaveChangesAsync();
+        }
 
 
         public async Task<GoalTypeDTO> CreateGoalType(CreateGoalTypeDTO createGoalTypeDTO)
@@ -99,6 +115,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Repository
 
             return goaltype ?? throw new GoalTypeNotFoundException();
         }
+
 
     }
 }

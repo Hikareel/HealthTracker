@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
+﻿using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Repository;
@@ -69,6 +70,23 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             catch(DbUpdateException ex)
             {
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
+            }
+            catch (GoalNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        public async Task<ActionResult> DeleteGoal(int goalId)
+        {
+            try
+            {
+                await _goalRepository.DeleteGoal(goalId);
+                return Ok();
             }
             catch (GoalNotFoundException ex)
             {
