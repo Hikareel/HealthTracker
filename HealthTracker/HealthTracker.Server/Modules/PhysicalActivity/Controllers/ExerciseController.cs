@@ -17,7 +17,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             _exerciseRepository = exerciseRepository;
         }
 
-        [HttpPut("exercise")]
+        [HttpPost("exercises")]
         public async Task<ActionResult> CreateExercise([FromBody] CreateExerciseDTO createExerciseDTO)
         {
             try
@@ -39,7 +39,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
-        [HttpGet("exercise/{id}")]
+        [HttpGet("exercises/{id}")]
         public async Task<ActionResult<ExerciseDTO>> GetExercise(int id)
         {
             try
@@ -57,7 +57,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
-        [HttpDelete("exercise/{id}")]
+        [HttpDelete("exercises/{id}")]
         public async Task<ActionResult> DeleteExercise(int id)
         {
             try
@@ -76,7 +76,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
         }
 
 
-        [HttpPut("exercise/type")]
+        [HttpPost("exercises/types")]
         public async Task<ActionResult> CreateExerciseType([FromBody] CreateExerciseTypeDTO createExerciseTypeDTO)
         {
             try
@@ -94,7 +94,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
-        [HttpGet("exercise/type/{id}")]
+        [HttpGet("exercises/types/{id}")]
         public async Task<ActionResult<ExerciseDTO>> GetExerciseType(int id)
         {
             try
@@ -112,7 +112,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
         }
 
-        [HttpDelete("exercise/type/{id}")]
+        [HttpDelete("exercises/types/{id}")]
         public async Task<ActionResult> DeleteExerciseType(int id)
         {
             try

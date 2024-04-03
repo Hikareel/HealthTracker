@@ -16,7 +16,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             _workoutRepository = workoutRepository;
         }
 
-        [HttpPut("users/workouts")]
+        [HttpPost("users/workouts")]
         public async Task<ActionResult> CreateExercise([FromBody] CreateWorkoutDTO createWorkoutDTO)
         {
             try
@@ -31,6 +31,24 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             catch (ExerciseTypeNotFoundException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpPost("users/workouts/exercises")]
+        public async Task<ActionResult> AddExerciseToWorkout([FromQuery] int workoutId, [FromQuery] int exerciseId)
+        {
+            try
+            {
+                await _workoutRepository.AddExerciseToWorkout(workoutId, exerciseId);
+                return Ok();
+            }
+            catch (Exception ex) when (ex is ExerciseNotFoundException || ex is WorkoutNotFoundException || ex is ExerciseAlreadyExistsInWorkout)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
