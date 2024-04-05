@@ -24,16 +24,17 @@ const clearFormStatus = () => {
 
 const tasksForEndpoint = (
   endpoint: string,
-  responseCentent: any
+  responseContent: any
 ) => {
   if(endpoint == "/login"){
-    localStorage.setItem("token", responseCentent)
+    localStorage.setItem("token", responseContent.token);
+    localStorage.setItem("userId", responseContent.userId);
     formStatus.value.success = "User is logged"
     router.push('/').then(() =>{
         window.location.reload()
     });
   } else{
-    formStatus.value.success = responseCentent
+    formStatus.value.success = responseContent
     document.getElementById('reset_button')!.click()
   }
 }
@@ -58,7 +59,7 @@ const sendData = async (
       );
       result.status = true
       if(endpoint == "/login")
-        result.content = data.token
+      result.content = { token: data.token, userId: data.userId };
       else 
         result.content = data.message
     } catch (error: any) {

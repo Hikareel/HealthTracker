@@ -15,7 +15,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import type { Ref } from 'vue';
 

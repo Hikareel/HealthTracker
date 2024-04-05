@@ -15,11 +15,12 @@ namespace HealthTracker.Server.Core.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
 
-
-        public AuthController(IUserRepository userRepository)
+        public AuthController(IUserRepository userRepository, UserManager<User> userManager)
         {
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         [HttpPost("login")]
@@ -28,8 +29,9 @@ namespace HealthTracker.Server.Core.Controllers
             var result = await _userRepository.LoginAsync(loginDto);
             if (result.Succeeded)
             {
-                var user = await _userRepository.LoginAsync(loginDto);
-                return Ok(new { Token = _userRepository.GenerateJwtToken(loginDto).Result });
+                var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
+                var token = await _userRepository.GenerateJwtToken(loginDto);
+                return Ok(new { Token = token, UserId = user.Id });
             }
 
             return BadRequest(result.Errors);
