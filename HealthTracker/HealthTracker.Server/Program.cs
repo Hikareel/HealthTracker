@@ -73,7 +73,7 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:5173") // Tutaj dodaj adres URL Twojego klienta Vue.js
+        builder => builder.WithOrigins("https://localhost:5173", "https://localhost:5174") // Tutaj dodaj adres URL Twojego klienta Vue.js
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials()); // Wa¿ne dla SignalR
@@ -94,12 +94,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowSpecificOrigin");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHub<ChatHub>("/chatHub");
-
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapFallbackToFile("/index.html");
 

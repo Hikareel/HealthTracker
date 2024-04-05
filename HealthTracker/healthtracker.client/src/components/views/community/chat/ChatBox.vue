@@ -26,8 +26,7 @@ interface Message {
 
 const currentMessages: Ref<Message[]> = ref([]);
 const messageToSend = ref('');
-const userId = ref('4'); // Zmieniać dynamicznie
-const friendToChatId = ref('5'); // To też
+const friendToChatId = ref('5'); // Zmieniać dynamicznie
 
 let token = localStorage.getItem('token');
 
@@ -41,7 +40,7 @@ async function sendMessage() {
   if (messageToSend.value.trim() !== '') {
     try 
     {
-      await connection.invoke("SendMessageToUser", userId.value, friendToChatId.value, messageToSend.value); //SendMesages userIdFrom, userIdTo, text
+      await connection.invoke("SendMessageToUser", localStorage.getItem('userId'), friendToChatId.value, messageToSend.value); //SendMesages userIdFrom, userIdTo, text
       messageToSend.value = '';
     } 
     catch (err) 
@@ -58,7 +57,7 @@ onMounted(async () => {
     console.log("Connected to Chat");
     connection.on("ReceiveMessage", (userFrom, userTo, message) => {
       console.error("ReceivedMessage")
-      const isYours = userFrom === userId.value;
+      const isYours = userFrom === localStorage.getItem('userId');
       currentMessages.value.push({
         id: Math.random()*100,
         text: message,
