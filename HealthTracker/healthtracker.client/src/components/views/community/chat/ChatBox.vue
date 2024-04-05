@@ -1,21 +1,77 @@
 <template>
   <div class="chat-messinput">
     <div class="messages">
-      <div v-for="message in CurrentMessages" :key="message.message"
+      <div v-for="message in currentMessages" :key="message.id"
         :class="['message', message.isYours ? 'own-message' : 'received-message']">
-        {{ message.message }}
+        {{ message.text }}
       </div>
     </div>
     <div class="chat-input">
-      <button><i class='bi bi-send-fill'></i></button>
-      <input type="text" placeholder="Write message..." />
+      <button @click="sendMessage"><i class='bi bi-send-fill'></i></button>
+      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessage" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { CurrentMessages } from '@/data/models/currentMessages'
+import { ref, onMounted } from 'vue';
+import * as signalR from '@microsoft/signalr';
+import { HubConnectionBuilder } from '@microsoft/signalr';
+import type { Ref } from 'vue';
+
+interface Message {
+  id: number,
+  text: string
+  isYours: boolean;
+}
+
+const currentMessages: Ref<Message[]> = ref([]);
+const messageToSend = ref('');
+const userId = ref('4'); // Zmieniać dynamicznie
+const friendToChatId = ref('5'); // To też
+
+let token = localStorage.getItem('token');
+
+let connection = new HubConnectionBuilder()
+    .withUrl("https://localhost:7170/chatHub", {
+        accessTokenFactory: () => token ?? ""
+    })
+    .build();
+
+async function sendMessage() {
+  if (messageToSend.value.trim() !== '') {
+    try 
+    {
+      await connection.invoke("SendMessageToUser", userId.value, friendToChatId.value, messageToSend.value); //SendMesages userIdFrom, userIdTo, text
+      messageToSend.value = '';
+    } 
+    catch (err) 
+    {
+      console.error(err);
+    }
+  }
+}
+
+onMounted(async () => {
+  try {
+    //Dopisać pobranie ostatnich wiadomości + wybór użytkownika do czatu.
+    await connection.start();
+    console.log("Connected to Chat");
+    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
+      console.error("ReceivedMessage")
+      const isYours = userFrom === userId.value;
+      currentMessages.value.push({
+        id: Math.random()*100,
+        text: message,
+        isYours: isYours
+      });
+    });
+  } catch (err) {
+    console.error("Error connecting to Chat:", err);
+  }
+});
 </script>
+
 
 <style lang="scss" scoped>
 .chat-messinput {

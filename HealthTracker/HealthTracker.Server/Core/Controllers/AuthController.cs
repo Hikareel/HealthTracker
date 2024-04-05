@@ -28,7 +28,8 @@ namespace HealthTracker.Server.Core.Controllers
             var result = await _userRepository.LoginAsync(loginDto);
             if (result.Succeeded)
             {
-                return Ok(new { Token = _userRepository.GenerateJwtToken() });
+                var user = await _userRepository.LoginAsync(loginDto);
+                return Ok(new { Token = _userRepository.GenerateJwtToken(loginDto).Result });
             }
 
             return BadRequest(result.Errors);

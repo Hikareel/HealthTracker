@@ -12,6 +12,7 @@ using HealthTracker.Server.Modules.Community.Repositories;
 using HealthTracker.Server.Core.Repositories;
 using AutoMapper;
 using HealthTracker.Server.Modules.Community.Helpers;
+using HealthTracker.Server.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,18 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 
+builder.Services.AddSignalR();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("https://localhost:5173") // Tutaj dodaj adres URL Twojego klienta Vue.js
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials()); // Wa¿ne dla SignalR
+});
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -80,12 +93,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
 
-//app.UseEndpoints(endpoints => endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}"));
+app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
