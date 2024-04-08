@@ -14,60 +14,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { HubConnectionBuilder } from '@microsoft/signalr';
-import type { Ref } from 'vue';
+import type { FriendModel } from '@/data/models/friendModel';
+import { ref, defineProps } from 'vue';
 
 interface Message {
   id: number,
-  text: string
+  text: string;
   isYours: boolean;
 }
 
-const currentMessages: Ref<Message[]> = ref([]);
+const props = defineProps<{
+  currentMessages: Message[];
+  connection: any;
+  friendToChat: FriendModel | null;
+}>();
+
 const messageToSend = ref('');
-const friendToChatId = ref('5'); // Zmieniać dynamicznie
 
-let token = localStorage.getItem('token');
-
-let connection = new HubConnectionBuilder()
-    .withUrl("https://localhost:7170/chatHub", {
-        accessTokenFactory: () => token ?? ""
-    })
-    .build();
 
 async function sendMessage() {
-  if (messageToSend.value.trim() !== '') {
-    try 
-    {
-      await connection.invoke("SendMessageToUser", localStorage.getItem('userId'), friendToChatId.value, messageToSend.value); //SendMesages userIdFrom, userIdTo, text
+  if (messageToSend.value.trim() !== '' && props.friendToChat !== null) {
+    try {
+      await props.connection.invoke("SendMessageToUser", localStorage.getItem('userId'), props.friendToChat.userId, messageToSend.value); // SendMessages userIdFrom, userIdTo, text
       messageToSend.value = '';
-    } 
-    catch (err) 
-    {
+    } catch (err) {
       console.error(err);
     }
   }
 }
-
-onMounted(async () => {
-  try {
-    //Dopisać pobranie ostatnich wiadomości + wybór użytkownika do czatu.
-    await connection.start();
-    console.log("Connected to Chat");
-    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
-      console.error("ReceivedMessage")
-      const isYours = userFrom === localStorage.getItem('userId');
-      currentMessages.value.push({
-        id: Math.random()*100,
-        text: message,
-        isYours: isYours
-      });
-    });
-  } catch (err) {
-    console.error("Error connecting to Chat:", err);
-  }
-});
 </script>
 
 

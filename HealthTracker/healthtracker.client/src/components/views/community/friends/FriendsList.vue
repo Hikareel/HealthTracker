@@ -1,14 +1,24 @@
 <template>
     <main class="main-list">
         <div class="friends-list">
-            <FriendItem v-for="obj in FriendsData" :item="obj"/>
+            <FriendItem v-for="friend in friends" :item="friend" :key="friend.userId" @click="selectFriend(friend)"/>
         </div>
     </main>
 </template>
 
 <script lang="ts" setup>
 import FriendItem from './FriendItem.vue'
-import { FriendsData } from '@/data/models/friendModel'
+import { type FriendModel } from '@/data/models/friendModel'
+
+defineProps<{
+    friends: FriendModel[]
+}>();
+
+const emit = defineEmits(['select']);
+
+const selectFriend = (friend: FriendModel) => {
+  emit('select', friend);
+};
 </script>
 
 <style lang="scss" scoped>

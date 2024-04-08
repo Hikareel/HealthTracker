@@ -15,8 +15,9 @@
         </div>
       </div>
       <div class="mobile-expander">
-        <FriendsList class="list-mobile" />
-        <ChatBox class="chat-mobile" />
+        <FriendsList :friends="friends" @select="friendSelected" class="list-mobile" />
+        <ChatBox :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection"
+          class="chat-mobile" />
       </div>
       <div class="wall-body">
         <!-- POSTs -->
@@ -27,8 +28,9 @@
     </div>
 
     <div class="right-content">
-      <FriendsList class="list" />
-      <Chat class="chat" />
+      <FriendsList :friends="friends" @select="friendSelected" class="list" />
+      <Chat :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection"
+        class="chat" />
     </div>
 
   </main>
@@ -36,16 +38,79 @@
 
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
+import { type FriendModel } from '@/data/models/friendModel'
 import Chat from './chat/Chat.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { PostData } from '@/data/models/postModels';
-import { ref } from "vue";
+import { ref, type Ref, onMounted } from "vue";
+import axios from 'axios';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 const is_mobile_expanded = ref(false)
 const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
+
+interface Message {
+  id: number,
+  text: string
+  isYours: boolean;
+}
+
+const friends = ref<FriendModel[]>([]);
+const currentMessages: Ref<Message[]> = ref([]);
+const friendToChat = ref<FriendModel | null>(null);
+let token = localStorage.getItem('token');
+
+const friendSelected = (friend: FriendModel) => {
+  friendToChat.value = friend;
+};
+
+let connection = new HubConnectionBuilder()
+  .withUrl("https://localhost:7170/chatHub", {
+    accessTokenFactory: () => token ?? ""
+  })
+  .build();
+
+onMounted(async () => {
+  getFriendList();
+  connectToChatHub();
+});
+
+async function connectToChatHub() {
+
+  try {
+    //Dopisać pobranie ostatnich wiadomości + wybór użytkownika do czatu.
+    await connection.start();
+    console.log("Connected to Chat");
+    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
+      const isYours = userFrom === localStorage.getItem('userId');
+      currentMessages.value.push({
+        id: 1, // Do zmiany
+        text: message,
+        isYours: isYours
+      });
+    });
+  } catch (err) {
+    console.error("Error connecting to Chat:", err);
+  }
+}
+
+async function getFriendList() {
+  const userId = localStorage.getItem("userId");
+  if (userId) {
+    try {
+      const response = await axios.get(`https://localhost:7170/api/users/${userId}/friends`);
+      friends.value = response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    console.error('User ID is not available.');
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -109,20 +174,21 @@ const ToggleMobile = () => {
           }
         }
       }
-      
+
       .friends-button {
         display: none;
         justify-content: center;
         align-content: center;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         padding: 0.5rem;
 
         .friends-button button {
           height: fit-content;
           width: fit-content;
         }
-        .menu-toggle{
-          .material-icons{
+
+        .menu-toggle {
+          .material-icons {
             transition: 0.5s ease-out;
           }
         }
@@ -135,11 +201,11 @@ const ToggleMobile = () => {
       opacity: 0;
       transition: height 0.5s ease, opacity 0.5s ease;
 
-      .list-mobile{
+      .list-mobile {
         height: 50%;
         margin-bottom: 0;
-      } 
-      
+      }
+
       .chat-mobile {
         height: 50%;
       }

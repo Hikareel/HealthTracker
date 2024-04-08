@@ -74,7 +74,7 @@ const preventSubmit = async (
     data: string
   ) => {
     clearFormStatus()
-    let response: IResponseModel = await sendData(endpoint, data)
+    const response: IResponseModel = await sendData(endpoint, data)
     if(response.status){
       tasksForEndpoint(endpoint, response.content)
     } else {

@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="friend-item">
-      <p><i class="bi bi-person-circle"></i>{{ item.firstname }} {{ item.secondname }}</p>
+      <p><i class="bi bi-person-circle"></i>{{ item.firstName }} {{ item.lastName }}</p>
     </div>
   </main>
 </template>
