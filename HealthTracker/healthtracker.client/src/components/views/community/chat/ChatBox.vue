@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import type { FriendModel } from '@/data/models/friendModel';
 import { ref, defineProps } from 'vue';
+import { user } from '../../../../data/service/userData'
 
 interface Message {
   id: number,
@@ -31,17 +32,19 @@ const props = defineProps<{
 
 const messageToSend = ref('');
 
-
 async function sendMessage() {
   if (messageToSend.value.trim() !== '' && props.friendToChat !== null) {
     try {
-      await props.connection.invoke("SendMessageToUser", localStorage.getItem('userId'), props.friendToChat.userId, messageToSend.value); // SendMessages userIdFrom, userIdTo, text
-      messageToSend.value = '';
+      if (user.userId) {
+        await props.connection.invoke("SendMessageToUser", user.userId, props.friendToChat.userId, messageToSend.value);
+        messageToSend.value = '';
+      }
     } catch (err) {
       console.error(err);
     }
   }
 }
+
 </script>
 
 

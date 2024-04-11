@@ -11,7 +11,7 @@ namespace HealthTracker.Server.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto);
+        Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto);
         Task<IdentityResult> LoginAsync(LoginDto loginDto);
         Task<string> GenerateJwtToken(LoginDto loginDto);
     }
@@ -27,7 +27,7 @@ namespace HealthTracker.Server.Core.Repositories
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto)
         {
             var userExists = await _userManager.FindByEmailAsync(userDto.Email);
             if (userExists != null)

@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.DTOs;
+﻿using AutoMapper;
+using HealthTracker.Server.Core.DTOs;
 using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,13 @@ namespace HealthTracker.Server.Core.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public AuthController(IUserRepository userRepository, UserManager<User> userManager)
+        public AuthController(IUserRepository userRepository, UserManager<User> userManager, IMapper mapper)
         {
             _userRepository = userRepository;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -30,8 +33,9 @@ namespace HealthTracker.Server.Core.Controllers
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
-                var token = await _userRepository.GenerateJwtToken(loginDto);
-                return Ok(new { Token = token, UserId = user.Id });
+                var userDTO = _mapper.Map<SuccessLoginDto>(user);
+                userDTO.Token = await _userRepository.GenerateJwtToken(loginDto);
+                return Ok(userDTO);
             }
 
             return BadRequest(result.Errors);
@@ -39,7 +43,7 @@ namespace HealthTracker.Server.Core.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto registerUserDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerUserDto)
         {
             var result = await _userRepository.RegisterUserAsync(registerUserDto);
 

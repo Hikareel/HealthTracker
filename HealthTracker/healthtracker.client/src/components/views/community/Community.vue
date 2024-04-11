@@ -29,8 +29,7 @@
 
     <div class="right-content">
       <FriendsList :friends="friends" @select="friendSelected" class="list" />
-      <Chat :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection"
-        class="chat" />
+      <Chat :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection" class="chat" />
     </div>
 
   </main>
@@ -46,6 +45,7 @@ import { PostData } from '@/data/models/postModels';
 import { ref, type Ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
+import { user } from '../../../data/service/userData'
 
 const is_mobile_expanded = ref(false)
 const ToggleMobile = () => {
@@ -61,7 +61,6 @@ interface Message {
 const friends = ref<FriendModel[]>([]);
 const currentMessages: Ref<Message[]> = ref([]);
 const friendToChat = ref<FriendModel | null>(null);
-let token = localStorage.getItem('token');
 
 const friendSelected = (friend: FriendModel) => {
   friendToChat.value = friend;
@@ -69,7 +68,7 @@ const friendSelected = (friend: FriendModel) => {
 
 let connection = new HubConnectionBuilder()
   .withUrl("https://localhost:7170/chatHub", {
-    accessTokenFactory: () => token ?? ""
+    accessTokenFactory: () => user.token ?? ""
   })
   .build();
 
@@ -79,13 +78,16 @@ onMounted(async () => {
 });
 
 async function connectToChatHub() {
-
   try {
     //Dopisać pobranie ostatnich wiadomości + wybór użytkownika do czatu.
+    if (!user.userId) {
+      return;
+    }
+
     await connection.start();
     console.log("Connected to Chat");
     connection.on("ReceiveMessage", (userFrom, userTo, message) => {
-      const isYours = userFrom === localStorage.getItem('userId');
+      const isYours = userFrom === user.userId;
       currentMessages.value.push({
         id: 1, // Do zmiany
         text: message,
@@ -98,16 +100,14 @@ async function connectToChatHub() {
 }
 
 async function getFriendList() {
-  const userId = localStorage.getItem("userId");
-  if (userId) {
-    try {
-      const response = await axios.get(`https://localhost:7170/api/users/${userId}/friends`);
-      friends.value = response.data;
-    } catch (error) {
-      console.error(error);
+  try {
+    if (!user.userId) {
+      return;
     }
-  } else {
-    console.error('User ID is not available.');
+    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`);
+    friends.value = response.data;
+  } catch (error) {
+    console.error(error);
   }
 }
 

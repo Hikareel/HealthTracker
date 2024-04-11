@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import router from '../../../router'
-localStorage.removeItem("token")
-router.push('/login').then(() =>{
-    window.location.reload()
-});
+import { updateUser } from '../../../data/service/userData'
+localStorage.removeItem("user")
+updateUser();
 </script>

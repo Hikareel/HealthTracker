@@ -1,4 +1,5 @@
 import { reactive } from "vue";
+import { user } from "../service/userData"
 
 const Links = reactive({
   1: {
@@ -11,31 +12,31 @@ const Links = reactive({
     name: "Meals",
     link: "/diary",
     icon: "restaurant",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   },
   3: {
     name: "Trainings Planner",
     link: "/planner",
     icon: "fitness_center",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   } ,
   4: {
     name: "Health Check",
     link: "/health",
     icon: "health_and_safety",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   },
   5: {
     name: "Goals and Progress",
     link: "/goals",
     icon: "emoji_events",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   },
   6: {
     name: "Community",
     link: "/community",
     icon: "groups",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   },
   7: {
     name: "About",
@@ -50,19 +51,19 @@ const AuthLinks = reactive({
     name: "Register",
     link: "/register",
     icon: "person_add",
-    isHidden: localStorage.getItem("token") ? true : false
+    isHidden: user.token ? false : true
   },
   2: {
     name: "Login",
     link: "/login",
     icon: "login",
-    isHidden: localStorage.getItem("token") ? true : false
+    isHidden: user.token ? false : true
   },
   3: {
     name: "Logout",
     link: "/logout",
     icon: "logout",
-    isHidden: localStorage.getItem("token") ? false : true
+    isHidden: user.token ? false : true
   },
 })
 

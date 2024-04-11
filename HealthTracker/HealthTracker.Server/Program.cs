@@ -63,6 +63,7 @@ builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
@@ -73,7 +74,7 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:5173", "https://localhost:5174") // Tutaj dodaj adres URL Twojego klienta Vue.js
+        builder => builder.WithOrigins("https://localhost:5173", "https://localhost:5174", "https://localhost:5175") // Tutaj dodaj adres URL Twojego klienta Vue.js
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials()); // Wa¿ne dla SignalR
