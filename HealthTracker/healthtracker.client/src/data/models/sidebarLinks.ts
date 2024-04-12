@@ -1,71 +1,30 @@
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { user } from "../service/userData"
 
+const createLink = (name: string, link: string, icon: string, isAuthRequired: boolean) => {
+  return computed(() => ({
+    name: name,
+    link: link,
+    icon: icon,
+    isHidden: isAuthRequired ? !user.token : false
+  }));
+};
+
 const Links = reactive({
-  1: {
-    name: "Home",
-    link: "/",
-    icon: "home",
-    isHidden: false
-  },
-  2: {
-    name: "Meals",
-    link: "/diary",
-    icon: "restaurant",
-    isHidden: user.token ? false : true
-  },
-  3: {
-    name: "Trainings Planner",
-    link: "/planner",
-    icon: "fitness_center",
-    isHidden: user.token ? false : true
-  } ,
-  4: {
-    name: "Health Check",
-    link: "/health",
-    icon: "health_and_safety",
-    isHidden: user.token ? false : true
-  },
-  5: {
-    name: "Goals and Progress",
-    link: "/goals",
-    icon: "emoji_events",
-    isHidden: user.token ? false : true
-  },
-  6: {
-    name: "Community",
-    link: "/community",
-    icon: "groups",
-    isHidden: user.token ? false : true
-  },
-  7: {
-    name: "About",
-    link: "/about",
-    icon: "info",
-    isHidden: false
-  }
-})
+  home: createLink("Home", "/", "home", false),
+  meals: createLink("Meals", "/diary", "restaurant", true),
+  trainingPlaner: createLink("Trainings Planner", "/planner", "fitness_center", true),
+  health: createLink("Health Check", "/health", "health_and_safety", true),
+  goals: createLink("Goals and Progress", "/goals", "emoji_events", true),
+  community: createLink("Community", "/community", "groups", true),
+  about: createLink("About", "/about", "info", false)
+});
 
 const AuthLinks = reactive({
-  1: {
-    name: "Register",
-    link: "/register",
-    icon: "person_add",
-    isHidden: user.token ? false : true
-  },
-  2: {
-    name: "Login",
-    link: "/login",
-    icon: "login",
-    isHidden: user.token ? false : true
-  },
-  3: {
-    name: "Logout",
-    link: "/logout",
-    icon: "logout",
-    isHidden: user.token ? false : true
-  },
-})
+  register: createLink("Register", "/register", "person_add", false),
+  login: createLink("Login", "/login", "login", false),
+  logout: createLink("Logout", "/logout", "logout", true)
+});
 
 interface ILinkItem{
   name: String,
@@ -73,5 +32,6 @@ interface ILinkItem{
   icon: String,
   isHidden: boolean
 }
+
 export { Links, AuthLinks };
 export type { ILinkItem };
