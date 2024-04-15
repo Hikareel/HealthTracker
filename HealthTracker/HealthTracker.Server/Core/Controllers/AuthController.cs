@@ -29,31 +29,46 @@ namespace HealthTracker.Server.Core.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var result = await _userRepository.LoginAsync(loginDto);
-            if (result.Succeeded)
+            try
             {
-                var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
-                var userDTO = _mapper.Map<SuccessLoginDto>(user);
-                userDTO.Token = await _userRepository.GenerateJwtToken(loginDto);
-                return Ok(userDTO);
-            }
+                var result = await _userRepository.LoginAsync(loginDto);
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
+                    var userDTO = _mapper.Map<SuccessLoginDto>(user);
+                    userDTO.Token = await _userRepository.GenerateJwtToken(loginDto);
+                    return Ok(userDTO);
+                }
 
-            return BadRequest(result.Errors);
+                return BadRequest(result.Errors);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerUserDto)
         {
-            var result = await _userRepository.RegisterUserAsync(registerUserDto);
-
-            if (result.Succeeded)
+            try
             {
-                return Ok(new { Message = "User registered successfully" });
-            }
+                var result = await _userRepository.RegisterUserAsync(registerUserDto);
 
-            return BadRequest(result.Errors);
+                if (result.Succeeded)
+                {
+                    return Ok(new { Message = "User registered successfully" });
+                }
+
+                return BadRequest(result.Errors);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
+
 
     }
 }
