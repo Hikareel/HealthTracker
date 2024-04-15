@@ -16,8 +16,8 @@
       </div>
       <div class="mobile-expander">
         <FriendsList :friends="friends" @select="friendSelected" class="list-mobile" />
-        <ChatBox :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection"
-          class="chat-mobile" />
+        <ChatBox :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
+          :connection="connection" class="chat-mobile" />
       </div>
       <div class="wall-body">
         <!-- POSTs -->
@@ -29,7 +29,8 @@
 
     <div class="right-content">
       <FriendsList :friends="friends" @select="friendSelected" class="list" />
-      <Chat :friendToChat="friendToChat" :current-messages="currentMessages" :connection="connection" class="chat" />
+      <Chat :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
+        class="chat" />
     </div>
 
   </main>
@@ -42,28 +43,22 @@ import Chat from './chat/Chat.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { PostData } from '@/data/models/postModels';
-import { ref, type Ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { user } from '../../../data/service/userData'
+import { currentMessages } from '@/data/models/messageModel';
+import { v4 as uuidv4 } from 'uuid';
 
 const is_mobile_expanded = ref(false)
 const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
-
-interface Message {
-  id: number,
-  text: string
-  isYours: boolean;
-}
-
 const friends = ref<FriendModel[]>([]);
-const currentMessages: Ref<Message[]> = ref([]);
-const friendToChat = ref<FriendModel | null>(null);
 
 const friendSelected = (friend: FriendModel) => {
-  friendToChat.value = friend;
+  currentMessages.value.friendToChat = friend;
+  getCurrentUsersMessagesWithFriend(friend.userId);
 };
 
 let connection = new HubConnectionBuilder()
@@ -79,7 +74,6 @@ onMounted(async () => {
 
 async function connectToChatHub() {
   try {
-    //Dopisać pobranie ostatnich wiadomości + wybór użytkownika do czatu.
     if (!user.userId) {
       return;
     }
@@ -87,15 +81,39 @@ async function connectToChatHub() {
     await connection.start();
     console.log("Connected to Chat");
     connection.on("ReceiveMessage", (userFrom, userTo, message) => {
+      console.log(message)
       const isYours = userFrom === user.userId;
-      currentMessages.value.push({
-        id: 1, // Do zmiany
+      currentMessages.value.messages.push({
+        id: uuidv4(),
         text: message,
         isYours: isYours
       });
     });
   } catch (err) {
     console.error("Error connecting to Chat:", err);
+  }
+}
+
+async function getCurrentUsersMessagesWithFriend(friendId: number) {
+  //Obsłuzyć może jakoś różne status cody.
+  try {
+    const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
+      params: {
+        pageNumber: currentMessages.value.pageNumber,
+        pageSize: currentMessages.value.pageSize
+      }
+    });
+
+    const messages = response.data.map((message: { id: number; text: string; userIdFrom: number; }) => ({
+      id: message.id,
+      text: message.text,
+      isYours: message.userIdFrom === user.userId
+    })).reverse();
+    currentMessages.value.messages = messages
+
+    console.log(currentMessages.value)
+  } catch (error) {
+    console.error(error);
   }
 }
 

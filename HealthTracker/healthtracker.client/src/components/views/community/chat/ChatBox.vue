@@ -1,8 +1,7 @@
 <template>
   <div class="chat-messinput">
     <div class="messages">
-      <div v-for="message in currentMessages" :key="message.id"
-        :class="['message', message.isYours ? 'own-message' : 'received-message']">
+      <div v-for="message in currentMessages.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
         {{ message.text }}
       </div>
     </div>
@@ -14,29 +13,21 @@
 </template>
 
 <script setup lang="ts">
-import type { FriendModel } from '@/data/models/friendModel';
 import { ref, defineProps } from 'vue';
-import { user } from '../../../../data/service/userData'
-
-interface Message {
-  id: number,
-  text: string;
-  isYours: boolean;
-}
+import { user } from '@/data/service/userData'
+import { currentMessages } from '@/data/models/messageModel';
 
 const props = defineProps<{
-  currentMessages: Message[];
   connection: any;
-  friendToChat: FriendModel | null;
 }>();
 
 const messageToSend = ref('');
 
 async function sendMessage() {
-  if (messageToSend.value.trim() !== '' && props.friendToChat !== null) {
+  if (messageToSend.value.trim() !== '' && currentMessages.value.friendToChat !== null) {
     try {
       if (user.userId) {
-        await props.connection.invoke("SendMessageToUser", user.userId, props.friendToChat.userId, messageToSend.value);
+        await props.connection.invoke("SendMessageToUser", user.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
         messageToSend.value = '';
       }
     } catch (err) {

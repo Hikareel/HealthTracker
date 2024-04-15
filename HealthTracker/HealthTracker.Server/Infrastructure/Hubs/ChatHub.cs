@@ -36,8 +36,6 @@ namespace HealthTracker.Server.Infrastructure.Hubs
             await Clients.User(userTo.ToString()).SendAsync("ReceiveMessage", userFrom, userTo, messageText);
         }
 
-
-
     }
 
 
