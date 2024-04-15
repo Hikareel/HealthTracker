@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="mobile-expander">
-        <FriendsList :friends="friends" @select="friendSelected" class="list-mobile" />
+        <FriendsList :friends="friends" @select="clickAtFriend" class="list-mobile" />
         <ChatBox :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
           :connection="connection" class="chat-mobile" />
       </div>
@@ -28,8 +28,8 @@
     </div>
 
     <div class="right-content">
-      <FriendsList :friends="friends" @select="friendSelected" class="list" />
-      <Chat :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
+      <FriendsList :friends="friends" @select="clickAtFriend" class="list" />
+      <Chat v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
         class="chat" />
     </div>
 
@@ -56,7 +56,9 @@ const ToggleMobile = () => {
 }
 const friends = ref<FriendModel[]>([]);
 
-const friendSelected = (friend: FriendModel) => {
+const selectedFriend = ref<FriendModel | null>(null);
+const clickAtFriend = (friend: FriendModel) => {
+  selectedFriend.value = friend;
   currentMessages.value.friendToChat = friend;
   getCurrentUsersMessagesWithFriend(friend.userId);
 };
@@ -154,7 +156,7 @@ async function getFriendList() {
       grid-column: 1;
       border-bottom: 1px solid #d3d3d3;
       width: 100%;
-      height: 10%;
+      height: 4rem;
       position: sticky;
       top: 0;
       background-color: inherit;
@@ -215,9 +217,10 @@ async function getFriendList() {
 
     .mobile-expander {
       height: 0;
+      width: inherit;
       overflow: hidden;
       opacity: 0;
-      transition: height 0.5s ease, opacity 0.5s ease;
+      transition: height 1.5s ease, opacity 1s ease;
 
       .list-mobile {
         height: 50%;
@@ -232,7 +235,7 @@ async function getFriendList() {
     .wall-body {
       grid-row: 2;
       grid-column: 1;
-      height: 100%;
+      height: calc(100% - 4rem);
       width: 100%;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -247,19 +250,19 @@ async function getFriendList() {
 
     &.is_mobile_expanded {
       .mobile-expander {
-        height: 100%;
+        height: calc(100% - 4rem);
         opacity: 1;
-        transition: 0.7s ease-in;
+        transition: 1s ease-in;
       }
 
       .wall-body {
         height: 0;
-        transition: height 0.7s ease-in;
+        transition: height 1s ease-in;
       }
 
       .wall-header .friends-button .menu-toggle .material-icons {
         transform: scaleY(-1);
-        transition: 0.5s ease-out;
+        transition: 0.7s ease-out;
       }
     }
   }
