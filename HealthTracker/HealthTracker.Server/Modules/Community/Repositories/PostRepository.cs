@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;

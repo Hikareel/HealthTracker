@@ -8,6 +8,7 @@ using System.Linq;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Core.Exceptions;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {

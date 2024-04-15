@@ -1,8 +1,10 @@
-﻿using HealthTracker.Server.Core.Exceptions.Community;
+﻿using HealthTracker.Server.Core.Exceptions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 //Do zastanowienia czy oddzielić komentarze od postów (repozytorium i kontroler)
 
@@ -26,6 +28,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 var result = await _postRepository.CreatePost(postDTO);
                 return CreatedAtAction(nameof(GetPost), new { postId = result.Id }, result);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
             {
@@ -104,6 +110,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _postRepository.CreateComment(parentCommentId, commentDTO);
                 return CreatedAtAction(nameof(GetComment), new { commentId = result.Id }, result);
 
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
             {

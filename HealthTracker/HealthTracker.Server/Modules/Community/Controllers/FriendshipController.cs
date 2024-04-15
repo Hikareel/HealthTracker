@@ -1,9 +1,11 @@
-﻿using HealthTracker.Server.Core.Exceptions.Community;
+﻿using HealthTracker.Server.Core.Exceptions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
@@ -27,6 +29,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _friendRepository.CreateFriendshipRequest(createFriendshipDTO);
                 return CreatedAtAction(nameof(GetFriendship), new { friendshipId = result.Id }, result);
 
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
             {
@@ -85,6 +91,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 await _friendRepository.ChangeFriendshipStatus(userId, friendId, isAccepted);
                 return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (Exception ex) when (ex is UserNotFoundException || ex is FriendshipNotFoundException)
             {
