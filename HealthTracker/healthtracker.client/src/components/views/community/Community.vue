@@ -20,7 +20,6 @@
           :connection="connection" class="chat-mobile" />
       </div>
       <div class="wall-body">
-        <!-- POSTs -->
         <div v-for="post in PostData" class="posts">
           <Post :item="post" />
         </div>
@@ -97,7 +96,7 @@ async function connectToChatHub() {
 }
 
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
-  //Obsłuzyć może jakoś różne status cody.
+  //Obsłuzyć może jakoś różne status cody. (500, 200, itp)
   try {
     const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
       params: {
