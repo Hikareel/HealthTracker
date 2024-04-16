@@ -1,21 +1,43 @@
 <template>
   <div class="chat-messinput">
     <div class="messages">
-      <div v-for="message in CurrentMessages" :key="message.message"
-        :class="['message', message.isYours ? 'own-message' : 'received-message']">
-        {{ message.message }}
+      <div v-for="message in currentMessages.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
+        {{ message.text }}
       </div>
     </div>
     <div class="chat-input">
-      <button><i class='bi bi-send-fill'></i></button>
-      <input type="text" placeholder="Write message..." />
+      <button @click="sendMessage"><i class='bi bi-send-fill'></i></button>
+      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessage" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { CurrentMessages } from '@/data/models/currentMessages'
+import { ref, defineProps } from 'vue';
+import { user } from '@/data/service/userData'
+import { currentMessages } from '@/data/models/messageModel';
+
+const props = defineProps<{
+  connection: any;
+}>();
+
+const messageToSend = ref('');
+
+async function sendMessage() {
+  if (messageToSend.value.trim() !== '' && currentMessages.value.friendToChat !== null) {
+    try {
+      if (user.userId) {
+        await props.connection.invoke("SendMessageToUser", user.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
+        messageToSend.value = '';
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 </script>
+
 
 <style lang="scss" scoped>
 .chat-messinput {

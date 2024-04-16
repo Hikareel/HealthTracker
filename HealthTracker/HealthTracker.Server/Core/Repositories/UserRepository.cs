@@ -1,17 +1,19 @@
 ﻿using HealthTracker.Server.Core.DTOs;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace HealthTracker.Server.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto);
+        Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto);
         Task<IdentityResult> LoginAsync(LoginDto loginDto);
-        string GenerateJwtToken();
+        Task<string> GenerateJwtToken(LoginDto loginDto);
     }
     public class UserRepository : IUserRepository
     {
@@ -25,7 +27,7 @@ namespace HealthTracker.Server.Core.Repositories
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto)
         {
             var userExists = await _userManager.FindByEmailAsync(userDto.Email);
             if (userExists != null)
@@ -72,15 +74,33 @@ namespace HealthTracker.Server.Core.Repositories
             }
         }
 
-        public string GenerateJwtToken()
+        public async Task<string> GenerateJwtToken(LoginDto loginDto)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(8),
-                signingCredentials: credentials);
+            var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ??
+                       await _userManager.FindByEmailAsync(loginDto.EmailUserName);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        new Claim("name", user.Id.ToString()),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
+
+            var token = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddHours(8),
+                    signingCredentials: credentials
+                );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

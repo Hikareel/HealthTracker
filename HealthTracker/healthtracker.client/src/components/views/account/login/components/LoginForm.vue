@@ -42,7 +42,7 @@ const formData = ref<ILoginModel>({
 });
 
 const sendFormData = async () => {
-    preventSubmit("/login", JSON.stringify(formData.value))
+    preventSubmit("/login", JSON.stringify(formData.value))//Dodać coś świadczącego o procesie logowania (np.: kręcące się kółko) 
     formData.value.Password = ''
 }
 </script>

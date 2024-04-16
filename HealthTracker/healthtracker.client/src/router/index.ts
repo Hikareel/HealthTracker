@@ -10,7 +10,7 @@ import Register from '../components/views/account/register/Register.vue'
 import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
-import Logout from '../components/views/account/logout.vue'
+import LogoutUser from '../components/views/account/LogoutUser.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -73,7 +73,7 @@ const router = createRouter({
     {
       path: '/logout',
       name: 'Logout',
-      component: Logout
+      component: LogoutUser
     }
   ]
 })

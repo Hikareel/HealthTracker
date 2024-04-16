@@ -15,11 +15,11 @@
         </div>
       </div>
       <div class="mobile-expander">
-        <FriendsList class="list-mobile" />
-        <ChatBox class="chat-mobile" />
+        <FriendsList :friends="friends" @select="clickAtFriend" class="list-mobile" />
+        <ChatBox :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
+          :connection="connection" class="chat-mobile" />
       </div>
       <div class="wall-body">
-        <!-- POSTs -->
         <div v-for="post in PostData" class="posts">
           <Post :item="post" />
         </div>
@@ -27,8 +27,9 @@
     </div>
 
     <div class="right-content">
-      <FriendsList class="list" />
-      <Chat class="chat" />
+      <FriendsList :friends="friends" @select="clickAtFriend" class="list" />
+      <Chat v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
+        class="chat" />
     </div>
 
   </main>
@@ -36,16 +37,99 @@
 
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
+import { type FriendModel } from '@/data/models/friendModel'
 import Chat from './chat/Chat.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { PostData } from '@/data/models/postModels';
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
+import { HubConnectionBuilder } from '@microsoft/signalr';
+import { user } from '../../../data/service/userData'
+import { currentMessages } from '@/data/models/messageModel';
+import { v4 as uuidv4 } from 'uuid';
 
 const is_mobile_expanded = ref(false)
 const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
+const friends = ref<FriendModel[]>([]);
+
+const selectedFriend = ref<FriendModel | null>(null);
+const clickAtFriend = (friend: FriendModel) => {
+  selectedFriend.value = friend;
+  currentMessages.value.friendToChat = friend;
+  getCurrentUsersMessagesWithFriend(friend.userId);
+};
+
+let connection = new HubConnectionBuilder()
+  .withUrl("https://localhost:7170/chatHub", {
+    accessTokenFactory: () => user.token ?? ""
+  })
+  .build();
+
+onMounted(async () => {
+  getFriendList();
+  connectToChatHub();
+});
+
+async function connectToChatHub() {
+  try {
+    if (!user.userId) {
+      return;
+    }
+
+    await connection.start();
+    console.log("Connected to Chat");
+    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
+      console.log(message)
+      const isYours = userFrom === user.userId;
+      currentMessages.value.messages.push({
+        id: uuidv4(),
+        text: message,
+        isYours: isYours
+      });
+    });
+  } catch (err) {
+    console.error("Error connecting to Chat:", err);
+  }
+}
+
+async function getCurrentUsersMessagesWithFriend(friendId: number) {
+  //Obsłuzyć może jakoś różne status cody. (500, 200, itp)
+  try {
+    const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
+      params: {
+        pageNumber: currentMessages.value.pageNumber,
+        pageSize: currentMessages.value.pageSize
+      }
+    });
+
+    const messages = response.data.map((message: { id: number; text: string; userIdFrom: number; }) => ({
+      id: message.id,
+      text: message.text,
+      isYours: message.userIdFrom === user.userId
+    })).reverse();
+    currentMessages.value.messages = messages
+
+    console.log(currentMessages.value)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getFriendList() {
+  try {
+    if (!user.userId) {
+      return;
+    }
+    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`);
+    friends.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -71,7 +155,7 @@ const ToggleMobile = () => {
       grid-column: 1;
       border-bottom: 1px solid #d3d3d3;
       width: 100%;
-      height: 10%;
+      height: 4rem;
       position: sticky;
       top: 0;
       background-color: inherit;
@@ -109,20 +193,21 @@ const ToggleMobile = () => {
           }
         }
       }
-      
+
       .friends-button {
         display: none;
         justify-content: center;
         align-content: center;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         padding: 0.5rem;
 
         .friends-button button {
           height: fit-content;
           width: fit-content;
         }
-        .menu-toggle{
-          .material-icons{
+
+        .menu-toggle {
+          .material-icons {
             transition: 0.5s ease-out;
           }
         }
@@ -131,15 +216,16 @@ const ToggleMobile = () => {
 
     .mobile-expander {
       height: 0;
+      width: inherit;
       overflow: hidden;
       opacity: 0;
-      transition: height 0.5s ease, opacity 0.5s ease;
+      transition: height 1.5s ease, opacity 1s ease;
 
-      .list-mobile{
+      .list-mobile {
         height: 50%;
         margin-bottom: 0;
-      } 
-      
+      }
+
       .chat-mobile {
         height: 50%;
       }
@@ -148,7 +234,7 @@ const ToggleMobile = () => {
     .wall-body {
       grid-row: 2;
       grid-column: 1;
-      height: 100%;
+      height: calc(100% - 4rem);
       width: 100%;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -163,19 +249,19 @@ const ToggleMobile = () => {
 
     &.is_mobile_expanded {
       .mobile-expander {
-        height: 100%;
+        height: calc(100% - 4rem);
         opacity: 1;
-        transition: 0.7s ease-in;
+        transition: 1s ease-in;
       }
 
       .wall-body {
         height: 0;
-        transition: height 0.7s ease-in;
+        transition: height 1s ease-in;
       }
 
       .wall-header .friends-button .menu-toggle .material-icons {
         transform: scaleY(-1);
-        transition: 0.5s ease-out;
+        transition: 0.7s ease-out;
       }
     }
   }

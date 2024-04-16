@@ -1,13 +1,14 @@
-import axios from 'axios';
-import router from '@/router'
-import { ref } from 'vue';
+import axios from "axios";
+import router from "@/router";
+import { ref } from "vue";
+import { updateUser } from "../service/userData";
 
-interface IResponseModel{
+interface IResponseModel {
   status: boolean,
   content: any
 }
 
-interface IFormStatusModel{
+interface IFormStatusModel {
   success: string,
   errors: string[]
 }
@@ -23,45 +24,45 @@ const clearFormStatus = () => {
 }
 
 const tasksForEndpoint = (
-  endpoint: string,
-  responseCentent: any
+    endpoint: string,
+    responseContent: any
 ) => {
-  if(endpoint == "/login"){
-    localStorage.setItem("token", responseCentent)
+  if (endpoint == "/login") {
+    localStorage.setItem("user", JSON.stringify(responseContent))
     formStatus.value.success = "User is logged"
-    router.push('/').then(() =>{
-        window.location.reload()
+    router.push("/").then(() => {
+      updateUser()
     });
-  } else{
-    formStatus.value.success = responseCentent
-    document.getElementById('reset_button')!.click()
+  } else {
+    formStatus.value.success = responseContent
+    document.getElementById("reset_button")!.click()
   }
 }
 
 const sendData = async (
     endpoint: string,
     postData: string
-  ) => {
-    const result: IResponseModel = {
+) => {
+  const result: IResponseModel = {
       status: false,
       content: ""
     }
-    try {
+  try {
       const { data } = await axios.post(
-        `/api${endpoint}`,
-        postData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      result.status = true
-      if(endpoint == "/login")
-        result.content = data.token
-      else 
-        result.content = data.message
-    } catch (error: any) {
+          `/api${endpoint}`,
+          postData,
+          {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    result.status = true;
+    if (endpoint == "/login") {
+      result.content = data;
+    } else {
+      result.content = data.message;
+    }
+  } catch (error: any) {
       result.status = false
       result.content = error.response.data
     }
@@ -71,16 +72,16 @@ const sendData = async (
 const preventSubmit = async (
     endpoint: string,
     data: string
-  ) => {
+) => {
     clearFormStatus()
-    let response: IResponseModel = await sendData(endpoint, data)
-    if(response.status){
-      tasksForEndpoint(endpoint, response.content)
+    const response: IResponseModel = await sendData(endpoint, data)
+    if (response.status) {
+        tasksForEndpoint(endpoint, response.content)
     } else {
-      response.content.forEach((element: { description: string; }) => {
-        formStatus.value.errors.push(element.description)
-      });
+        response.content.forEach((element: { description: string }) => {
+            formStatus.value.errors.push(element.description)
+        });
     }
-  }
+}
 
 export { preventSubmit, formStatus, clearFormStatus }
