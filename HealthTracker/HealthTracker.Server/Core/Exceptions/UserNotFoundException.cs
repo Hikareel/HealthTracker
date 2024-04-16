@@ -1,4 +1,4 @@
-﻿namespace HealthTracker.Server.Core.Exceptions.Community
+﻿namespace HealthTracker.Server.Core.Exceptions
 {
     /// <summary>
     /// Represents an error when a user cannot be found.

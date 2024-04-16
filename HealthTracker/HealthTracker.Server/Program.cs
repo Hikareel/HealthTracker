@@ -12,6 +12,8 @@ using HealthTracker.Server.Modules.Community.Repositories;
 using HealthTracker.Server.Core.Repositories;
 using AutoMapper;
 using HealthTracker.Server.Modules.Community.Helpers;
+using HealthTracker.Server.Modules.PhysicalActivity.Repository;
+using HealthTracker.Server.Modules.PhysicalActivity.Helpers;
 using HealthTracker.Server.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +62,9 @@ builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IFriendRepository, FriendshipRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
 builder.Services.AddAuthorization();
 
@@ -67,6 +72,9 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(FriendshipProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
+builder.Services.AddAutoMapper(typeof(GoalProfile));
+builder.Services.AddAutoMapper(typeof(ExerciseProfile));
+builder.Services.AddAutoMapper(typeof(WorkoutProfile));
 
 builder.Services.AddSignalR();
 
@@ -77,7 +85,7 @@ builder.Services.AddCors(options =>
         builder => builder.WithOrigins("https://localhost:5173", "https://localhost:5174", "https://localhost:5175") // Tutaj dodaj adres URL Twojego klienta Vue.js
                           .AllowAnyMethod()
                           .AllowAnyHeader()
-                          .AllowCredentials()); // Wa¿ne dla SignalR
+                          .AllowCredentials()); // Waï¿½ne dla SignalR
 });
 
 var app = builder.Build();

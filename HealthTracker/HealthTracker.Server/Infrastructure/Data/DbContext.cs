@@ -28,6 +28,7 @@ namespace HealthTracker.Server.Infrastrucure.Data
         public DbSet<Meal> Meal { get; set; }
         public DbSet<MealType> MealType { get; set; }
         public DbSet<MealUser> MealUser { get; set; }
+        public DbSet<Exercise> Exercise { get; set; }
         public DbSet<ExerciseType> ExerciseType { get; set; }
         public DbSet<Goal> Goal { get; set; }
         public DbSet<GoalType> GoalType { get; set; }
