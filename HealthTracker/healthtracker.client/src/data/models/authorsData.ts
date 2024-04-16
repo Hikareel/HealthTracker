@@ -13,30 +13,30 @@ interface IAuthor {
 
 const authors = [
   {
-    firstName: "string",
-    lastName: "string",
-    role: "string",
-    image: "string",
+    firstName: "Damian",
+    lastName: "Subzda",
+    role: "Developer",
+    image: 'programista1.png',
     urls: [
       {
-        name: "string",
-        url: "string",
+        name: "Github",
+        url: "https://github.com/DamianSubzda",
       },
       {
-        name: "string",
-        url: "string",
+        name: "Example",
+        url: "https://wp.pl",
       },
     ],
   },
   {
-    firstName: "string",
-    lastName: "string",
-    role: "string",
-    image: "string",
+    firstName: "Filip",
+    lastName: "Stańczak",
+    role: "Developer",
+    image: 'programista2.png',
     urls: [
       {
-        name: "string",
-        url: "string",
+        name: "Github",
+        url: "https://github.com/Hikareel",
       },
     ],
   },
