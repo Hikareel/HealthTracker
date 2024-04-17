@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
+﻿using HealthTracker.Server.Core.DTOs;
+using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,11 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
     public class WorkoutController : ControllerBase
     {
         private readonly IWorkoutRepository _workoutRepository;
-        public WorkoutController(IWorkoutRepository workoutRepository) 
+        private readonly ILogger<WorkoutController> _logger;
+        public WorkoutController(IWorkoutRepository workoutRepository, ILogger<WorkoutController> logger) 
         {
             _workoutRepository = workoutRepository;
+            _logger = logger;
         }
 
         [HttpPost("users/workouts")]
@@ -26,14 +29,16 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create exercise process for {DTO}.", createWorkoutDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (ExerciseTypeNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create exercise process for {DTO}.", createWorkoutDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -50,8 +55,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the add exercise to workout process for workout: {workoutId} and exercise: {exerciseId}.", workoutId, exerciseId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -68,8 +74,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get workout process for {WorkoutId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -86,8 +93,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the delete workout process for {WorkoutId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }

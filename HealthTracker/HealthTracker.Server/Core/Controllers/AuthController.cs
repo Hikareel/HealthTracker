@@ -18,12 +18,14 @@ namespace HealthTracker.Server.Core.Controllers
         private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUserRepository userRepository, UserManager<User> userManager, IMapper mapper)
+        public AuthController(IUserRepository userRepository, UserManager<User> userManager, IMapper mapper, ILogger<AuthController> logger)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -42,8 +44,9 @@ namespace HealthTracker.Server.Core.Controllers
 
                 return BadRequest(result.Errors);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the login process for user {EmailUserName}.", loginDto.EmailUserName);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -63,8 +66,9 @@ namespace HealthTracker.Server.Core.Controllers
 
                 return BadRequest(result.Errors);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the register process for user {UserName}.", registerUserDto.UserName);
                 return StatusCode(500, "Internal server error");
             }
         }

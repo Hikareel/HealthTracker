@@ -37,6 +37,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
@@ -53,6 +54,7 @@
     <Folder Include="Modules\Health\DTOs\" />
     <Folder Include="Modules\Meals\Controllers\" />
     <Folder Include="Modules\Meals\DTOs\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>
