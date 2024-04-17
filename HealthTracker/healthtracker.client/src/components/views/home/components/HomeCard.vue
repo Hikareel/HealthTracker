@@ -53,8 +53,9 @@ defineProps<{
         }
 
         .content {
+            transition: opacity 0.25s ease, font-size 0.25s ease-out;
+            font-size: 0;
             opacity: 0;
-            height: 0;
 
             .description {
                 text-align: left;

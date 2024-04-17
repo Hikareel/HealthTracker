@@ -26,27 +26,23 @@ import { HomeCardData } from '@/data/models/homeCardModel';
 
     .segment {
       flex: 1;
-      transition: flex 0.8s ease;
+      transition: flex 5.0s ease;
       height: 100%;
 
       &:hover {
+        cursor: pointer;
+        transition: flex 0.8s ease;
         flex: 7;
 
-        &:hover ::v-deep .content {
-          transition: opacity 0.8s ease, height 0.8s ease;
+        ::v-deep .content {
+          transition: font-size 0.8s ease;
           opacity: 1;
-          height: auto;
+          font-size: medium;
         }
+      }
 
-        .home-main-card {
-          &:click {
-            cursor: progress;
-          }
-
-          &:hover {
-            cursor: pointer;
-          }
-        }
+      &:click {
+        cursor: progress;
       }
     }
   }
