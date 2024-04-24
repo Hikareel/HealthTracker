@@ -7,12 +7,28 @@ const currentPosts: Ref<ICurrentPosts> = ref({
 });
 
 interface IPost {
-    id: number;
-    userId: number;
-    userFirstName: string,
-    userLastName: string,
-    content: string;
-    dateOfCreate: string;
+  id: number;
+  userId: number;
+  userFirstName: string;
+  userLastName: string;
+  content: string;
+  dateOfCreate: string;
+  comments: IComment[];
+  likes: ILike[];
+}
+
+interface IComment {
+  id: number;
+  postId: number;
+  userId: number;
+  parentCommentId: number | null;
+  content: string;
+}
+
+interface ILike {
+  id: number;
+  userId: number;
+  postId: number;
 }
 
 interface ICurrentPosts {
@@ -21,4 +37,4 @@ interface ICurrentPosts {
   pageSize: number;
 }
 export { currentPosts };
-export type { IPost, ICurrentPosts };
+export type { IPost, ILike, IComment, ICurrentPosts };

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthTracker.Server.Modules.Community.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthTracker.Server.Modules.Community.DTOs
 {
@@ -12,5 +13,7 @@ namespace HealthTracker.Server.Modules.Community.DTOs
         [MaxLength(2500, ErrorMessage = "Must be 2500 characters or less!")]
         public string Content { get; set; }
         public DateTime? DateOfCreate { get; set; }
+        public virtual ICollection<CommentDTO> Comments { get; set; }
+        public virtual ICollection<LikeDTO> Likes { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
@@ -19,6 +20,10 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<CommentDTO> GetComment(int commentId);
         Task<List<CommentDTO>> GetCommentsByPostId(int postId);
         Task DeleteComment(int commentId);
+        Task<LikeDTO> CreateLike(CreateLikeDTO likeDTO);
+        Task<LikeDTO> GetLike(int likeId);
+        Task DeleteLike(int likeId);
+        Task DeleteUsersLike(int userId, int postId);
     }
     public class PostRepository : IPostRepository
     {
@@ -61,7 +66,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         public async Task DeletePost(int postId)
         {
             var post = await _context.Post.FindAsync(postId);
-            
+
             if (post == null)
             {
                 throw new PostNotFoundException();
@@ -91,6 +96,8 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .Where(p => friendIds.Contains(p.UserId))
                 .OrderByDescending(p => p.DateOfCreate)
                 .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Likes)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .Select(p => new PostDTO
@@ -100,7 +107,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                     UserFirstName = p.User.FirstName,
                     UserLastName = p.User.LastName,
                     Content = p.Content,
-                    DateOfCreate = p.DateOfCreate
+                    DateOfCreate = p.DateOfCreate,
+                    Comments = p.Comments.Select(c => _mapper.Map<CommentDTO>(c)).ToList(),
+                    Likes = p.Likes.Select(l => _mapper.Map<LikeDTO>(l)).ToList()
                 })
                 .ToListAsync();
 
@@ -183,5 +192,69 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _context.Comment.RemoveRange(childComments);
         }
 
+        public async Task<LikeDTO> CreateLike(CreateLikeDTO likeDTO)
+        {
+            if(await _context.Like.AnyAsync(p => p.UserId == likeDTO.UserId && p.PostId == likeDTO.PostId))
+            {
+                throw new LikeAlreadyExistsException();
+            }
+
+            if (!await _context.User.AnyAsync(line => line.Id == likeDTO.UserId))
+            {
+                throw new UserNotFoundException();
+            }
+
+            if (!await _context.Post.AnyAsync(line => line.Id == likeDTO.PostId))
+            {
+                throw new PostNotFoundException();
+            }
+
+            var like = _mapper.Map<Like>(likeDTO);
+
+            await _context.Like.AddAsync(like);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<LikeDTO>(like);
+        }
+
+        public async Task<LikeDTO> GetLike(int likeId)
+        {
+            var like = await _context.Like
+                .FirstOrDefaultAsync(p => p.Id == likeId);
+
+            var likeDto = _mapper.Map<LikeDTO>(like);
+
+            return likeDto ?? throw new LikeNotFoundException();
+        }
+
+        public async Task DeleteLike(int likeId)
+        {
+            var like = await _context.Like
+                .FirstOrDefaultAsync(p => p.Id == likeId);
+            if (like != null)
+            {
+                _context.Like.Remove(like);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new LikeNotFoundException();
+            }
+        }
+
+        public async Task DeleteUsersLike(int userId, int postId)
+        {
+            var like = await _context.Like
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.PostId == postId);
+            if (like != null)
+            {
+                _context.Like.Remove(like);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new LikeNotFoundException();
+            }
+        }
     }
 }

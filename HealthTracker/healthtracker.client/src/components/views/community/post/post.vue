@@ -10,10 +10,10 @@
       </div>
       <div class="footer">
         <button class="like">
-          <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ 0 }}
+          <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ item.likes.length }}
         </button>
         <button class="comment" @click="toggleComments">
-          <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ 0 }}
+          <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ item.comments.length }}
         </button>
       </div>
       <!--Show after click-->

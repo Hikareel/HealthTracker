@@ -176,6 +176,81 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
+        [HttpPost("users/posts/likes")]
+        public async Task<ActionResult> CreateLike(CreateLikeDTO createLikeDTO)
+        {
+            try
+            {
+                var result = await _postRepository.CreateLike(createLikeDTO);
+                return CreatedAtAction(nameof(GetLike), new { likeId = result.Id }, result);
 
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.InnerException?.Message ?? "Database error.");
+            }
+            catch (Exception ex) when (ex is LikeAlreadyExistsException || ex is UserNotFoundException || ex is PostNotFoundException)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpGet("users/posts/likes/{likeId}")]
+        public async Task<ActionResult<LikeDTO>> GetLike(int likeId)
+        {
+            try
+            {
+                var result = await _postRepository.GetLike(likeId);
+                return Ok(result);
+            }
+            catch (LikeNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpDelete("users/posts/likes/{likeId}")]
+        public async Task<ActionResult> DeleteLike(int likeId)
+        {
+            try
+            {
+                await _postRepository.DeleteLike(likeId);
+                return Ok();
+            }
+            catch (LikeNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpDelete("users/{userId}/posts/{postId}/likes")]
+        public async Task<ActionResult> DeleteUsersLike(int userId, int postId)
+        {
+            try
+            {
+                await _postRepository.DeleteUsersLike(userId, postId);
+                return Ok();
+            }
+            catch (LikeNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
     }
 }

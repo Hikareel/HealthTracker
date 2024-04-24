@@ -14,6 +14,9 @@ namespace HealthTracker.Server.Modules.Community.Helpers
             CreateMap<CreateCommentDTO, Comment>();
             CreateMap<Comment, CommentDTO>();
 
+            CreateMap<CreateLikeDTO, Like>();
+            CreateMap<Like, LikeDTO>();
+
         }
     }
 }
