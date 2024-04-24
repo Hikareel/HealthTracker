@@ -2,7 +2,7 @@
   <main class="post">
     <div class="content">
       <div class="header">
-        <p>{{ item.user }}</p>
+        <p>{{ item.userFirstName }} {{ item.userLastName }}</p>
       </div>
       <div class="main">
         <div v-html="safeHtml"></div>
@@ -10,10 +10,10 @@
       </div>
       <div class="footer">
         <button class="like">
-          <i class="bi bi-hand-thumbs-up-fill"></i>
+          <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ 0 }}
         </button>
         <button class="comment" @click="toggleComments">
-          <i class='bi bi-chat-dots-fill'></i>
+          <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ 0 }}
         </button>
       </div>
       <!--Show after click-->
@@ -28,17 +28,17 @@
 import { ref, computed } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
-import type { IPostModel } from '@/data/models/postModels';
+import type { IPost } from '@/data/models/postModels';
 
 const { item } = defineProps<{
-  item: IPostModel
+  item: IPost
 }>();
 
 const md = new MarkdownIt();
 const isCommentsVisible = ref(false);
 
 const safeHtml = computed(() => {
-  const rawHtml = md.render(item.markdownText);
+  const rawHtml = md.render(item.content);
   return DOMPurify.sanitize(rawHtml);
 });
 

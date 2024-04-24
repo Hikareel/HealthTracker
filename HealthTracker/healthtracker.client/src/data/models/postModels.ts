@@ -1,42 +1,24 @@
-import { reactive } from "vue";
+import { type Ref, ref } from "vue";
 
+const currentPosts: Ref<ICurrentPosts> = ref({
+  posts: [],
+  pageNumber: 1,
+  pageSize: 10,
+});
 
-const PostData = reactive([
-    {
-        user: "user1",
-        markdownText: "# Hello world\n\nSome plain text"
-
-    },
-    {
-        user: "user2",
-        markdownText: "# *Hello* world\nSome **plain** text"
-
-    },
-    {
-        user: "user3",
-        markdownText: "# Hello world\n\nSome plain text"
-
-    },
-    {
-        user: "user4",
-        markdownText: "# Hello world\n\nSome plain text"
-
-    },
-    {
-        user: "user5",
-        markdownText: "# Hello world\n\nSome plain text"
-
-    },
-    {
-        user: "user6",
-        markdownText: "# Hello world\n\nSome plain text"
-
-    }
-])
-
-interface IPostModel {
-    user: string,
-    markdownText: string
+interface IPost {
+    id: number;
+    userId: number;
+    userFirstName: string,
+    userLastName: string,
+    content: string;
+    dateOfCreate: string;
 }
-export { PostData };
-export type { IPostModel };
+
+interface ICurrentPosts {
+  posts: IPost[];
+  pageNumber: number;
+  pageSize: number;
+}
+export { currentPosts };
+export type { IPost, ICurrentPosts };

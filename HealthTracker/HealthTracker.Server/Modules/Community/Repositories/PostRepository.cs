@@ -6,8 +6,6 @@ using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.ComponentModel.Design;
 
 namespace HealthTracker.Server.Modules.Community.Repositories
 {
@@ -16,7 +14,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
         Task<PostDTO> GetPost(int postId);
         Task DeletePost(int postId);
-        Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber);
+        Task<List<PostDTO>> GetPosts(int UserId, int pageSize, int pageNumber);
         Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
         Task<CommentDTO> GetComment(int commentId);
         Task<List<CommentDTO>> GetCommentsByPostId(int postId);
@@ -75,37 +73,40 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         }
 
-        public async Task<PostListDTO> GetPosts(int userId, int pageSize, int pageNumber)
+        public async Task<List<PostDTO>> GetPosts(int userId, int pageSize, int pageNumber)
         {
-            if (!await _context.User.AnyAsync(line => line.Id == userId))
+            if (!await _context.User.AnyAsync(u => u.Id == userId))
             {
                 throw new UserNotFoundException();
             }
 
             Status status = await _statusRepository.GetStatus("Accepted");
             var friendIds = await _context.Friendship
-                .Where(f => f.User1Id == userId || f.User2Id == userId)
-                .Where(f => f.StatusId == status.Id)
+                .Where(f => (f.User1Id == userId || f.User2Id == userId) && f.StatusId == status.Id)
                 .Select(f => f.User1Id == userId ? f.User2Id : f.User1Id)
                 .Distinct()
                 .ToListAsync();
 
-            var postsQuery = _context.Post
-                .Where(post => friendIds.Contains(post.UserId))
-                .OrderByDescending(post => post.DateOfCreate);
-
-            var posts = await postsQuery
-                .ProjectTo<PostDTO>(_mapper.ConfigurationProvider)
+            var posts = await _context.Post
+                .Where(p => friendIds.Contains(p.UserId))
+                .OrderByDescending(p => p.DateOfCreate)
+                .Include(p => p.User)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
+                .Select(p => new PostDTO
+                {
+                    Id = p.Id,
+                    UserId = p.UserId,
+                    UserFirstName = p.User.FirstName,
+                    UserLastName = p.User.LastName,
+                    Content = p.Content,
+                    DateOfCreate = p.DateOfCreate
+                })
                 .ToListAsync();
 
-            return new PostListDTO
-            {
-                UserId = userId,
-                Posts = posts
-            };
+            return posts;
         }
+
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
         {
