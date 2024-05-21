@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Exceptions;
+﻿using HealthTracker.Server.Core.DTOs;
+using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
@@ -14,9 +15,11 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
     public class GoalController : ControllerBase
     {
         private readonly IGoalRepository _goalRepository;
-        public GoalController(IGoalRepository goalRepository)
+        private readonly ILogger<GoalController> _logger;
+        public GoalController(IGoalRepository goalRepository, ILogger<GoalController> logger)
         {
             _goalRepository = goalRepository;
+            _logger = logger;
         }
         
         [HttpPost("users/goals")]
@@ -29,14 +32,16 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create goal process for {DTO}.", createGoalDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (GoalTypeNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create goal process for {DTO}.", createGoalDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -53,8 +58,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get goal process for {GoalId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -70,8 +76,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get goals process for user {UserId}.", userId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -86,31 +93,34 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
             catch(DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the change goal status process for {DTO}.", changeGoalDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (GoalNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the change goal status process for {DTO}.", changeGoalDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
-        [HttpDelete("users/goals/{goalId}")]
-        public async Task<ActionResult> DeleteGoal(int goalId)
+        [HttpDelete("users/goals/{id}")]
+        public async Task<ActionResult> DeleteGoal(int id)
         {
             try
             {
-                await _goalRepository.DeleteGoal(goalId);
+                await _goalRepository.DeleteGoal(id);
                 return Ok();
             }
             catch (GoalNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the delete goal process for {GoalId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -125,10 +135,12 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create goal type process for {DTO}.", createGoalTypeDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create goal type process for {DTO}.", createGoalTypeDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -145,8 +157,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get goaltype process for {GoalTypeId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
 
@@ -160,8 +173,9 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
                 var result = await _goalRepository.GetGoalTypes(pageNumber, pageSize);
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get goaltypes process.");
                 return StatusCode(500, "Internal server error.");
             }
         }

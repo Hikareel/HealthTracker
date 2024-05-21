@@ -1,4 +1,5 @@
-﻿using HealthTracker.Server.Core.Exceptions;
+﻿using HealthTracker.Server.Core.Controllers;
+using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
@@ -13,9 +14,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatRepository _chatRepository;
-        public ChatController(IChatRepository chatRepository)
+        private readonly ILogger<ChatController> _logger;
+        public ChatController(IChatRepository chatRepository, ILogger<ChatController> logger)
         {
             _chatRepository = chatRepository;
+            _logger = logger;
         }
 
         [HttpPost("users/messages")]
@@ -29,14 +32,16 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create message process for {SendMessageDTO}.", sendMessageDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create message process for {DTO}.", sendMessageDTO);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -54,8 +59,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get message process for {MessageId}.", messageId);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -72,8 +78,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get messages process for {UserFrom} to {UserTo}.", userFrom, userTo);
                 return StatusCode(500, "Internal server error");
             }
         }

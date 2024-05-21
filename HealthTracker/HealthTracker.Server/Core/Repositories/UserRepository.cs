@@ -1,4 +1,5 @@
 ﻿using HealthTracker.Server.Core.DTOs;
+using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using Microsoft.AspNetCore.Identity;
@@ -88,11 +89,11 @@ namespace HealthTracker.Server.Core.Repositories
             }
 
             var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-        new Claim("name", user.Id.ToString()),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    };
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim("name", user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
             var token = new JwtSecurityToken(
                     issuer: _configuration["Jwt:Issuer"],

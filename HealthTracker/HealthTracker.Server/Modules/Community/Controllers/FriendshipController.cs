@@ -3,7 +3,6 @@ using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +15,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
     public class FriendshipController : ControllerBase
     {
         private readonly IFriendRepository _friendRepository;
-        public FriendshipController(IFriendRepository friendRepository)
+        private readonly ILogger<FriendshipController> _logger;
+        public FriendshipController(IFriendRepository friendRepository, ILogger<FriendshipController> logger)
         {
             _friendRepository = friendRepository;
+            _logger = logger;
         }
 
         [HttpPost("users/friends/")]
@@ -32,6 +33,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create friendship process for {DTO}.", createFriendshipDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
@@ -42,8 +44,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return StatusCode(409, ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create friendship process for {DTO}.", createFriendshipDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -60,8 +63,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get friendship process for {FriendshipId}.", friendshipId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -78,8 +82,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get friendships list process for {UserId}.", userId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -100,8 +105,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the change friendship status process for user {UserId} to friend {FriendId}.", userId, friendId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -118,8 +124,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the delete friendship process for user {UserId} to friend {FriendId}.", userId, friendId);
                 return StatusCode(500, "Internal server error.");
             }
         }

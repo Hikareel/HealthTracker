@@ -8,6 +8,7 @@ Packages - BackEnd:
  - Microsoft.AspNetCore.Identity.UI
  - Microsoft.AspNetCore.Identity.EntityFrameworkCore
  - Microsoft.AspNetCore.Authentication.JwtBearer
+ - Serilog.AspNetCore
 
 Packages - FrontEnd:
  - vue-router
