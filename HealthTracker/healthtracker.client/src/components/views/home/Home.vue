@@ -15,34 +15,34 @@ import { HomeCardData } from '@/data/models/homeCardModel';
 
 <style lang="scss" scoped>
 .home-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100%;
-  width: 100%;
+  height: 100%;
+
   .main-view {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1rem;
-    @media (max-width: 600px) {
-        flex-direction: column;
-    }
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 8rem);
+
     .segment {
-      margin: 1rem;
+      flex: 1;
+      transition: flex 5.0s ease;
+      height: 100%;
+
       &:hover {
-        background-color: transparent;
-        text-decoration: none;
+        cursor: pointer;
+        transition: flex 0.8s ease;
+        flex: 7;
+
+        ::v-deep .content {
+          transition: font-size 0.8s ease;
+          opacity: 1;
+          font-size: medium;
+        }
       }
-      .home-main-card{
-        &:click {
-          cursor: progress;
-        }
-        &:hover {
-          cursor: pointer;
-        }
+
+      &:click {
+        cursor: progress;
       }
     }
   }

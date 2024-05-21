@@ -26,8 +26,10 @@ import { SocialLinks } from '@/data/models/socialLinks'
     gap: 20px;
     list-style: none;
     @media (max-width: 768px){
+      .link_name{
+        display: none;
+      }
       gap: 0px;
-      flex-direction: column;
     }
   }
   .sl{
