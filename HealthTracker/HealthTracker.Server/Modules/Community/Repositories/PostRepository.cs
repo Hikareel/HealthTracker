@@ -18,6 +18,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
         Task<CommentDTO> GetComment(int commentId);
         Task<List<CommentDTO>> GetCommentsByPostId(int postId);
+        Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId);
         Task DeleteComment(int commentId);
         Task<LikeDTO> CreateLike(LikeDTO likeDTO);
         Task<LikeDTO> GetLike(int userId, int postId);
@@ -37,29 +38,39 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _statusRepository = statusRepository;
         }
 
-        public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
+        public async Task<PostDTO> CreatePost(CreatePostDTO createPostDTO)
         {
-            if (!await _context.User.AnyAsync(line => line.Id == postDTO.UserId))
+            var user = await _context.User.FirstOrDefaultAsync(line => line.Id == createPostDTO.UserId);
+            if (user == null)
             {
                 throw new UserNotFoundException();
             }
 
-            var post = _mapper.Map<Post>(postDTO);
+            var post = _mapper.Map<Post>(createPostDTO);
 
             await _context.Post.AddAsync(post);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<PostDTO>(post);
+            var postDTO = _mapper.Map<PostDTO>(post);
+
+            postDTO.UserFirstName = user.FirstName;
+            postDTO.UserLastName= user.LastName;
+
+            return postDTO;
         }
 
         public async Task<PostDTO> GetPost(int postId)
         {
             var post = await _context.Post
-                .FirstOrDefaultAsync(p => p.Id == postId);
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Likes)
+                .FirstOrDefaultAsync(p => p.Id == postId) ?? throw new PostNotFoundException();
 
             var postDto = _mapper.Map<PostDTO>(post);
+            postDto.AmountOfComments = await _context.Comment.CountAsync(c => c.PostId == postId);
 
-            return postDto ?? throw new PostNotFoundException();
+            return postDto;
         }
 
         public async Task DeletePost(int postId)
@@ -107,14 +118,14 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                     UserLastName = p.User.LastName,
                     Content = p.Content,
                     DateOfCreate = p.DateOfCreate,
-                    Comments = p.Comments.Select(c => _mapper.Map<CommentDTO>(c)).ToList(),
+                    AmountOfComments = p.Comments.Count(),
+                    Comments = p.Comments.Where(c => c.ParentComment == null).Select(c => _mapper.Map<CommentDTO>(c)).ToList(),
                     Likes = p.Likes.Select(l => _mapper.Map<LikeDTO>(l)).ToList()
                 })
                 .ToListAsync();
 
             return posts;
         }
-
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
         {
@@ -151,19 +162,59 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             var comment = await _context.Comment
                 .Where(line => line.Id == commentId)
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? throw new CommentNotFoundException();
 
-            return comment ?? throw new CommentNotFoundException();
+            comment.AmountOfChildComments = await _context.Comment
+                .CountAsync(child => child.ParentCommentId == comment.Id);
+
+            return comment;
         }
 
         //W przyszłości dodać paginację dla dużej ilości komentarzy!
         public async Task<List<CommentDTO>> GetCommentsByPostId(int postId)
         {
-            var result = await _context.Comment.Where(line => line.PostId == postId)
+            var childCounts = await _context.Comment
+                .Where(child => child.ParentCommentId != null && child.PostId == postId)
+                .GroupBy(child => child.ParentCommentId)
+                .Select(group => new { ParentId = group.Key, Count = group.Count() })
+                .ToListAsync();
+
+            var parentComments = await _context.Comment
+                .Where(line => line.PostId == postId && line.ParentComment == null)
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            return result;
+            parentComments.ForEach(p => p.AmountOfChildComments = childCounts.FirstOrDefault(c => c.ParentId == p.Id)?.Count ?? 0);
+
+            return parentComments;
+        }
+
+        public async Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId)
+        {
+
+            if (!await _context.Post.AnyAsync(line => line.Id == postId))
+            {
+                throw new PostNotFoundException();
+            }
+
+            var parentComment = await _context.Comment
+                .Where(line => line.Id == parentCommentId)
+                .FirstOrDefaultAsync() ?? throw new CommentNotFoundException();
+
+            var comments = await _context.Comment
+                .Where(line => line.PostId == postId && line.ParentComment == parentComment)
+                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            var childCounts = await _context.Comment
+                .Where(child => child.ParentCommentId != null && child.PostId == postId)
+                .GroupBy(child => child.ParentCommentId)
+                .Select(group => new { ParentId = group.Key, Count = group.Count() })
+                .ToListAsync();
+
+            comments.ForEach(p => p.AmountOfChildComments = childCounts.FirstOrDefault(c => c.ParentId == p.Id)?.Count ?? 0);
+
+            return comments;
         }
 
         public async Task DeleteComment(int commentId)
@@ -193,7 +244,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<LikeDTO> CreateLike(LikeDTO likeDTO)
         {
-            if(await _context.Like.AnyAsync(p => p.UserId == likeDTO.UserId && p.PostId == likeDTO.PostId))
+            if (await _context.Like.AnyAsync(p => p.UserId == likeDTO.UserId && p.PostId == likeDTO.PostId))
             {
                 throw new LikeAlreadyExistsException();
             }
@@ -250,6 +301,5 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             }
         }
 
-        
     }
 }

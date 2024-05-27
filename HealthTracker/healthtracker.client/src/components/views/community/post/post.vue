@@ -18,17 +18,18 @@
       </div>
       <!--Show after click-->
       <div class="comment-section" v-if="isCommentsVisible">
-        <p>comment</p>
+        <Comment v-for="comment in item.comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
       </div>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
+import Comment from './Comment.vue'
 import { ref, computed } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
-import { currentPosts, type ILike, type IPost } from '@/data/models/postModels';
+import { currentPosts, type IPost } from '@/data/models/postModels';
 import { user } from '@/data/service/userData';
 import axios from 'axios';
 
