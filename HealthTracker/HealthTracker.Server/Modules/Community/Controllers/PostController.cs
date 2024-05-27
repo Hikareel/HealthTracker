@@ -1,5 +1,6 @@
 ﻿using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
+using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
@@ -177,12 +178,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpPost("users/posts/likes")]
-        public async Task<ActionResult> CreateLike(CreateLikeDTO createLikeDTO)
+        public async Task<ActionResult> CreateLike(LikeDTO likeDTO)
         {
             try
             {
-                var result = await _postRepository.CreateLike(createLikeDTO);
-                return CreatedAtAction(nameof(GetLike), new { likeId = result.Id }, result);
+                var result = await _postRepository.CreateLike(likeDTO);
+                return CreatedAtAction(nameof(GetLike), new { userId = result.UserId, postId = result.PostId }, result);
 
             }
             catch (DbUpdateException ex)
@@ -199,12 +200,12 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpGet("users/posts/likes/{likeId}")]
-        public async Task<ActionResult<LikeDTO>> GetLike(int likeId)
+        [HttpGet("users/{userId}/posts/{postId}/likes")]
+        public async Task<ActionResult<LikeDTO>> GetLike(int userId, int postId)
         {
             try
             {
-                var result = await _postRepository.GetLike(likeId);
+                var result = await _postRepository.GetLike(userId, postId);
                 return Ok(result);
             }
             catch (LikeNotFoundException ex)
@@ -217,17 +218,13 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        [HttpDelete("users/posts/likes/{likeId}")]
-        public async Task<ActionResult> DeleteLike(int likeId)
+        [HttpGet("users/posts/{postId}/likes")]
+        public async Task<ActionResult<List<LikeDTO>>> GetLikesFromPost(int postId)
         {
             try
             {
-                await _postRepository.DeleteLike(likeId);
-                return Ok();
-            }
-            catch (LikeNotFoundException ex)
-            {
-                return BadRequest(ex.Message);
+                var result = await _postRepository.GetLikesFromPost(postId);
+                return Ok(result);
             }
             catch (Exception)
             {
@@ -236,11 +233,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpDelete("users/{userId}/posts/{postId}/likes")]
-        public async Task<ActionResult> DeleteUsersLike(int userId, int postId)
+        public async Task<ActionResult> DeleteLike(int userId, int postId)
         {
             try
             {
-                await _postRepository.DeleteUsersLike(userId, postId);
+                await _postRepository.DeleteLike(userId, postId);
                 return Ok();
             }
             catch (LikeNotFoundException ex)

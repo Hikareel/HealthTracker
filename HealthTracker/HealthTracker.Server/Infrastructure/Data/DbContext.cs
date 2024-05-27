@@ -54,6 +54,11 @@ namespace HealthTracker.Server.Infrastrucure.Data
             modelBuilder.Entity<Status>()
                 .HasIndex(s => s.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<Like>()
+                .HasKey(l => new { l.UserId, l.PostId });
+
+
         }
 
     }

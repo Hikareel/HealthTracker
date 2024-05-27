@@ -9,7 +9,7 @@
         <div class="attachment"></div>
       </div>
       <div class="footer">
-        <button class="like">
+        <button class="like" @click="likePost">
           <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ item.likes.length }}
         </button>
         <button class="comment" @click="toggleComments">
@@ -28,7 +28,9 @@
 import { ref, computed } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
-import type { IPost } from '@/data/models/postModels';
+import { currentPosts, type ILike, type IPost } from '@/data/models/postModels';
+import { user } from '@/data/service/userData';
+import axios from 'axios';
 
 const { item } = defineProps<{
   item: IPost
@@ -41,6 +43,27 @@ const safeHtml = computed(() => {
   const rawHtml = md.render(item.content);
   return DOMPurify.sanitize(rawHtml);
 });
+
+async function likePost() {
+
+  const postIndex = currentPosts.value.posts.findIndex(post => post.id === item.id);
+  const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === user.userId);
+
+  try {
+    if (likeIndex > -1) {
+      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${item.id}/likes`);
+      currentPosts.value.posts[postIndex].likes.splice(likeIndex, 1);
+    } else {
+      const response = await axios.post(`https://localhost:7170/api/users/posts/likes`, {
+        userId: user.userId,
+        postId: item.id
+      });
+      currentPosts.value.posts[postIndex].likes.push(response.data);
+    }
+  } catch (error) {
+    console.error('Błąd podczas aktualizacji polubień', error);
+  }
+}
 
 function toggleComments() {
   isCommentsVisible.value = !isCommentsVisible.value;

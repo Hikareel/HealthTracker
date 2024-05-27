@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
-using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Infrastrucure.Data;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
@@ -20,10 +19,10 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<CommentDTO> GetComment(int commentId);
         Task<List<CommentDTO>> GetCommentsByPostId(int postId);
         Task DeleteComment(int commentId);
-        Task<LikeDTO> CreateLike(CreateLikeDTO likeDTO);
-        Task<LikeDTO> GetLike(int likeId);
-        Task DeleteLike(int likeId);
-        Task DeleteUsersLike(int userId, int postId);
+        Task<LikeDTO> CreateLike(LikeDTO likeDTO);
+        Task<LikeDTO> GetLike(int userId, int postId);
+        Task<List<LikeDTO>> GetLikesFromPost(int postId);
+        Task DeleteLike(int userId, int postId);
     }
     public class PostRepository : IPostRepository
     {
@@ -192,7 +191,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             _context.Comment.RemoveRange(childComments);
         }
 
-        public async Task<LikeDTO> CreateLike(CreateLikeDTO likeDTO)
+        public async Task<LikeDTO> CreateLike(LikeDTO likeDTO)
         {
             if(await _context.Like.AnyAsync(p => p.UserId == likeDTO.UserId && p.PostId == likeDTO.PostId))
             {
@@ -214,35 +213,29 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             await _context.Like.AddAsync(like);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<LikeDTO>(like);
+            return likeDTO;
         }
 
-        public async Task<LikeDTO> GetLike(int likeId)
+        public async Task<LikeDTO> GetLike(int userId, int postId)
         {
             var like = await _context.Like
-                .FirstOrDefaultAsync(p => p.Id == likeId);
+                 .FirstOrDefaultAsync(p => p.UserId == userId && p.PostId == postId);
 
             var likeDto = _mapper.Map<LikeDTO>(like);
 
             return likeDto ?? throw new LikeNotFoundException();
         }
 
-        public async Task DeleteLike(int likeId)
+        public async Task<List<LikeDTO>> GetLikesFromPost(int postId)
         {
-            var like = await _context.Like
-                .FirstOrDefaultAsync(p => p.Id == likeId);
-            if (like != null)
-            {
-                _context.Like.Remove(like);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new LikeNotFoundException();
-            }
+            var likes = await _context.Like
+                .Where(like => like.PostId == postId)
+                .ProjectTo<LikeDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+            return likes;
         }
 
-        public async Task DeleteUsersLike(int userId, int postId)
+        public async Task DeleteLike(int userId, int postId)
         {
             var like = await _context.Like
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.PostId == postId);
@@ -256,5 +249,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 throw new LikeNotFoundException();
             }
         }
+
+        
     }
 }

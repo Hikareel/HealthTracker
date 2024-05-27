@@ -6,7 +6,6 @@ namespace HealthTracker.Server.Modules.Community.Models
 {
     public class LikeDTO
     {
-        public int Id { get; set; }
         [Required]
         public int UserId { get; set; }
         [Required]
