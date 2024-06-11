@@ -2,12 +2,14 @@ using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Core.Repositories;
 using HealthTracker.Server.Infrastructure.Hubs;
 using HealthTracker.Server.Infrastrucure.Data;
+using HealthTracker.Server.Modules.Community.Controllers;
 using HealthTracker.Server.Modules.Community.Helpers;
 using HealthTracker.Server.Modules.Community.Repositories;
 using HealthTracker.Server.Modules.PhysicalActivity.Helpers;
 using HealthTracker.Server.Modules.PhysicalActivity.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -43,7 +45,10 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.OrderActionsBy((apiDesc) => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{apiDesc.HttpMethod}");
+    });
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("HealthTrackerDBconnString")));
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)

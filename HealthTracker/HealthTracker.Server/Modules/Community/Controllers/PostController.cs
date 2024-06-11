@@ -50,11 +50,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpGet("users/posts/{postId}")]
-        public async Task<ActionResult<PostDTO>> GetPost(int id)
+        public async Task<ActionResult<PostDTO>> GetPost(int postId)
         {
             try
             {
-                var result = await _postRepository.GetPost(id);
+                var result = await _postRepository.GetPost(postId);
                 return Ok(result);
             }
             catch (PostNotFoundException ex)
@@ -63,29 +63,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during the get post process for {PostId}.", id);
+                _logger.LogError(ex, "Error occurred during the get post process for {PostId}.", postId);
                 return StatusCode(500, "Internal server error.");
             }
 
-        }
-
-        [HttpDelete("users/posts/{postId}")]
-        public async Task<ActionResult> DeletePost(int id)
-        {
-            try
-            {
-                await _postRepository.DeletePost(id);
-                return Ok();
-            }
-            catch(PostNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during the delete post process for {PostId}.", id);
-                return StatusCode(500, "Internal server error.");
-            }
         }
 
         [HttpGet("users/{userId}/wall/posts")]
@@ -109,86 +90,24 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         }
 
-        [HttpPost("users/posts/comments/{parentCommentId}")]
-        [HttpPost("users/posts/comments")]
-        public async Task<ActionResult> CreateComment(int? parentCommentId, [FromBody] CreateCommentDTO commentDTO)
+        [HttpDelete("users/posts/{postId}")]
+        public async Task<ActionResult> DeletePost(int postId)
         {
             try
             {
-                var result = await _postRepository.CreateComment(parentCommentId, commentDTO);
-                return CreatedAtAction(nameof(GetComment), new { commentId = result.Id }, result);
-
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "Error occurred during the create comment process for {DTO}.", commentDTO);
-                return BadRequest(ex.InnerException?.Message ?? "Database error.");
-            }
-            catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during the create comment process for {DTO}.", commentDTO);
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
-        [HttpGet("users/posts/comments/{commentId}")]
-        public async Task<ActionResult<CommentDTO>> GetComment(int id)
-        {
-            try
-            {
-                var result = await _postRepository.GetComment(id);
-                return Ok(result);
-            }
-            catch (CommentNotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during the get comment process for {CommentId}.", id);
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
-        //Tu może zmienić zwracanego jsona, aby zwracał zagnieżdżone komentarze dzieci
-        [HttpGet("users/posts/{postId}/comments")]
-        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int id)
-        {
-            try
-            {
-                var result = await _postRepository.GetCommentsByPostId(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", id);
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
-        [HttpDelete("users/posts/comments/{commentId}")]
-        public async Task<ActionResult> DeleteComment(int id)
-        {
-            try
-            {
-                await _postRepository.DeleteComment(id);
+                await _postRepository.DeletePost(postId);
                 return Ok();
             }
-            catch (CommentNotFoundException ex)
+            catch (PostNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during the delete comment process for {CommentId}.", id);
+                _logger.LogError(ex, "Error occurred during the delete post process for {PostId}.", postId);
                 return StatusCode(500, "Internal server error.");
             }
         }
-
 
     }
 }
