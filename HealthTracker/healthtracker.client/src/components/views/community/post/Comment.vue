@@ -1,7 +1,7 @@
 <template>
     <!-- DODAJ KOMENTARZ -->
     <div class="add-comment">
-        <p>komentarz: {{ depth }}</p>
+        <p :style="{ marginLeft: depth + 'em' }">{{ item.content }}{{ depth }}</p>
     </div>
     <!-- KOMENTARZ -->
     <div class="add-comment">
