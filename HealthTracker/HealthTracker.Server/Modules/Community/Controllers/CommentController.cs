@@ -5,9 +5,8 @@ using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-
-//Do zastanowienia czy oddzielić komentarze od postów (repozytorium i kontroler)
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
@@ -68,18 +67,17 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
-        //Tu może zmienić zwracanego jsona, aby zwracał zagnieżdżone komentarze dzieci
         [HttpGet("users/posts/{postId}/comments")]
-        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int commentId)
+        public async Task<ActionResult<CommentFromPostDTO>> GetCommentsByPostId(int postId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var result = await _postRepository.GetCommentsByPostId(commentId);
+                var result = await _postRepository.GetCommentsByPostId(postId, pageNumber, pageSize);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", commentId);
+                _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", postId);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -103,6 +101,43 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
+        [HttpDelete("users/{usersId}/posts/comments")]
+        public async Task<ActionResult> DeleteUsersComment(int userId)
+        {
+            try
+            {
+                await _postRepository.DeleteUserComments(userId);
+                return Ok();
+            }
+            catch (UserNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during the delete users comments process for {UserId}.", userId);
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpDelete("users/posts/{postId}/comments")]
+        public async Task<ActionResult> DeleteCommentFromPost(int postId)
+        {
+            try
+            {
+                await _postRepository.DeleteCommentsFromPost(postId);
+                return Ok();
+            }
+            catch (PostNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during the delete comments under post process for {UserId}.", postId);
+                return StatusCode(500, "Internal server error.");
+            }
+        }
 
     }
 }

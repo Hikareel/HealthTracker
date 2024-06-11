@@ -7,8 +7,6 @@ using HealthTracker.Server.Modules.Community.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-//Do zastanowienia czy oddzielić komentarze od postów (repozytorium i kontroler)
-
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
@@ -69,7 +67,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         }
 
-        [HttpGet("users/{userId}/wall/posts")]
+        [HttpGet("users/{userId}/posts/wall")]
         public async Task<ActionResult<PostListDTO>> GetPosts(int userId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             try
