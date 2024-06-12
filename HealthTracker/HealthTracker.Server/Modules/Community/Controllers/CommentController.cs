@@ -75,6 +75,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _postRepository.GetCommentsByPostId(postId, pageNumber, pageSize);
                 return Ok(result);
             }
+            catch(NullPageException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", postId);

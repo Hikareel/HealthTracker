@@ -102,6 +102,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .Take(pageSize)
                 .ToListAsync();
 
+            if (posts.Count == 0)
+            {
+                throw new NullPageException();
+            }
+
             return new PostListDTO
             {
                 UserId = userId,
@@ -155,6 +160,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .Where(comment => comment.PostId == postId)
                 .CountAsync();
 
+            if (totalCommentsCount == 0)
+            {
+                throw new NullPageException();
+            }
+            
             var comments = await _context.Comment
                 .Where(comment => comment.PostId == postId)
                 .Skip((pageNr - 1) * pageSize)
