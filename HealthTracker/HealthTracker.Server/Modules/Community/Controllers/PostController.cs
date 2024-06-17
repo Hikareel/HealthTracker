@@ -16,9 +16,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostRepository _postRepository;
-        public PostController(IPostRepository postRepository)
+        private readonly ILogger<PostController> _logger;
+        public PostController(IPostRepository postRepository, ILogger<PostController> logger)
         {
             _postRepository = postRepository;
+            _logger = logger;
         }
 
 
@@ -32,52 +34,56 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create post process for {DTO}.", postDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (UserNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create post process for {DTO}.", postDTO);
                 return StatusCode(500, "Internal server error.");
             }
 
         }
 
         [HttpGet("users/posts/{postId}")]
-        public async Task<ActionResult<PostDTO>> GetPost(int postId)
+        public async Task<ActionResult<PostDTO>> GetPost(int id)
         {
             try
             {
-                var result = await _postRepository.GetPost(postId);
+                var result = await _postRepository.GetPost(id);
                 return Ok(result);
             }
             catch (PostNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get post process for {PostId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
 
         }
 
         [HttpDelete("users/posts/{postId}")]
-        public async Task<ActionResult> DeletePost(int postId)
+        public async Task<ActionResult> DeletePost(int id)
         {
             try
             {
-                await _postRepository.DeletePost(postId);
+                await _postRepository.DeletePost(id);
                 return Ok();
             }
             catch(PostNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the delete post process for {PostId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -95,8 +101,9 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get posts process for user {UserId}.", userId);
                 return StatusCode(500, "Internal server error.");
             }
 
@@ -114,47 +121,51 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred during the create comment process for {DTO}.", commentDTO);
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
             catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the create comment process for {DTO}.", commentDTO);
                 return StatusCode(500, "Internal server error.");
             }
         }
 
         [HttpGet("users/posts/comments/{commentId}")]
-        public async Task<ActionResult<CommentDTO>> GetComment(int commentId)
+        public async Task<ActionResult<CommentDTO>> GetComment(int id)
         {
             try
             {
-                var result = await _postRepository.GetComment(commentId);
+                var result = await _postRepository.GetComment(id);
                 return Ok(result);
             }
             catch (CommentNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get comment process for {CommentId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
 
         //Tu może zmienić zwracanego jsona, aby zwracał zagnieżdżone komentarze dzieci
         [HttpGet("users/posts/{postId}/comments")]
-        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int postId)
+        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByPostId(int id)
         {
             try
             {
-                var result = await _postRepository.GetCommentsByPostId(postId);
+                var result = await _postRepository.GetCommentsByPostId(id);
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -177,19 +188,20 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
         [HttpDelete("users/posts/comments/{commentId}")]
-        public async Task<ActionResult> DeleteComment(int commentId)
+        public async Task<ActionResult> DeleteComment(int id)
         {
             try
             {
-                await _postRepository.DeleteComment(commentId);
+                await _postRepository.DeleteComment(id);
                 return Ok();
             }
             catch (CommentNotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during the delete comment process for {CommentId}.", id);
                 return StatusCode(500, "Internal server error.");
             }
         }

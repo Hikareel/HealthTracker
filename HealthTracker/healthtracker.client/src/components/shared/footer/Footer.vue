@@ -18,9 +18,7 @@ const isCommunityPage = computed(() => route.path === '/community');
 
 <style lang="scss" scoped>
 footer {
-  min-height: 4rem;
-  bottom: 0;
-  right: 0;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,7 +31,9 @@ footer {
 
     @media (max-width: 550px) {
       gap: 1rem;
-      flex-direction: column;
+      h1{
+        display: none;
+      }
     }
   }
 }
