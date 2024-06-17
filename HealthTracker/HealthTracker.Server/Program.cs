@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,8 +49,25 @@ void ConfigureServices(WebApplicationBuilder builder)
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
-        c.OrderActionsBy((apiDesc) => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{apiDesc.HttpMethod}");
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "HealthTracker API",
+            Version = "v1"
+        });
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        c.IncludeXmlComments(xmlPath);
+        string[] methodsOrder = new string[] { "get", "post", "put", "patch", "delete", "options", "trace" };
+        c.OrderActionsBy(apiDesc =>
+        {
+            var methodIndex = Array.IndexOf(methodsOrder, apiDesc.HttpMethod?.ToLower() ?? "get");
+            var debugInfo = $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{methodIndex}_{apiDesc.HttpMethod}_{apiDesc.RelativePath}";
+            Console.WriteLine(debugInfo);
+            return debugInfo;
+        });
+
     });
+
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("HealthTrackerDBconnString")));
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)

@@ -22,6 +22,14 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         }
 
 
+        /// <summary>
+        /// Creates an instance of a post
+        /// </summary>
+        /// <param name="postDTO">The schema of created post mapped to PostDTO</param>
+        /// <returns>Created PostDTO</returns>
+        /// <response code="201">Returns if post created successfully</response>
+        /// <response code="400">Returns if User not found or database error</response>
+        /// <response code="500">Returns if internal server error</response>
         [HttpPost("users/posts")]
         public async Task<ActionResult<PostDTO>> CreatePost([FromBody] CreatePostDTO postDTO)
         {
