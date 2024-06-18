@@ -17,9 +17,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<List<PostDTO>> GetPosts(int UserId, int pageSize, int pageNumber);
         Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
         Task<CommentDTO> GetComment(int commentId);
-        Task<List<CommentDTO>> GetCommentsByPostId(int postId);
+        Task<CommentFromPostDTO> GetCommentsByPostId(int postId, int pageNr, int pageSize);
         Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId);
         Task DeleteComment(int commentId);
+        Task DeleteCommentsFromPost(int postId);
+        Task DeleteUserComments(int userId);
         Task<LikeDTO> CreateLike(LikeDTO likeDTO);
         Task<LikeDTO> GetLike(int userId, int postId);
         Task<List<LikeDTO>> GetLikesFromPost(int postId);
@@ -73,7 +75,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             return postDto;
         }
 
-        public async Task DeletePost(int postId)
+        public async Task DeletePost(int postId) //Usuwanie komentarzy + lików 
         {
             var post = await _context.Post.FindAsync(postId);
 
@@ -123,8 +125,17 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                     Likes = p.Likes.Select(l => _mapper.Map<LikeDTO>(l)).ToList()
                 })
                 .ToListAsync();
+                
+            if (posts.Count == 0)
+            {
+                throw new NullPageException();
+            }
 
-            return posts;
+            return new PostListDTO
+            {
+                UserId = userId,
+                Posts = posts
+            };
         }
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
@@ -170,24 +181,32 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             return comment;
         }
 
-        //W przyszłości dodać paginację dla dużej ilości komentarzy!
-        public async Task<List<CommentDTO>> GetCommentsByPostId(int postId)
+        public async Task<CommentFromPostDTO> GetCommentsByPostId(int postId, int pageNr, int pageSize)
         {
-            var childCounts = await _context.Comment
-                .Where(child => child.ParentCommentId != null && child.PostId == postId)
-                .GroupBy(child => child.ParentCommentId)
-                .Select(group => new { ParentId = group.Key, Count = group.Count() })
-                .ToListAsync();
+            var totalCommentsCount = await _context.Comment
+                .Where(comment => comment.PostId == postId)
+                .CountAsync();
 
-            var parentComments = await _context.Comment
-                .Where(line => line.PostId == postId && line.ParentComment == null)
+            if (totalCommentsCount == 0)
+            {
+                throw new NullPageException();
+            }
+            
+            var comments = await _context.Comment
+                .Where(comment => comment.PostId == postId)
+                .Skip((pageNr - 1) * pageSize)
+                .Take(pageSize)
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            parentComments.ForEach(p => p.AmountOfChildComments = childCounts.FirstOrDefault(c => c.ParentId == p.Id)?.Count ?? 0);
-
-            return parentComments;
-        }
+            return new CommentFromPostDTO()
+            {
+                Comments = comments,
+                PageNr = pageNr,
+                PageSize = pageSize,
+                PostId = postId,
+                CommentsCount = totalCommentsCount
+            };
 
         public async Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId)
         {
@@ -241,7 +260,36 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             }
             _context.Comment.RemoveRange(childComments);
         }
+        
+        public async Task DeleteCommentsFromPost(int postId)
+        {
+            if (!await _context.Post.AnyAsync(line => line.Id == postId))
+            {
+                throw new PostNotFoundException();
+            }
+            var comments = await _context.Comment
+                .Where(line => line.PostId == postId)
+                .ToListAsync();
 
+            _context.RemoveRange(comments);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteUserComments(int userId)
+        {
+            if (!await _context.User.AnyAsync(line => line.Id == userId))
+            {
+                throw new UserNotFoundException();
+            }
+
+            var comments = await _context.Comment
+                .Where(line=> line.UserId == userId)
+                .ToListAsync();
+
+            _context.RemoveRange(comments);
+            await _context.SaveChangesAsync();
+        }
+        
         public async Task<LikeDTO> CreateLike(LikeDTO likeDTO)
         {
             if (await _context.Like.AnyAsync(p => p.UserId == likeDTO.UserId && p.PostId == likeDTO.PostId))
@@ -258,7 +306,6 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             {
                 throw new PostNotFoundException();
             }
-
             var like = _mapper.Map<Like>(likeDTO);
 
             await _context.Like.AddAsync(like);
@@ -300,6 +347,5 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 throw new LikeNotFoundException();
             }
         }
-
     }
 }

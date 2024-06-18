@@ -74,6 +74,10 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _chatRepository.GetMessages(userFrom, userTo, pageNumber, pageSize);
                 return Ok(result);
             }
+            catch(NullPageException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (UserNotFoundException ex)
             {
                 return BadRequest(ex.Message);
