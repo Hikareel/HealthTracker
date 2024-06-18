@@ -9,8 +9,10 @@ using HealthTracker.Server.Modules.PhysicalActivity.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,6 +84,18 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
             ValidateAudience = true,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true
+        };
+    })
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+        googleOptions.Events.OnCreatingTicket = context =>
+        {
+            // Logowanie lub inne akcje po zalogowaniu u¿ytkownika
+            Log.Information("U¿ytkownik zalogowany przez Google: {Email}", context.Principal.FindFirst(ClaimTypes.Email).Value);
+            return Task.CompletedTask;
         };
     });
 }

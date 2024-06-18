@@ -5,7 +5,10 @@ using HealthTracker.Server.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 
@@ -17,13 +20,15 @@ namespace HealthTracker.Server.Core.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUserRepository userRepository, UserManager<User> userManager, IMapper mapper, ILogger<AuthController> logger)
+        public AuthController(IUserRepository userRepository, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ILogger<AuthController> logger)
         {
             _userRepository = userRepository;
             _userManager = userManager;
+            _signInManager = signInManager;
             _mapper = mapper;
             _logger = logger;
         }
@@ -38,7 +43,7 @@ namespace HealthTracker.Server.Core.Controllers
                 {
                     var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
                     var userDTO = _mapper.Map<SuccessLoginDto>(user);
-                    userDTO.Token = await _userRepository.GenerateJwtToken(loginDto);
+                    userDTO.Token = await _userRepository.GenerateJwtToken(loginDto.EmailUserName);
                     return Ok(userDTO);
                 }
 
@@ -72,6 +77,64 @@ namespace HealthTracker.Server.Core.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet("login-google")]
+        public IActionResult LoginWithGoogle()
+        {
+            string? redirectUrl = Url.Action(nameof(HandleGoogleLogin), "Auth");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
+        }
+
+        [HttpGet("handle-google-login")]
+        public async Task<IActionResult> HandleGoogleLogin()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                _logger.LogError("Error loading external login information.");
+                return RedirectToRoute(new { action = "Login" });
+            }
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
+                var token = await _userRepository.GenerateJwtToken(user.Email);
+                return Ok(new { Token = token });
+            }
+            else
+            {
+                var user = new User
+                {
+                    Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                    UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                    FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                    LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                    PhoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone),
+                    DateOfCreate = DateTime.UtcNow
+                };
+
+                if (DateTime.TryParse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth), out DateTime dob))
+                {
+                    user.DateOfBirth = dob;
+                }
+
+                var createUserResult = await _userManager.CreateAsync(user);
+                if (createUserResult.Succeeded)
+                {
+                    await _userManager.AddLoginAsync(user, info);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    var token = await _userRepository.GenerateJwtToken(user.Email);
+                    return Ok(new { Message = "User created and logged in successfully", Token = token });
+                }
+                else
+                {
+                    return StatusCode(500, createUserResult.Errors);
+                }
+            }
+        }
+
 
 
     }

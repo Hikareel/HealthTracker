@@ -21,6 +21,7 @@
     "markdown-it": "^14.0.0",
     "uuid": "^9.0.1",
     "vue": "^3.4.15",
+    "vue-authenticate": "^1.5.0",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.2.5"
   },
