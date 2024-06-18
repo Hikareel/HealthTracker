@@ -20,7 +20,7 @@
           :connection="connection" class="chat-mobile" />
       </div>
       <div class="wall-body">
-        <div v-for="post in PostData" class="posts">
+        <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
           <Post :item="post" />
         </div>
       </div>
@@ -37,23 +37,24 @@
 
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
+import Chat from './chat/Chat.vue'
 import { type FriendModel } from '@/data/models/friendModel'
 import ChatItem from './chat/ChatItem.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
-import { PostData } from '@/data/models/postModels';
+import { type FriendModel, friends } from '@/data/models/friendModel'
+import { currentPosts } from '@/data/models/postModels';
+import { user } from '../../../data/service/userData'
+import { currentMessages } from '@/data/models/messageModel';
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import { user } from '../../../data/service/userData'
-import { currentMessages } from '@/data/models/messageModel';
 import { v4 as uuidv4 } from 'uuid';
 
 const is_mobile_expanded = ref(false)
 const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
-const friends = ref<FriendModel[]>([]);
 
 const selectedFriend = ref<FriendModel | null>(null);
 const clickAtFriend = (friend: FriendModel) => {
@@ -70,6 +71,7 @@ let connection = new HubConnectionBuilder()
 
 onMounted(async () => {
   getFriendList();
+  getPosts();
   connectToChatHub();
 });
 
@@ -128,6 +130,23 @@ async function getFriendList() {
   } catch (error) {
     console.error(error);
   }
+}
+async function getPosts() {
+  try {
+    if (!user.userId) {
+      return;
+    }
+    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/wall/posts`, {
+      params: {
+        pageNumber: currentPosts.value.pageNumber,
+        pageSize: currentPosts.value.pageSize
+      }
+    });
+    currentPosts.value.posts = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+
 }
 
 </script>
