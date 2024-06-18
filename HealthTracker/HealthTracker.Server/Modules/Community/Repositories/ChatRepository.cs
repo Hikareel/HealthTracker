@@ -72,6 +72,11 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
+            if (messages.Count == 0)
+            {
+                throw new NullPageException();
+            }
+
             return messages;
 
         }
