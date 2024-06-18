@@ -11,6 +11,7 @@ import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
 import LogoutUser from '../components/views/account/LogoutUser.vue'
+import LoginSuccess from '../components/views/account/login/components/LoginSuccess.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -59,6 +60,11 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/login-success',
+      name: 'LoginSuccess',
+      component: LoginSuccess
     },
     {
       path: '/login/pass-reset',

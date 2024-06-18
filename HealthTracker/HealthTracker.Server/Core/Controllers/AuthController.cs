@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -102,7 +104,14 @@ namespace HealthTracker.Server.Core.Controllers
                 var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
                 var userDTO = _mapper.Map<SuccessLoginDto>(user);
                 userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
-                return Ok(userDTO);
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+
+                var userJson = JsonConvert.SerializeObject(userDTO, settings);
+                var frontendUrl = $"https://localhost:5174/login-success?user={Uri.EscapeDataString(userJson)}";
+                return Redirect(frontendUrl);
             }
             else
             {
@@ -128,7 +137,14 @@ namespace HealthTracker.Server.Core.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     var userDTO = _mapper.Map<SuccessLoginDto>(user);
                     userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
-                    return Ok(userDTO);
+                    var settings = new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    };
+
+                    var userJson = JsonConvert.SerializeObject(userDTO, settings);
+                    var frontendUrl = $"https://localhost:5174/login-success?user={Uri.EscapeDataString(userJson)}";
+                    return Redirect(frontendUrl);
                 }
                 else
                 {
