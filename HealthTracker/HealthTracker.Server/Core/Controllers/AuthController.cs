@@ -93,15 +93,16 @@ namespace HealthTracker.Server.Core.Controllers
             if (info == null)
             {
                 _logger.LogError("Error loading external login information.");
-                return RedirectToRoute(new { action = "Login" });
+                return StatusCode(500, "External server error.");
             }
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
-                var token = await _userRepository.GenerateJwtToken(user.Email);
-                return Ok(new { Token = token });
+                var userDTO = _mapper.Map<SuccessLoginDto>(user);
+                userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
+                return Ok(userDTO);
             }
             else
             {
@@ -125,8 +126,9 @@ namespace HealthTracker.Server.Core.Controllers
                 {
                     await _userManager.AddLoginAsync(user, info);
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    var token = await _userRepository.GenerateJwtToken(user.Email);
-                    return Ok(new { Message = "User created and logged in successfully", Token = token });
+                    var userDTO = _mapper.Map<SuccessLoginDto>(user);
+                    userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
+                    return Ok(userDTO);
                 }
                 else
                 {
