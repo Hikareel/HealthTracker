@@ -14,7 +14,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
         Task<PostDTO> GetPost(int postId);
         Task DeletePost(int postId);
-        Task<PostListDTO> GetPosts(int UserId, int pageSize, int pageNumber);
+        Task<List<PostDTO>> GetPosts(int UserId, int pageSize, int pageNumber);
         Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO);
         Task<CommentDTO> GetComment(int commentId);
         Task<CommentFromPostDTO> GetCommentsByPostId(int postId, int pageNr, int pageSize);
@@ -90,7 +90,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         }
 
-        public async Task<PostListDTO> GetPosts(int userId, int pageSize, int pageNumber)
+        public async Task<List<PostDTO>> GetPosts(int userId, int pageSize, int pageNumber)
         {
             if (!await _context.User.AnyAsync(u => u.Id == userId))
             {
@@ -131,11 +131,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 throw new NullPageException();
             }
 
-            return new PostListDTO
-            {
-                UserId = userId,
-                Posts = posts
-            };
+            return posts;
         }
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)

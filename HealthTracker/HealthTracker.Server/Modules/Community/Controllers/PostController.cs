@@ -75,8 +75,8 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 
         }
 
-        [HttpGet("users/{userId}/posts/wall")]
-        public async Task<ActionResult<PostListDTO>> GetPosts(int userId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
+        [HttpGet("users/{userId}/wall/posts")]
+        public async Task<ActionResult<List<PostDTO>>> GetPosts(int userId, [FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
         {
             try
             {
