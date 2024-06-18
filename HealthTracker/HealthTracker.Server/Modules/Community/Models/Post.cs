@@ -21,5 +21,6 @@ namespace HealthTracker.Server.Modules.Community.Models
         public DateTime? DateOfCreate { get; set; }
 
         public virtual ICollection<Comment> Comments { get; } = new List<Comment>();
+        public virtual ICollection<Like> Likes { get; } = new List<Like>();
     }
 }

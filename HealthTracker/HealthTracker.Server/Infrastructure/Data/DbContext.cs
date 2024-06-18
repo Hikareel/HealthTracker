@@ -34,6 +34,7 @@ namespace HealthTracker.Server.Infrastrucure.Data
         public DbSet<GoalType> GoalType { get; set; }
         public DbSet<Workout> Workout { get; set; }
         public DbSet<Message> Message { get; set; }
+        public DbSet<Like> Like { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -53,6 +54,11 @@ namespace HealthTracker.Server.Infrastrucure.Data
             modelBuilder.Entity<Status>()
                 .HasIndex(s => s.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<Like>()
+                .HasKey(l => new { l.UserId, l.PostId });
+
+
         }
 
     }
