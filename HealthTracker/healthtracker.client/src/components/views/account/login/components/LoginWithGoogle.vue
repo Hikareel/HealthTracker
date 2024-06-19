@@ -4,7 +4,6 @@
 </template>
 
 <script>
-import { ButtonElement } from '@vueform/vueform/dist/vueform';
 
 export default {
   methods: {

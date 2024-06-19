@@ -1,5 +1,5 @@
 <template>
-    <div class="form">
+    <div class="form" :class="{ 'is-logging': isLogging }">
         <FormStatus formTitle="Login"/>
         <Vueform class="form-content" v-model="formData" @submit="sendFormData" :float-placeholders="false"
             :endpoint="false" :display-errors="false" sync>
@@ -38,19 +38,30 @@ import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService';
 import LoginWithGoogle from './LoginWithGoogle.vue'
 
+const isLogging = ref(false);
+
 const formData = ref<ILoginModel>({
     EmailUserName: '',
     Password: '',
 });
 
 const sendFormData = async () => {
-    preventSubmit("/login", JSON.stringify(formData.value))//Dodać coś świadczącego o procesie logowania (np.: kręcące się kółko) 
-    formData.value.Password = ''
+    isLogging.value = true;
+    try {
+        await preventSubmit("/login", JSON.stringify(formData.value));
+    } finally {
+        isLogging.value = false;
+        formData.value.Password = ''; 
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 .login-button {
     margin-top: 1rem;
+}
+.form.is-logging {
+    opacity: 0.5;
+    pointer-events: none;
 }
 </style>
