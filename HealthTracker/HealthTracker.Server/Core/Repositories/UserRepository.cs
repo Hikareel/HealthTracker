@@ -14,7 +14,7 @@ namespace HealthTracker.Server.Core.Repositories
     {
         Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto);
         Task<IdentityResult> LoginAsync(LoginDto loginDto);
-        Task<string> GenerateJwtToken(LoginDto loginDto);
+        Task<string> GenerateJwtToken(string emailUserName);
     }
     public class UserRepository : IUserRepository
     {
@@ -75,36 +75,35 @@ namespace HealthTracker.Server.Core.Repositories
             }
         }
 
-        public async Task<string> GenerateJwtToken(LoginDto loginDto)
+        public async Task<string> GenerateJwtToken(string emailUserName)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ??
-                       await _userManager.FindByEmailAsync(loginDto.EmailUserName);
-
+            var user = await _userManager.FindByNameAsync(emailUserName) ?? await _userManager.FindByEmailAsync(emailUserName);
             if (user == null)
             {
-                throw new UserNotFoundException();
+                throw new UserNotFoundException("User not found.");
             }
 
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim("name", user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("name", $"{user.FirstName} {user.LastName}"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
             var token = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Issuer"],
-                    audience: _configuration["Jwt:Audience"],
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddHours(8),
-                    signingCredentials: credentials
-                );
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
     }
 }

@@ -10,7 +10,8 @@ import Register from '../components/views/account/register/Register.vue'
 import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
-import LogoutUser from '../components/views/account/LogoutUser.vue'
+import LoginSuccess from '../components/views/account/login/components/LoginSuccess.vue'
+import { updateUser } from '@/data/service/userData'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -61,6 +62,11 @@ const router = createRouter({
       component: Login
     },
     {
+      path: '/login-success',
+      name: 'LoginSuccess',
+      component: LoginSuccess
+    },
+    {
       path: '/login/pass-reset',
       name: 'Reset Password',
       component: PassReset
@@ -73,7 +79,13 @@ const router = createRouter({
     {
       path: '/logout',
       name: 'Logout',
-      component: LogoutUser
+      beforeEnter: (_to, _from, next) => {
+        console.log("Trying to log out...");
+        localStorage.removeItem("user");
+        updateUser();
+        next('/login')
+      },
+      redirect: ''
     }
   ]
 })

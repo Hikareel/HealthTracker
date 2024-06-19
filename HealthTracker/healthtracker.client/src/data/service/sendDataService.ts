@@ -1,3 +1,4 @@
+//To gówno jest całe do zmiany. Fakty są takie że trzeba zrobić jakiś system do strzelania w endpointy ale na to się patzrzeć nie da.
 import axios from "axios";
 import router from "@/router";
 import { ref } from "vue";

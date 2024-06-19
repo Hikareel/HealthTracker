@@ -37,8 +37,6 @@
 
 <script lang="ts" setup>
 import FriendsList from './friends/FriendsList.vue'
-import Chat from './chat/Chat.vue'
-import { type FriendModel } from '@/data/models/friendModel'
 import ChatItem from './chat/ChatItem.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'

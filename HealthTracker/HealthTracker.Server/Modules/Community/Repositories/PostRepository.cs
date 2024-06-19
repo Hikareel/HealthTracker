@@ -131,11 +131,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 throw new NullPageException();
             }
 
-            return new PostListDTO
-            {
-                UserId = userId,
-                Posts = posts
-            };
+            return posts;
         }
 
         public async Task<CommentDTO> CreateComment(int? parentCommentId, CreateCommentDTO commentDTO)
@@ -191,7 +187,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             {
                 throw new NullPageException();
             }
-            
+
             var comments = await _context.Comment
                 .Where(comment => comment.PostId == postId)
                 .Skip((pageNr - 1) * pageSize)
@@ -207,6 +203,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 PostId = postId,
                 CommentsCount = totalCommentsCount
             };
+        }
 
         public async Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId)
         {
