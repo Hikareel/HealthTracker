@@ -77,6 +77,7 @@ void ConfigureServices(WebApplicationBuilder builder)
         .AddEntityFrameworkStores<ApplicationDbContext>();
     builder.Services.Configure<IdentityOptions>(options =>
     {
+        options.SignIn.RequireConfirmedAccount = false;
         options.SignIn.RequireConfirmedEmail = false;
         options.SignIn.RequireConfirmedPhoneNumber = false;
     });

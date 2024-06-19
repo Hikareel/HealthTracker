@@ -1,7 +1,6 @@
 <template>
   <main class="form-page">
     <LoginForm />
-    <LoginWithGoogle />
   </main>
 </template>
 

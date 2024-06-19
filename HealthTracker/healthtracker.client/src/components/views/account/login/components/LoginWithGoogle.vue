@@ -1,8 +1,11 @@
 <template>
-  <button @click="loginWithGoogle">Log in with Google</button>
+  <ButtonElement @click="loginWithGoogle" name="submit" button-label="Log in with Google" align="center" :submits="true"
+    full size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
 </template>
 
 <script>
+import { ButtonElement } from '@vueform/vueform/dist/vueform';
+
 export default {
   methods: {
     loginWithGoogle() {

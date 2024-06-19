@@ -19,6 +19,7 @@
                 <ButtonElement id="reset_button" name="reset" type="reset" :resets="true" hidden />
                 <ButtonElement class="login-button" name="submit" button-label="Login" align="center" :submits="true" full
                     size="lg" :columns="{ container: 12, label: 0, wrapper: 12 }" />
+                <LoginWithGoogle />
             </GroupElement>
             <GroupElement name="control2">
                 <ButtonElement name="forgot" button-type="anchor" href="/login/pass-reset" button-label="Forgot password?"
@@ -35,6 +36,7 @@ import { ref } from 'vue';
 import type { ILoginModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
 import { preventSubmit } from '@/data/service/sendDataService';
+import LoginWithGoogle from './LoginWithGoogle.vue'
 
 const formData = ref<ILoginModel>({
     EmailUserName: '',
