@@ -1,9 +1,3 @@
-<script setup lang="ts">
-import Footer from './components/shared/footer/Footer.vue'
-import Sidebar from './components/shared/sidebar/Sidebar.vue'
-import Header from './components/shared/header/Header.vue'
-</script>
-
 <template>
   <div class="main">
     <Sidebar />
@@ -18,6 +12,23 @@ import Header from './components/shared/header/Header.vue'
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import Footer from './components/shared/footer/Footer.vue'
+import Sidebar from './components/shared/sidebar/Sidebar.vue'
+import Header from './components/shared/header/Header.vue'
+import { onMounted } from 'vue';
+import { updateUser } from './data/service/userData';
+
+onMounted(async ()=>{
+  await initialApplication()
+});
+
+async function initialApplication() {
+  console.log('Strona została odświeżona lub załadowana');
+  updateUser();
+}
+</script>
 
 <style lang="scss" scoped>
 .main {
