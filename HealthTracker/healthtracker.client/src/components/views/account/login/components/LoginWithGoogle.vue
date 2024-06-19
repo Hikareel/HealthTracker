@@ -1,5 +1,5 @@
 <template>
-  <ButtonElement @click="loginWithGoogle" button-label="Log in with Google" align="center" full size="lg"
+  <ButtonElement @click="loginWithGoogle" button-label="Log in with Google" align="center" full size="lg" name="LoginWithGoogle"
     :columns="{ container: 12, label: 0, wrapper: 12 }" />
 </template>
 
