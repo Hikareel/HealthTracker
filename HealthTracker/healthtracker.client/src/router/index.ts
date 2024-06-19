@@ -10,8 +10,8 @@ import Register from '../components/views/account/register/Register.vue'
 import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
-import Logout from '../components/views/account/logout.vue'
-import AddWorkout from '../components/views/treningsPlanner/components/WorkoutForm.vue'
+import LoginSuccess from '../components/views/account/login/components/LoginSuccess.vue'
+import { updateUser } from '@/data/service/userData'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -35,11 +35,6 @@ const router = createRouter({
       path: '/planner',
       name: 'Planner',
       component: TreningsPlanner
-    },
-    {
-      path: '/planner/add-workout',
-      name: 'AddWorkout',
-      component: AddWorkout
     },
     {
       path: '/health',
@@ -67,6 +62,11 @@ const router = createRouter({
       component: Login
     },
     {
+      path: '/login-success',
+      name: 'LoginSuccess',
+      component: LoginSuccess
+    },
+    {
       path: '/login/pass-reset',
       name: 'Reset Password',
       component: PassReset
@@ -79,7 +79,13 @@ const router = createRouter({
     {
       path: '/logout',
       name: 'Logout',
-      component: Logout
+      beforeEnter: (_to, _from, next) => {
+        console.log("Trying to log out...");
+        localStorage.removeItem("user");
+        updateUser();
+        next('/login')
+      },
+      redirect: ''
     }
   ]
 })

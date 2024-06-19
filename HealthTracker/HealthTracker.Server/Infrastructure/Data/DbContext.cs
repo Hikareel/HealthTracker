@@ -28,10 +28,13 @@ namespace HealthTracker.Server.Infrastrucure.Data
         public DbSet<Meal> Meal { get; set; }
         public DbSet<MealType> MealType { get; set; }
         public DbSet<MealUser> MealUser { get; set; }
+        public DbSet<Exercise> Exercise { get; set; }
         public DbSet<ExerciseType> ExerciseType { get; set; }
         public DbSet<Goal> Goal { get; set; }
         public DbSet<GoalType> GoalType { get; set; }
         public DbSet<Workout> Workout { get; set; }
+        public DbSet<Message> Message { get; set; }
+        public DbSet<Like> Like { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -47,6 +50,15 @@ namespace HealthTracker.Server.Infrastrucure.Data
                 .WithMany()
                 .HasForeignKey(f => f.User2Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Status>()
+                .HasIndex(s => s.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Like>()
+                .HasKey(l => new { l.UserId, l.PostId });
+
+
         }
 
     }

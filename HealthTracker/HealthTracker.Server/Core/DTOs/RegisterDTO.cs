@@ -2,7 +2,7 @@
 
 namespace HealthTracker.Server.Core.DTOs
 {
-    public class RegisterUserDto
+    public class RegisterDTO
     {
         [Required]
         [EmailAddress]

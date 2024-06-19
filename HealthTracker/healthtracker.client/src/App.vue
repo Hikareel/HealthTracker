@@ -1,52 +1,67 @@
-<script setup lang="ts">
-import Footer from './components/shared/footer/Footer.vue'
-import Sidebar from './components/shared/sidebar/Sidebar.vue'
-import Header from './components/shared/header/Header.vue'
-</script>
-
 <template>
   <div class="main">
     <Sidebar />
+    <Header title="HealthTracker" />
     <div class="content">
-      <Header title="HealthTracker" />
-      <RouterView v-slot="{Component}" >
+      <RouterView v-slot="{ Component }">
         <Transition name="fade" mode="out-in">
-          <component :is="Component" class="view"/>
+          <component :is="Component" class="view" />
         </Transition>
       </RouterView>
-      <Footer />
+      <Footer class="footer" />
     </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import Footer from './components/shared/footer/Footer.vue'
+import Sidebar from './components/shared/sidebar/Sidebar.vue'
+import Header from './components/shared/header/Header.vue'
+import { onMounted } from 'vue';
+import { updateUser } from './data/service/userData';
+
+onMounted(async ()=>{
+  await initialApplication()
+});
+
+async function initialApplication() {
+  console.log('Strona została odświeżona lub załadowana');
+  updateUser();
+}
+</script>
+
 <style lang="scss" scoped>
-  .main{
-    overflow-x: hidden;
-    background: rgb(37,32,32);
-    background: linear-gradient(135deg, rgba(37,32,32,1) 0%, rgba(62,50,50,1) 50%, rgba(126,99,99,1) 100%); 
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: rgb(37, 32, 32);
+  background: linear-gradient(135deg, rgba(37, 32, 32, 1) 0%, rgba(62, 50, 50, 1) 50%, rgba(126, 99, 99, 1) 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  .content {
     display: flex;
-    .content{
-      top: 0;
-      right:0;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      .view{
-        width: calc(100vw - 4rem);
-        margin-left: 4rem;
-        padding-top: 4rem;
-        min-height: calc(100vh - 4rem);
-      }
-    }
+    flex-direction: column;
+    flex: 1;
+    padding-top: 4rem;
+    padding-left: 4rem;
+    overflow-y: auto;
   }
 
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
+  .footer {
+    margin-top: auto;
   }
-  
-  .fade-enter-active,
-  .fade-leave-active{
-    transition: opacity 0.3s ease-out;
-  }
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-out;
+}
 </style>

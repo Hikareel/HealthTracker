@@ -218,6 +218,51 @@ namespace HealthTracker.Server.Migrations
                     b.ToTable("Friendship");
                 });
 
+            modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Like", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "PostId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Like");
+                });
+
+            modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("SendTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserIdFrom")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserIdTo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserIdFrom");
+
+                    b.HasIndex("UserIdTo");
+
+                    b.ToTable("Message");
+                });
+
             modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -258,6 +303,9 @@ namespace HealthTracker.Server.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Status");
                 });
@@ -750,6 +798,44 @@ namespace HealthTracker.Server.Migrations
                     b.Navigation("User2");
                 });
 
+            modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Like", b =>
+                {
+                    b.HasOne("HealthTracker.Server.Modules.Community.Models.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthTracker.Server.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Message", b =>
+                {
+                    b.HasOne("HealthTracker.Server.Core.Models.User", "UserFrom")
+                        .WithMany()
+                        .HasForeignKey("UserIdFrom")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthTracker.Server.Core.Models.User", "UserTo")
+                        .WithMany()
+                        .HasForeignKey("UserIdTo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserFrom");
+
+                    b.Navigation("UserTo");
+                });
+
             modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Post", b =>
                 {
                     b.HasOne("HealthTracker.Server.Core.Models.User", "User")
@@ -919,6 +1005,8 @@ namespace HealthTracker.Server.Migrations
             modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("HealthTracker.Server.Modules.Community.Models.Status", b =>

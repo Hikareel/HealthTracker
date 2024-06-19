@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="friend-item">
-      <p>{{ item.firstname }} {{ item.secondname }}</p>
+      <p><i class="bi bi-person-circle"></i>{{ item.firstName }} {{ item.lastName }}</p>
     </div>
   </main>
 </template>
@@ -16,14 +16,18 @@ defineProps<{
 
 <style lang="scss" scoped>
 .friend-item{
-  border-bottom: 1px solid black;
-  border-radius: 10px 0 0 0;
+  justify-content: center;
+  align-content: center;
+  border-radius: 10px 0 0 10px;
   padding: 0.5rem;
   font-size: 16px;
   color: white;
   &:hover{
     cursor: pointer;
     background-color: rgba(100, 100, 100, 0.2);
+  }
+  i {
+    margin-right: 0.5rem;
   }
 }
 </style>

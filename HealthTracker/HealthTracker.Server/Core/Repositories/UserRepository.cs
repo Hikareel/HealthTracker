@@ -1,17 +1,20 @@
 ﻿using HealthTracker.Server.Core.DTOs;
+using HealthTracker.Server.Core.Exceptions;
+using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
-namespace HealthTracker.Server.Infrastructure.Repositories
+namespace HealthTracker.Server.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto);
+        Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto);
         Task<IdentityResult> LoginAsync(LoginDto loginDto);
-        string GenerateJwtToken();
+        Task<string> GenerateJwtToken(string emailUserName);
     }
     public class UserRepository : IUserRepository
     {
@@ -25,7 +28,7 @@ namespace HealthTracker.Server.Infrastructure.Repositories
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto)
         {
             var userExists = await _userManager.FindByEmailAsync(userDto.Email);
             if (userExists != null)
@@ -72,18 +75,35 @@ namespace HealthTracker.Server.Infrastructure.Repositories
             }
         }
 
-        public string GenerateJwtToken()
+        public async Task<string> GenerateJwtToken(string emailUserName)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var user = await _userManager.FindByNameAsync(emailUserName) ?? await _userManager.FindByEmailAsync(emailUserName);
+            if (user == null)
+            {
+                throw new UserNotFoundException("User not found.");
+            }
 
-            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(8),
-                signingCredentials: credentials);
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim("name", $"{user.FirstName} {user.LastName}"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
     }
 }

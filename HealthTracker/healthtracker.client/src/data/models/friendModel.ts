@@ -1,64 +1,12 @@
-import { reactive } from "vue";
+import { ref } from "vue";
 
-//Pobierane z backendu.
-const FriendsData = reactive([
-    {
-        firstname: "ppl1_first",
-        secondname: "ppl1_second"
-    },
-    {
-        firstname: "ppl2_first",
-        secondname: "ppl2_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    },
-    {
-        firstname: "ppl3_first",
-        secondname: "ppl3_second"
-    }
-])
-
-interface FriendsModel {
-    firstname: string;
-    secondname: string;
+interface FriendModel {
+    userId: number;
+    firstName: string;
+    lastName: string;
 }
-export { FriendsData };
-export type { FriendsModel };
+
+const friends = ref<FriendModel[]>([]);
+
+export { friends }
+export type { FriendModel };

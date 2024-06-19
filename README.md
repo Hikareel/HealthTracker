@@ -8,6 +8,7 @@ Packages - BackEnd:
  - Microsoft.AspNetCore.Identity.UI
  - Microsoft.AspNetCore.Identity.EntityFrameworkCore
  - Microsoft.AspNetCore.Authentication.JwtBearer
+ - Serilog.AspNetCore
 
 Packages - FrontEnd:
  - vue-router
@@ -16,3 +17,5 @@ Packages - FrontEnd:
  - npm i @vueform/vueform
  - npm install --save axios vue-axios
  - npm install bootstrap-icons
+ - npm install markdown-it
+ - npm install dompurify
