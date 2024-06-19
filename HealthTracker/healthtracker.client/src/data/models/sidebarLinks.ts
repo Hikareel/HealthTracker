@@ -6,7 +6,7 @@ const createLink = (name: string, link: string, icon: string, isAuthRequired: bo
     name: name,
     link: link,
     icon: icon,
-    isHidden: isAuthRequired ? !user.token : false
+    isHidden: isAuthRequired ? !user.token : user.token && !(name === "Home" || name === "About")
   }));
 };
 
