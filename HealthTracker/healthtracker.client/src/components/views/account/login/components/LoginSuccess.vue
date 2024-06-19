@@ -9,7 +9,7 @@ export default {
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     const userDTO = urlParams.get('user');
-    console.log(userDTO)
+
     if (userDTO) {
       const userData = JSON.parse(decodeURIComponent(userDTO));
       localStorage.setItem('user', JSON.stringify(userData));
@@ -17,7 +17,6 @@ export default {
       router.push("/").then(() => {
         updateUser()
       });
-      console.log(user);
     }
   }
 }
