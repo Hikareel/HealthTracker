@@ -18,6 +18,8 @@
       </div>
       <!--Show after click-->
       <div class="comment-section" v-if="isCommentsVisible">
+        <button @click="addComment"><i class='bi bi-send-fill'></i></button>
+        <input type="text" v-model="commentToAdd" placeholder="Write comment...">
         <Comment v-for="comment in item.comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
       </div>
     </div>
@@ -37,16 +39,20 @@ const { item } = defineProps<{
   item: IPost
 }>();
 
-const md = new MarkdownIt();
 const isCommentsVisible = ref(false);
+const commentToAdd = ref('');
 
 const safeHtml = computed(() => {
+  const md = new MarkdownIt();
   const rawHtml = md.render(item.content);
   return DOMPurify.sanitize(rawHtml);
 });
 
-async function likePost() {
+function toggleComments() {
+  isCommentsVisible.value = !isCommentsVisible.value;
+}
 
+async function likePost() {
   const postIndex = currentPosts.value.posts.findIndex(post => post.id === item.id);
   const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === user.userId);
 
@@ -66,8 +72,27 @@ async function likePost() {
   }
 }
 
-function toggleComments() {
-  isCommentsVisible.value = !isCommentsVisible.value;
+async function addComment() {
+  if (commentToAdd.value) {
+    try {
+      const response = await axios.post(`https://localhost:7170/api/users/posts/comments`, {
+        postId: item.id,
+        userId: user.userId,
+        content: commentToAdd.value
+      }
+      );
+
+      if (response.status === 201) {
+        item.comments.push(response.data);
+      }
+    } catch (error) {
+      console.error('Błąd podczas dodawania komentarza', error);
+    } finally {
+      commentToAdd.value = '';
+    }
+  } else {
+    console.log("Pusty komentarz nie może zostać dodany");
+  }
 }
 
 </script>
