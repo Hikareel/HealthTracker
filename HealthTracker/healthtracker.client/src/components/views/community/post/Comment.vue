@@ -1,17 +1,28 @@
 <template>
-    <div :style="{ marginLeft: '1em' }">
-        <div>
-            <p>{{ item.content }}</p>
+    <div class="comment" :style="{ marginLeft: depth > 0 ? '1em' : '0' }">
+        <div class="comment-content">
+            <div class="comment-header">
+                <div>{{ item.userId }}</div>
+                <div>2024-01-01</div> <!--Zmiana na imię i nazwisko + data stworzenie komentarza-->
+            </div>
+            <div class="comment-body">
+                <p>{{ item.content }}</p>
+            </div>
         </div>
-        <a @click="toggleCommentRespone">Respone</a>
+        <div class="comment-footer" v-if="depth < 4">
+            <a @click="toggleCommentRespone">Respone</a>
+            <a @click="toggleMoreComments" v-if="comments.length != 0">Show {{ comments.length }} responses</a>
+        </div>
+
         <div class="add-comment-div" v-if="isResponseClicked">
             <button @click="addCommentToParent"><i class='bi bi-send-fill'></i></button>
             <input v-model="commentToAdd" type="text" placeholder="Respone...">
         </div>
         <div v-if="comments.length != 0">
-            <a @click="toggleMoreComments">Show {{ comments.length }} responses</a>
+
             <div v-if="isMoreCommentsClicked">
-                <Comment v-for="comment in comments" :key="comment.id" :item="comment" :post-id=comment.postId />
+                <Comment v-for="comment in comments" :depth="depth + 1" :key="comment.id" :item="comment"
+                    :post-id=comment.postId />
             </div>
         </div>
         <!-- ZAŁADUJ WIĘCEJ KOMENTARZY (paginacja)-->
@@ -35,6 +46,7 @@ const isMoreCommentsClicked = ref(false)
 const props = defineProps<{
     item: IComment
     postId: number
+    depth: number
 }>();
 
 onMounted(async () => {
@@ -74,7 +86,7 @@ async function addCommentToParent() {
             if (response.status === 201) {
                 comments.value.push(response.data);
                 isMoreCommentsClicked.value = true
-            }else{
+            } else {
                 alert(response.status + " " + response.statusText)
             }
         } catch (error) {
@@ -88,4 +100,9 @@ async function addCommentToParent() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.comment {
+    border: 1px solid $success-color;
+    border-radius: 10px;
+}
+</style>

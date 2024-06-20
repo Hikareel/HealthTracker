@@ -18,8 +18,10 @@
       </div>
       <!--Show after click-->
       <div class="comment-section" v-if="isCommentsVisible">
-        <button @click="addComment"><i class='bi bi-send-fill'></i></button>
-        <input type="text" v-model="commentToAdd" placeholder="Write comment...">
+        <div class="comment-input">
+          <button @click="addComment"><i class='bi bi-send-fill'></i></button>
+          <input type="text" v-model="commentToAdd" placeholder="Write comment...">
+        </div>
         <Comment v-for="comment in item.comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
       </div>
     </div>
@@ -147,6 +149,60 @@ async function addComment() {
 
   .comment-section {
     padding: 1rem;
+
+    .comment-input {
+      display: flex;
+      height: 15%;
+      gap: 2px;
+
+      button {
+        background-color: rgb(73, 61, 61);
+        cursor: pointer;
+        border: none;
+        width: 3.5rem;
+        border-radius: 1.5rem;
+
+        &:hover {
+          background-color: rgb(112, 112, 112);
+        }
+
+        &:active {
+        }
+      }
+
+      button i {
+        display: inline-block;
+        transition: transform 0.3s ease;
+      }
+
+      button:active i {
+        transform: scale(1.5);
+      }
+
+      input {
+        height: 2.5rem;
+        background-color: rgb(73, 61, 61);
+        color: white;
+        width: 100%;
+        border: 0;
+        outline: 0;
+        padding-left: 1rem;
+        font-weight: 400;
+        border-radius: 1.5rem;
+
+        &:hover {
+        }
+
+        &:active {
+          border: 0;
+        }
+
+        &:focus {
+          border: 0;
+        }
+      }
+    }
   }
+
 }
 </style>
