@@ -72,17 +72,11 @@ async function getComments(parentCommentId: number | null) {
 async function addCommentToParent() {
     if (commentToAdd.value) {
         try {
-            const response = await axios.post(`https://localhost:7170/api/users/posts/comments/`, {
+            const response = await axios.post(`https://localhost:7170/api/users/posts/comments/${props.item.id}`, {
                 postId: props.postId,
                 userId: props.item.userId,
                 content: commentToAdd.value
-            }, {
-                params: {
-                    parenCommentId: props.item.parentCommentId
-                }
-            }
-            );
-
+            });
             if (response.status === 201) {
                 comments.value.push(response.data);
                 isMoreCommentsClicked.value = true
