@@ -10,7 +10,7 @@ namespace HealthTracker.Server.Modules.Community.DTOs
         public int PostId { get; set; }
         public int PageNr { get; set; }
         public int PageSize { get; set; }
-        public int CommentsCount {  get; set; }
-        public List<CommentDTO> Comments { get; set; } = new List<CommentDTO>();
+        public int TotalCommentsLeft {  get; set; }
+        public ICollection<CommentDTO> Comments { get; set; } = new List<CommentDTO>();
     }
 }

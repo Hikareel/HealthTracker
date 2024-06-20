@@ -86,6 +86,24 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
         }
 
+        [HttpGet("users/posts/{postId}/comments/{parentCommentId}")]
+        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByParentCommentId(int postId, int parentCommentId)
+        {
+            try
+            {
+                var result = await _postRepository.GetCommentsByParentCommentId(postId, parentCommentId);
+                return Ok(result);
+            }
+            catch (Exception ex) when (ex is CommentNotFoundException || ex is PostNotFoundException)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
         [HttpDelete("users/posts/comments/{commentId}")]
         public async Task<ActionResult> DeleteComment(int commentId)
         {

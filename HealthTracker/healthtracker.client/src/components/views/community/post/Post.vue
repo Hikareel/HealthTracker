@@ -13,7 +13,7 @@
           <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ item.likes.length }}
         </button>
         <button class="comment" @click="toggleComments">
-          <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ item.comments.length }}
+          <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ commentsCount }}
         </button>
       </div>
       <!--Show after click-->
@@ -22,7 +22,7 @@
           <button @click="addComment"><i class='bi bi-send-fill'></i></button>
           <input type="text" v-model="commentToAdd" placeholder="Write comment...">
         </div>
-        <Comment v-for="comment in item.comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
+        <Comment v-for="comment in comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
       </div>
     </div>
   </main>
@@ -30,24 +30,32 @@
 
 <script lang="ts" setup>
 import Comment from './Comment.vue'
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
 import { currentPosts, type IPost } from '@/data/models/postModels';
 import { user } from '@/data/service/userData';
 import axios from 'axios';
+import type { IComment } from '@/data/models/postModels';
 
 const { item } = defineProps<{
   item: IPost
 }>();
-
+const comments = ref<IComment[]>([]);
+const commentsCount = ref(item.amountOfComments)
 const isCommentsVisible = ref(false);
 const commentToAdd = ref('');
+const pageNr = ref(1);
+const pageSize = ref(10);
 
 const safeHtml = computed(() => {
   const md = new MarkdownIt();
   const rawHtml = md.render(item.content);
   return DOMPurify.sanitize(rawHtml);
+});
+
+onMounted(async () => {
+  await getComments();
 });
 
 function toggleComments() {
@@ -74,6 +82,28 @@ async function likePost() {
   }
 }
 
+async function getComments() {
+  try {
+    if (!item.id) {
+      return;
+    }
+    const response = await axios.get(`https://localhost:7170/api/users/posts/${item.id}/comments`, {
+      params: {
+        pageNumber: pageNr.value,
+        pageSize: pageSize.value
+      }
+    });
+    if (response.status == 200) {
+      comments.value = [];
+      response.data.comments.forEach((element: IComment) => {
+        comments.value.push(element);
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function addComment() {
   if (commentToAdd.value) {
     try {
@@ -85,7 +115,8 @@ async function addComment() {
       );
 
       if (response.status === 201) {
-        item.comments.push(response.data);
+        commentsCount.value = commentsCount.value + 1;
+        comments.value.unshift(response.data);
       }
     } catch (error) {
       console.error('Błąd podczas dodawania komentarza', error);
@@ -108,97 +139,100 @@ async function addComment() {
   border-radius: 1rem;
   background-color: rgba(62, 50, 50, 1);
 
+  .content {
+    width: 100%;
 
-  .header {
-    border-radius: 1rem 1rem 0 0;
-    padding: 0.5rem;
-  }
-
-  .main {
-    border-top: 2px solid rgb(73, 61, 61);
-    padding: 1rem;
-  }
-
-  .footer {
-    border-radius: 0 0 1rem 1rem;
-    text-align: center;
-    display: flex;
-    height: 1.5rem;
-
-    button {
-      background-color: rgb(73, 61, 61);
-      color: white;
-      width: 100%;
-      border: none;
-      border-radius: 1rem;
-
-      &:hover {
-        background-color: rgb(112, 112, 112);
-      }
+    .header {
+      border-radius: 1rem 1rem 0 0;
+      padding: 0.5rem;
     }
-  }
 
-  .footer button i {
-    display: inline-block;
-    transition: transform 0.3s ease;
-  }
+    .main {
+      border-top: 2px solid rgb(73, 61, 61);
+      padding: 1rem;
+    }
 
-  .footer button:active i {
-    transform: scale(1.1);
-  }
-
-  .comment-section {
-    padding: 1rem;
-
-    .comment-input {
+    .footer {
+      border-radius: 0 0 1rem 1rem;
+      text-align: center;
       display: flex;
-      height: 15%;
-      gap: 2px;
+      height: 1.5rem;
 
       button {
         background-color: rgb(73, 61, 61);
-        cursor: pointer;
+        color: white;
+        width: 100%;
         border: none;
-        width: 3.5rem;
-        border-radius: 1.5rem;
+        border-radius: 1rem;
 
         &:hover {
           background-color: rgb(112, 112, 112);
         }
+      }
+    }
 
-        &:active {
+    .footer button i {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .footer button:active i {
+      transform: scale(1.1);
+    }
+
+    .comment-section {
+      padding: 1rem;
+      width: inherit;
+
+      .comment-input {
+        display: flex;
+        height: 15%;
+        gap: 2px;
+        width: inherit;
+
+        button {
+          background-color: rgb(73, 61, 61);
+          cursor: pointer;
+          border: none;
+          width: 3.5rem;
+          border-radius: 1.5rem;
+
+          &:hover {
+            background-color: rgb(112, 112, 112);
+          }
+
+          &:active {}
         }
-      }
 
-      button i {
-        display: inline-block;
-        transition: transform 0.3s ease;
-      }
-
-      button:active i {
-        transform: scale(1.5);
-      }
-
-      input {
-        height: 2.5rem;
-        background-color: rgb(73, 61, 61);
-        color: white;
-        width: 100%;
-        border: 0;
-        outline: 0;
-        padding-left: 1rem;
-        font-weight: 400;
-        border-radius: 1.5rem;
-
-        &:hover {
+        button i {
+          display: inline-block;
+          transition: transform 0.3s ease;
         }
 
-        &:active {
+        button:active i {
+          transform: scale(1.5);
+        }
+
+        input {
+          height: 2.5rem;
+          background-color: rgb(73, 61, 61);
+          color: white;
+          width: 100%;
           border: 0;
-        }
+          outline: 0;
+          padding-left: 1rem;
+          font-weight: 400;
+          border-radius: 1.5rem;
 
-        &:focus {
-          border: 0;
+          &:hover {}
+
+          &:active {
+            border: 0;
+          }
+
+          &:focus {
+            border: 0;
+          }
         }
       }
     }

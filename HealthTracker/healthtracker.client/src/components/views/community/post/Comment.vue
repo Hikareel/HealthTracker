@@ -2,15 +2,15 @@
     <div class="comment" :style="{ marginLeft: depth > 0 ? '1em' : '0' }">
         <div class="comment-content">
             <div class="comment-header">
-                <div>{{ item.userId }}</div>
-                <div>2024-01-01</div> <!--Zmiana na imię i nazwisko + data stworzenie komentarza-->
+                <div class="comment-header-name">{{ item.userFirstName }} {{ item.userLastName }}</div>
+                <div class="comment-header-time">{{ item.dateOfCreate }}</div>
             </div>
             <div class="comment-body">
                 <p>{{ item.content }}</p>
             </div>
         </div>
         <div class="comment-footer" v-if="depth < 4">
-            <a @click="toggleCommentRespone">Respone</a>
+            <a @click="toggleCommentRespone">Response</a>
             <a @click="toggleMoreComments" v-if="comments.length != 0">Show {{ comments.length }} responses</a>
         </div>
 
@@ -78,7 +78,8 @@ async function addCommentToParent() {
                 content: commentToAdd.value
             });
             if (response.status === 201) {
-                comments.value.push(response.data);
+                comments.value.unshift(response.data);
+
                 isMoreCommentsClicked.value = true
             } else {
                 alert(response.status + " " + response.statusText)
@@ -96,7 +97,97 @@ async function addCommentToParent() {
 
 <style lang="scss" scoped>
 .comment {
+    width: inherit;
     border: 1px solid $success-color;
     border-radius: 10px;
+
+    .comment-content {
+        width: inherit;
+
+        .comment-header {
+            padding-top: 0.25rem;
+            padding-left: 0.25rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-items: center;
+            align-items: baseline;
+            width: inherit;
+
+            .comment-header-name {}
+
+            .comment-header-time {
+                font-size: 70%;
+                opacity: 80%;
+            }
+        }
+
+        .comment-body {
+            width: inherit;
+            min-height: 2rem;
+            padding: 0.5rem;
+        }
+
+        .comment-footer {
+            width: inherit;
+
+            .comment-footer a {
+                color: yellow;
+            }
+        }
+    }
+
+    .add-comment-div {
+
+        display: flex;
+        height: 15%;
+        gap: 2px;
+        width: inherit;
+
+        button {
+            background-color: rgb(73, 61, 61);
+            cursor: pointer;
+            border: none;
+            width: 3.5rem;
+            border-radius: 1.5rem;
+
+            &:hover {
+                background-color: rgb(112, 112, 112);
+            }
+
+            &:active {}
+        }
+
+        button i {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        button:active i {
+            transform: scale(1.5);
+        }
+
+        input {
+            height: 2.5rem;
+            background-color: rgb(73, 61, 61);
+            color: white;
+            width: 100%;
+            border: 0;
+            outline: 0;
+            padding-left: 1rem;
+            font-weight: 400;
+            border-radius: 1.5rem;
+
+            &:hover {}
+
+            &:active {
+                border: 0;
+            }
+
+            &:focus {
+                border: 0;
+            }
+        }
+
+    }
 }
 </style>

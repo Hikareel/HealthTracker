@@ -96,7 +96,6 @@ async function connectToChatHub() {
 }
 
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
-  //Obsłuzyć może jakoś różne status cody. (500, 200, itp)
   try {
     const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
       params: {
@@ -140,9 +139,10 @@ async function getPosts() {
         pageSize: currentPosts.value.pageSize
       }
     });
+
     currentPosts.value.posts = response.data;
   } catch (error) {
-    console.error(error);
+      console.error(error);
   }
 
 }
