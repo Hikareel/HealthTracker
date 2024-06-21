@@ -47,7 +47,6 @@ import { currentMessages } from '@/data/models/messageModel';
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import { v4 as uuidv4 } from 'uuid';
 import { getPostOnWall } from '../../../data/service/api/community/postController'
 
 const is_mobile_expanded = ref(false)
@@ -84,11 +83,10 @@ async function connectToChatHub() {
 
     await connection.start();
     console.log("Connected to Chat");
-    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
-      console.log(message)
+    connection.on("ReceiveMessage", (id, userFrom, userTo, message) => {
       const isYours = userFrom === user.userId;
       currentMessages.value.messages.push({
-        id: uuidv4(),
+        id: id,
         text: message,
         isYours: isYours
       });
