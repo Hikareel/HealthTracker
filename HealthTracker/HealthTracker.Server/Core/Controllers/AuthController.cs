@@ -4,14 +4,9 @@ using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 
 namespace HealthTracker.Server.Core.Controllers
@@ -57,7 +52,6 @@ namespace HealthTracker.Server.Core.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerUserDto)

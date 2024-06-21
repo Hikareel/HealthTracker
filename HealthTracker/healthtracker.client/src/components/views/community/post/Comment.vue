@@ -36,8 +36,9 @@
 import { ref, onMounted } from 'vue';
 import { type IComment } from '@/data/models/postModels'
 import axios from 'axios';
+import { user } from '@/data/service/userData';
 
-const pageNumberOfComments = ref(1); //ToDo: gdy API będzie to obsługiwać. 
+// const pageNumberOfComments = ref(1); //ToDo: gdy API będzie to obsługiwać. 
 const comments = ref<IComment[]>([]);
 const commentToAdd = ref('');
 const isResponseClicked = ref(false)
@@ -62,7 +63,11 @@ function toggleMoreComments() {
 
 async function getComments(parentCommentId: number | null) {
     try {
-        const response = await axios.get(`https://localhost:7170/api/users/posts/${props.postId}/comments/${parentCommentId}`);
+        const response = await axios.get(`https://localhost:7170/api/users/posts/${props.postId}/comments/${parentCommentId}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            },
+        });
         comments.value = response.data;
     } catch (error) {
         console.error('Error fetching comments', error);
@@ -76,13 +81,16 @@ async function addCommentToParent() {
                 postId: props.postId,
                 userId: props.item.userId,
                 content: commentToAdd.value
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
             });
             if (response.status === 201) {
                 comments.value.unshift(response.data);
-
-                isMoreCommentsClicked.value = true
+                isMoreCommentsClicked.value = true;
             } else {
-                alert(response.status + " " + response.statusText)
+                alert(response.status + " " + response.statusText);
             }
         } catch (error) {
             console.error('Błąd podczas dodawania komentarza', error);
@@ -93,6 +101,7 @@ async function addCommentToParent() {
         console.log("Pusty komentarz nie może zostać dodany");
     }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -113,7 +122,7 @@ async function addCommentToParent() {
             align-items: baseline;
             width: inherit;
 
-            .comment-header-name {}
+            // .comment-header-name {}
 
             .comment-header-time {
                 font-size: 70%;
@@ -137,7 +146,6 @@ async function addCommentToParent() {
     }
 
     .add-comment-div {
-
         display: flex;
         height: 15%;
         gap: 2px;
@@ -154,7 +162,7 @@ async function addCommentToParent() {
                 background-color: rgb(112, 112, 112);
             }
 
-            &:active {}
+            // &:active {}
         }
 
         button i {
@@ -177,7 +185,7 @@ async function addCommentToParent() {
             font-weight: 400;
             border-radius: 1.5rem;
 
-            &:hover {}
+            // &:hover {}
 
             &:active {
                 border: 0;

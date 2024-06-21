@@ -67,6 +67,28 @@ void ConfigureServices(WebApplicationBuilder builder)
             Console.WriteLine(debugInfo);
             return debugInfo;
         });
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please insert JWT with Bearer into field",
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        });
 
     });
 
@@ -107,8 +129,9 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = false,
-            ValidateIssuerSigningKey = true
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero
         };
     })
     .AddGoogle(googleOptions =>
@@ -118,7 +141,6 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
         googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
         googleOptions.Events.OnCreatingTicket = context =>
         {
-            // Logowanie lub inne akcje po zalogowaniu u¿ytkownika
             Log.Information("U¿ytkownik zalogowany przez Google: {Email}", context.Principal.FindFirst(ClaimTypes.Email).Value);
             return Task.CompletedTask;
         };
@@ -130,7 +152,7 @@ void ConfigureCors(WebApplicationBuilder builder)
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowSpecificOrigin", builder => builder
-            .WithOrigins("https://localhost:5173", "https://localhost:5174", "https://localhost:5175")
+            .WithOrigins("https://localhost:5174")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
@@ -145,6 +167,7 @@ void ConfigureMiddleware(WebApplication app)
         app.UseSwaggerUI();
     }
 
+    app.UseHsts();
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseCors("AllowSpecificOrigin");

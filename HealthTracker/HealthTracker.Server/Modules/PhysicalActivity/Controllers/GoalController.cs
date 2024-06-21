@@ -4,6 +4,7 @@ using HealthTracker.Server.Core.Exceptions.PhysicalActivity;
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class GoalController : ControllerBase
     {
         private readonly IGoalRepository _goalRepository;

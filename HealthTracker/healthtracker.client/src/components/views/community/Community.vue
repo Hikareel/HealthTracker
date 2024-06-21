@@ -68,9 +68,9 @@ let connection = new HubConnectionBuilder()
   .build();
 
 onMounted(async () => {
-  getFriendList();
-  getPosts();
-  connectToChatHub();
+  await getFriendList();
+  await getPosts();
+  await connectToChatHub();
 });
 
 async function connectToChatHub() {
@@ -98,6 +98,9 @@ async function connectToChatHub() {
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
   try {
     const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }, 
       params: {
         pageNumber: currentMessages.value.pageNumber,
         pageSize: currentMessages.value.pageSize
@@ -111,7 +114,6 @@ async function getCurrentUsersMessagesWithFriend(friendId: number) {
     })).reverse();
     currentMessages.value.messages = messages
 
-    console.log(currentMessages.value)
   } catch (error) {
     console.error(error);
   }
@@ -122,7 +124,11 @@ async function getFriendList() {
     if (!user.userId) {
       return;
     }
-    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`);
+    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }, 
+    });
     friends.value = response.data;
   } catch (error) {
     console.error(error);
@@ -134,6 +140,9 @@ async function getPosts() {
       return;
     }
     const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/wall/posts`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }, 
       params: {
         pageNumber: currentPosts.value.pageNumber,
         pageSize: currentPosts.value.pageSize

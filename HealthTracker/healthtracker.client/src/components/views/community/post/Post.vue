@@ -68,12 +68,20 @@ async function likePost() {
 
   try {
     if (likeIndex > -1) {
-      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${item.id}/likes`);
+      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${item.id}/likes`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        },
+      });
       currentPosts.value.posts[postIndex].likes.splice(likeIndex, 1);
     } else {
       const response = await axios.post(`https://localhost:7170/api/users/posts/likes`, {
         userId: user.userId,
         postId: item.id
+      }, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
       currentPosts.value.posts[postIndex].likes.push(response.data);
     }
@@ -88,12 +96,15 @@ async function getComments() {
       return;
     }
     const response = await axios.get(`https://localhost:7170/api/users/posts/${item.id}/comments`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      },
       params: {
         pageNumber: pageNr.value,
         pageSize: pageSize.value
       }
     });
-    if (response.status == 200) {
+    if (response.status == 200 && response.data != '') {
       comments.value = [];
       response.data.comments.forEach((element: IComment) => {
         comments.value.push(element);
@@ -108,11 +119,15 @@ async function addComment() {
   if (commentToAdd.value) {
     try {
       const response = await axios.post(`https://localhost:7170/api/users/posts/comments`, {
+        headers: {
+        'Authorization': `Bearer ${user.token}`
+      },
+      params:{
         postId: item.id,
         userId: user.userId,
         content: commentToAdd.value
       }
-      );
+      });
 
       if (response.status === 201) {
         commentsCount.value = commentsCount.value + 1;
@@ -201,7 +216,9 @@ async function addComment() {
             background-color: rgb(112, 112, 112);
           }
 
-          &:active {}
+          // &:active {
+
+          // }
         }
 
         button i {
@@ -224,7 +241,7 @@ async function addComment() {
           font-weight: 400;
           border-radius: 1.5rem;
 
-          &:hover {}
+          // &:hover {}
 
           &:active {
             border: 0;

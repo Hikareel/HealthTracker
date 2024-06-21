@@ -1,9 +1,9 @@
 ﻿using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
-using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +11,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class PostController : ControllerBase
     {
         private readonly IPostRepository _postRepository;
@@ -20,7 +21,6 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             _postRepository = postRepository;
             _logger = logger;
         }
-
 
         /// <summary>
         /// Creates an instance of a post

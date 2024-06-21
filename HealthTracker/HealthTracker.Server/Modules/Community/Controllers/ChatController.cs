@@ -4,6 +4,7 @@ using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IChatRepository _chatRepository;

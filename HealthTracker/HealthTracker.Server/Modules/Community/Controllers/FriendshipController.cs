@@ -3,15 +3,16 @@ using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
 
-    //Pomysł zmiany z freindship na relations - wtedy można będzie lepiej obsługiwać takie elementy jak usunięty/ zablokowany
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class FriendshipController : ControllerBase
     {
         private readonly IFriendRepository _friendRepository;
