@@ -28,7 +28,8 @@ namespace HealthTracker.Server.Modules.Community.Controllers
         /// <param name="postDTO">The schema of created post mapped to PostDTO</param>
         /// <returns>Created PostDTO</returns>
         /// <response code="201">Returns if post created successfully</response>
-        /// <response code="400">Returns if User not found or database error</response>
+        /// <response code="400">Returns if database error</response>
+        /// <response code="404">Returns if User not found </response>
         /// <response code="500">Returns if internal server error</response>
         [HttpPost("users/posts")]
         public async Task<ActionResult<PostDTO>> CreatePost([FromBody] CreatePostDTO postDTO)
@@ -45,7 +46,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -86,11 +87,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch(NullPageException ex)
             {
-                return NotFound(ex.Message);
+                return Ok();
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -132,9 +133,13 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             {
                 return BadRequest(ex.InnerException?.Message ?? "Database error.");
             }
-            catch (Exception ex) when (ex is LikeAlreadyExistsException || ex is UserNotFoundException || ex is PostNotFoundException)
+            catch (LikeAlreadyExistsException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch(Exception ex) when (ex is UserNotFoundException || ex is PostNotFoundException)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -152,7 +157,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (LikeNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -184,7 +189,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (LikeNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {

@@ -65,7 +65,7 @@
 import { ref } from 'vue';
 import type { IRegisterModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
-import { preventSubmit } from '@/data/service/sendDataService'
+import { preventSubmit } from '@/data/service/api/account/sendDataService'
 
 const isRegistering = ref(false)
 

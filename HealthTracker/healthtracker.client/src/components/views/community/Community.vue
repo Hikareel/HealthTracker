@@ -21,7 +21,7 @@
       </div>
       <div class="wall-body">
         <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
-          <Post :item="post" />
+          <Post :post="post" />
         </div>
       </div>
     </div>
@@ -48,8 +48,11 @@ import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { v4 as uuidv4 } from 'uuid';
+import { getPostOnWall } from '../../../data/service/api/community/postController'
 
 const is_mobile_expanded = ref(false)
+const postPageNumber = ref(1)
+const postPageSize = 10
 const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
@@ -135,25 +138,12 @@ async function getFriendList() {
   }
 }
 async function getPosts() {
-  try {
-    if (!user.userId) {
-      return;
+  const posts = await getPostOnWall(postPageNumber.value, postPageSize);
+    if (posts) {
+      currentPosts.value.posts = posts
+    } else {
+        console.error("Failed to load posts or no posts available");
     }
-    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/wall/posts`, {
-      headers: {
-        'Authorization': `Bearer ${user.token}`
-      }, 
-      params: {
-        pageNumber: currentPosts.value.pageNumber,
-        pageSize: currentPosts.value.pageSize
-      }
-    });
-
-    currentPosts.value.posts = response.data;
-  } catch (error) {
-      console.error(error);
-  }
-
 }
 
 </script>

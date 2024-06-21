@@ -2,7 +2,7 @@
   <main class="post">
     <div class="content">
       <div class="header">
-        <p>{{ item.userFirstName }} {{ item.userLastName }}</p>
+        <p>{{ props.post.userFirstName }} {{ props.post.userLastName }}</p>
       </div>
       <div class="main">
         <div v-html="safeHtml"></div>
@@ -10,7 +10,7 @@
       </div>
       <div class="footer">
         <button class="like" @click="likePost">
-          <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ item.likes.length }}
+          <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ props.post.likes.length }}
         </button>
         <button class="comment" @click="toggleComments">
           <i class='bi bi-chat-dots-fill'></i>&nbsp;{{ commentsCount }}
@@ -23,6 +23,7 @@
           <input type="text" v-model="commentToAdd" placeholder="Write comment...">
         </div>
         <Comment v-for="comment in comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
+        <button v-if="isMoreComments" @click="getComments">Load more comments</button>
       </div>
     </div>
   </main>
@@ -37,20 +38,22 @@ import { currentPosts, type IPost } from '@/data/models/postModels';
 import { user } from '@/data/service/userData';
 import axios from 'axios';
 import type { IComment } from '@/data/models/postModels';
+import { getPostComments } from '@/data/service/api/community/postController';
 
-const { item } = defineProps<{
-  item: IPost
+const props = defineProps<{
+  post: IPost
 }>();
 const comments = ref<IComment[]>([]);
-const commentsCount = ref(item.amountOfComments)
+const commentsCount = ref(props.post.amountOfComments)
 const isCommentsVisible = ref(false);
+const isMoreComments = ref(false);
 const commentToAdd = ref('');
-const pageNr = ref(1);
-const pageSize = ref(10);
+const pageNr = ref(0);
+const pageSize = 10;
 
 const safeHtml = computed(() => {
   const md = new MarkdownIt();
-  const rawHtml = md.render(item.content);
+  const rawHtml = md.render(props.post.content);
   return DOMPurify.sanitize(rawHtml);
 });
 
@@ -63,12 +66,12 @@ function toggleComments() {
 }
 
 async function likePost() {
-  const postIndex = currentPosts.value.posts.findIndex(post => post.id === item.id);
+  const postIndex = currentPosts.value.posts.findIndex(post => post.id === props.post.id);
   const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === user.userId);
 
   try {
     if (likeIndex > -1) {
-      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${item.id}/likes`, {
+      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${props.post.id}/likes`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         },
@@ -77,7 +80,7 @@ async function likePost() {
     } else {
       const response = await axios.post(`https://localhost:7170/api/users/posts/likes`, {
         userId: user.userId,
-        postId: item.id
+        postId: props.post.id
       }, {
         headers: {
           'Authorization': `Bearer ${user.token}`
@@ -91,27 +94,17 @@ async function likePost() {
 }
 
 async function getComments() {
-  try {
-    if (!item.id) {
-      return;
-    }
-    const response = await axios.get(`https://localhost:7170/api/users/posts/${item.id}/comments`, {
-      headers: {
-        'Authorization': `Bearer ${user.token}`
-      },
-      params: {
-        pageNumber: pageNr.value,
-        pageSize: pageSize.value
-      }
+  pageNr.value += 1;
+  const recivedData = await getPostComments(props.post.id, pageNr.value, pageSize);
+  if (recivedData.comments) {
+    recivedData.comments.forEach((element: IComment) => {
+      comments.value.push(element);
     });
-    if (response.status == 200 && response.data != '') {
-      comments.value = [];
-      response.data.comments.forEach((element: IComment) => {
-        comments.value.push(element);
-      });
+    if (recivedData.totalCommentsLeft > 0){
+      isMoreComments.value = true;
+    }else{
+      isMoreComments.value = false;
     }
-  } catch (error) {
-    console.error(error);
   }
 }
 
@@ -119,18 +112,17 @@ async function addComment() {
   if (commentToAdd.value) {
     try {
       const response = await axios.post(`https://localhost:7170/api/users/posts/comments`, {
-        headers: {
-        'Authorization': `Bearer ${user.token}`
-      },
-      params:{
-        postId: item.id,
+        postId: props.post.id,
         userId: user.userId,
         content: commentToAdd.value
-      }
+      }, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
 
       if (response.status === 201) {
-        commentsCount.value = commentsCount.value + 1;
+        commentsCount.value += 1;
         comments.value.unshift(response.data);
       }
     } catch (error) {
@@ -142,6 +134,7 @@ async function addComment() {
     console.log("Pusty komentarz nie może zostać dodany");
   }
 }
+
 
 </script>
 

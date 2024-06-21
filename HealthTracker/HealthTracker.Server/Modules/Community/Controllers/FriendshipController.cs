@@ -39,7 +39,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (FriendshipAlreadyExistsException ex)
             {
@@ -81,7 +81,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (Exception ex) when (ex is UserNotFoundException || ex is FriendshipNotFoundException)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch(FriendshipNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

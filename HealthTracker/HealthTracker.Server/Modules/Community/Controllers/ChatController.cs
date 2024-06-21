@@ -39,7 +39,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -78,11 +78,11 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch(NullPageException ex)
             {
-                return NotFound(ex.Message);
+                return Ok();
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

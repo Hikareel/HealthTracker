@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { formStatus, clearFormStatus } from '@/data/service/sendDataService'
+import { formStatus, clearFormStatus } from '@/data/service/api/account/sendDataService'
 clearFormStatus()
 defineProps<{
   formTitle: string

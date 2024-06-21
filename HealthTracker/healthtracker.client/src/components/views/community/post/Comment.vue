@@ -25,10 +25,6 @@
                     :post-id=comment.postId />
             </div>
         </div>
-        <!-- ZAŁADUJ WIĘCEJ KOMENTARZY (paginacja)-->
-        <div>
-
-        </div>
     </div>
 </template>
 

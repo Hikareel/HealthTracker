@@ -38,7 +38,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (CommentNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch(NullPageException ex)
             {
-                return Ok(Array.Empty<string>());
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -95,7 +95,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (Exception ex) when (ex is CommentNotFoundException || ex is PostNotFoundException)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -113,7 +113,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (CommentNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -132,7 +132,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (PostNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
