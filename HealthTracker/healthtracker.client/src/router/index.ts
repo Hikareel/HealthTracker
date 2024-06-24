@@ -1,3 +1,4 @@
+import { useUserStore } from './../store/account/auth';
 import {createRouter, createWebHistory} from 'vue-router'
 import Home from '../components/views/home/Home.vue'
 import About from '../components/views/about/About.vue'
@@ -11,7 +12,6 @@ import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
 import LoginSuccess from '../components/views/account/login/components/LoginSuccess.vue'
-import { updateUser } from '@/data/service/userData'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -80,9 +80,9 @@ const router = createRouter({
       path: '/logout',
       name: 'Logout',
       beforeEnter: (_to, _from, next) => {
-        console.log("Trying to log out...");
         localStorage.removeItem("user");
-        updateUser();
+        const userStore = useUserStore();
+        userStore.updateUserData();
         next('/login')
       },
       redirect: ''

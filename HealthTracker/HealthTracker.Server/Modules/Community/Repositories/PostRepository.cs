@@ -193,6 +193,7 @@ namespace HealthTracker.Server.Modules.Community.Repositories
             return commentDTO;
         }
 
+        //To do zmiany bo nie potrzeba robić wyszukiwania Użytkowników, gdyż każdy POST na swojego użytkownika jak i userId. (Z użytkownika pobrać można imie i nazwisko)
         public async Task<CommentFromPostDTO> GetCommentsByPostId(int postId, int pageNr, int pageSize)
         {
             if (!await _context.Post.AnyAsync(line => line.Id == postId))

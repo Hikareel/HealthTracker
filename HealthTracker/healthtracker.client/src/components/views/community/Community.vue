@@ -42,13 +42,14 @@ import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { type FriendModel, friends } from '@/data/models/friendModel'
 import { currentPosts } from '@/data/models/postModels';
-import { user } from '../../../data/service/userData'
 import { currentMessages } from '@/data/models/messageModel';
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { getPostOnWall } from '../../../data/service/api/community/postController'
+import { useUserStore } from '@/store/account/auth';
 
+const userStore = useUserStore();
 const is_mobile_expanded = ref(false)
 const postPageNumber = ref(1)
 const postPageSize = 10
@@ -65,7 +66,7 @@ const clickAtFriend = (friend: FriendModel) => {
 
 let connection = new HubConnectionBuilder()
   .withUrl("https://localhost:7170/chatHub", {
-    accessTokenFactory: () => user.token ?? ""
+    accessTokenFactory: () => userStore.token ?? ""
   })
   .build();
 
@@ -77,14 +78,14 @@ onMounted(async () => {
 
 async function connectToChatHub() {
   try {
-    if (!user.userId) {
+    if (!userStore.userId) {
       return;
     }
 
     await connection.start();
     console.log("Connected to Chat");
     connection.on("ReceiveMessage", (id, userFrom, userTo, message) => {
-      const isYours = userFrom === user.userId;
+      const isYours = userFrom === userStore.userId;
       currentMessages.value.messages.push({
         id: id,
         text: message,
@@ -98,9 +99,9 @@ async function connectToChatHub() {
 
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
   try {
-    const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
+    const response = await axios.get(`https://localhost:7170/api/users/messages/${userStore.userId}/${friendId}/`, {
       headers: {
-        'Authorization': `Bearer ${user.token}`
+        'Authorization': `Bearer ${userStore.token}`
       }, 
       params: {
         pageNumber: currentMessages.value.pageNumber,
@@ -111,7 +112,7 @@ async function getCurrentUsersMessagesWithFriend(friendId: number) {
     const messages = response.data.map((message: { id: number; text: string; userIdFrom: number; }) => ({
       id: message.id,
       text: message.text,
-      isYours: message.userIdFrom === user.userId
+      isYours: message.userIdFrom === userStore.userId
     })).reverse();
     currentMessages.value.messages = messages
 
@@ -122,12 +123,12 @@ async function getCurrentUsersMessagesWithFriend(friendId: number) {
 
 async function getFriendList() {
   try {
-    if (!user.userId) {
+    if (!userStore.userId) {
       return;
     }
-    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`, {
+    const response = await axios.get(`https://localhost:7170/api/users/${userStore.userId}/friends`, {
       headers: {
-        'Authorization': `Bearer ${user.token}`
+        'Authorization': `Bearer ${userStore.token}`
       }, 
     });
     friends.value = response.data;

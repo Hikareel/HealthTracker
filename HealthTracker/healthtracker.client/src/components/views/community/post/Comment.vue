@@ -32,8 +32,9 @@
 import { ref, onMounted } from 'vue';
 import { type IComment } from '@/data/models/postModels'
 import axios from 'axios';
-import { user } from '@/data/service/userData';
+import { useUserStore } from '@/store/account/auth';
 
+const userStore = useUserStore();
 // const pageNumberOfComments = ref(1); //ToDo: gdy API będzie to obsługiwać. 
 const comments = ref<IComment[]>([]);
 const commentToAdd = ref('');
@@ -61,7 +62,7 @@ async function getComments(parentCommentId: number | null) {
     try {
         const response = await axios.get(`https://localhost:7170/api/users/posts/${props.postId}/comments/${parentCommentId}`, {
             headers: {
-                'Authorization': `Bearer ${user.token}`
+                'Authorization': `Bearer ${userStore.token}`
             },
         });
         comments.value = response.data;
@@ -79,7 +80,7 @@ async function addCommentToParent() {
                 content: commentToAdd.value
             }, {
                 headers: {
-                    'Authorization': `Bearer ${user.token}`
+                    'Authorization': `Bearer ${userStore.token}`
                 }
             });
             if (response.status === 201) {

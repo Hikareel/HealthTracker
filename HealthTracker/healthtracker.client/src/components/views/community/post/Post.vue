@@ -35,14 +35,15 @@ import { ref, computed, onMounted } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
 import { currentPosts, type IPost } from '@/data/models/postModels';
-import { user } from '@/data/service/userData';
 import axios from 'axios';
 import type { IComment } from '@/data/models/postModels';
 import { getPostComments } from '@/data/service/api/community/postController';
+import { useUserStore } from '@/store/account/auth';
 
 const props = defineProps<{
   post: IPost
 }>();
+const userStore = useUserStore();
 const comments = ref<IComment[]>([]);
 const commentsCount = ref(props.post.amountOfComments)
 const isCommentsVisible = ref(false);
@@ -67,23 +68,23 @@ function toggleComments() {
 
 async function likePost() {
   const postIndex = currentPosts.value.posts.findIndex(post => post.id === props.post.id);
-  const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === user.userId);
+  const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === userStore.userId);
 
   try {
     if (likeIndex > -1) {
-      await axios.delete(`https://localhost:7170/api/users/${user.userId}/posts/${props.post.id}/likes`, {
+      await axios.delete(`https://localhost:7170/api/users/${userStore.userId}/posts/${props.post.id}/likes`, {
         headers: {
-          'Authorization': `Bearer ${user.token}`
+          'Authorization': `Bearer ${userStore.token}`
         },
       });
       currentPosts.value.posts[postIndex].likes.splice(likeIndex, 1);
     } else {
       const response = await axios.post(`https://localhost:7170/api/users/posts/likes`, {
-        userId: user.userId,
+        userId: userStore.userId,
         postId: props.post.id
       }, {
         headers: {
-          'Authorization': `Bearer ${user.token}`
+          'Authorization': `Bearer ${userStore.token}`
         }
       });
       currentPosts.value.posts[postIndex].likes.push(response.data);
@@ -113,11 +114,11 @@ async function addComment() {
     try {
       const response = await axios.post(`https://localhost:7170/api/users/posts/comments`, {
         postId: props.post.id,
-        userId: user.userId,
+        userId: userStore.userId,
         content: commentToAdd.value
       }, {
         headers: {
-          'Authorization': `Bearer ${user.token}`
+          'Authorization': `Bearer ${userStore.token}`
         }
       });
 

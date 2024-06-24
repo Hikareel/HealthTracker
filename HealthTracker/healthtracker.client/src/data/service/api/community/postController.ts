@@ -1,18 +1,19 @@
-import { user } from "@/data/service/userData";
-import axios from "axios";
+import { useUserStore } from "@/store/account/auth";
+import apiClient from "../axios";
 
 const getPostOnWall = async (pageNumber: number, pageSize: number) => {
-  if (!user.userId) {
+  const userStore = useUserStore();
+  if (!userStore.userId) {
     console.log("No user ID provided");
     return null;
   }
 
   try {
-    const response = await axios.get(
-      `https://localhost:7170/api/users/${user.userId}/wall/posts`,
+    const response = await apiClient.get(
+      `/api/users/${userStore.userId}/wall/posts`,
       {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${userStore.token}`,
         },
         params: {
           pageNumber: pageNumber,
@@ -32,15 +33,16 @@ const getPostComments = async (
   pageNumber: number,
   pageSize: number
 ) => {
+  const userStore = useUserStore();
   try {
     if (!postId) {
       return;
     }
-    const response = await axios.get(
-      `https://localhost:7170/api/users/posts/${postId}/comments`,
+    const response = await apiClient.get(
+      `/api/users/posts/${postId}/comments`,
       {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${userStore.token}`,
         },
         params: {
           pageNumber: pageNumber,

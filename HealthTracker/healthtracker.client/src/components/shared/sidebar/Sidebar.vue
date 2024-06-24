@@ -2,7 +2,7 @@
   <aside :class="`${is_expanded && 'is-expanded'}`">
     <div class="control">
       <div class="logo">
-          <img src="../../../assets/LogoHT.png" class="logo-img" alt="Logo"/>
+          <img src="@/assets/LogoHT.png" class="logo-img" alt="Logo"/>
       </div>
       <div class="menu-toggle-wrap">
         <button class="menu-toggle" @click="ToggleMenu">
@@ -13,20 +13,28 @@
       </div>
     </div>
     <div class="menu">
-      <SidebarItem v-for="obj in Links" :item="obj" :key="obj.name"/>
+      <SidebarItem v-for="link in Links" :item="link" :key="link.name"/>
     </div>
     <div class="flex"></div>
     <div class="menu">
-      <SidebarItem v-for="obj in AuthLinks" :item="obj" :key="obj.name"/>
+      <SidebarItem v-for="link in AuthLinks" :item="link" :key="link.name"/>
     </div>
   </aside>
 </template>
 
 <script lang="ts" setup>
 import SidebarItem from "./components/SidebarItem.vue";
-import {Links, AuthLinks} from "@/data/models/sidebarLinks";
-import { ref } from "vue";
+import { getLinks, getAuthLinks } from "@/data/models/sidebarLinks";
+import { ref, reactive,onBeforeMount } from "vue";
 const is_expanded = ref(false)
+let Links = reactive({});
+let AuthLinks = reactive({});
+
+onBeforeMount(() => {
+  Links = getLinks();
+  AuthLinks = getAuthLinks();
+});
+
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value
 }

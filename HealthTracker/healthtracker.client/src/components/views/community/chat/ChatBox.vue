@@ -14,9 +14,10 @@
 
 <script setup lang="ts">
 import { ref, defineProps } from 'vue';
-import { user } from '@/data/service/userData'
 import { currentMessages } from '@/data/models/messageModel';
+import { useUserStore } from '@/store/account/auth';
 
+const userStore = useUserStore();
 const props = defineProps<{
   connection: any;
 }>();
@@ -26,8 +27,8 @@ const messageToSend = ref('');
 async function sendMessage() {
   if (messageToSend.value.trim() !== '' && currentMessages.value.friendToChat !== null) {
     try {
-      if (user.userId) {
-        await props.connection.invoke("SendMessageToUser", user.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
+      if (userStore.userId) {
+        await props.connection.invoke("SendMessageToUser", userStore.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
         messageToSend.value = '';
       }
     } catch (err) {
