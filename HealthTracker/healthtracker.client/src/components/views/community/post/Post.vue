@@ -9,7 +9,7 @@
         <div class="attachment"></div>
       </div>
       <div class="footer">
-        <button class="like" @click="likePost">
+        <button class="like" @click="presslikePostButton">
           <i class="bi bi-hand-thumbs-up-fill"></i>&nbsp;{{ props.post.likes.length }}
         </button>
         <button class="comment" @click="toggleComments">
@@ -35,9 +35,8 @@ import { ref, computed, onMounted } from 'vue';
 import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
 import { currentPosts, type IPost } from '@/data/models/postModels';
-import axios from 'axios';
 import type { IComment } from '@/data/models/postModels';
-import { getPostComments } from '@/data/service/api/community/postController';
+import { getPostComments, likePostByPostId, deleteLikeByPostId, addCommentToPost } from '@/data/service/api/community/postController';
 import { useUserStore } from '@/store/account/auth';
 
 const props = defineProps<{
@@ -66,31 +65,18 @@ function toggleComments() {
   isCommentsVisible.value = !isCommentsVisible.value;
 }
 
-async function likePost() {
+async function presslikePostButton() {
   const postIndex = currentPosts.value.posts.findIndex(post => post.id === props.post.id);
   const likeIndex = currentPosts.value.posts[postIndex].likes.findIndex((like) => like.userId === userStore.userId);
 
-  try {
-    if (likeIndex > -1) {
-      await axios.delete(`https://localhost:7170/api/users/${userStore.userId}/posts/${props.post.id}/likes`, {
-        headers: {
-          'Authorization': `Bearer ${userStore.token}`
-        },
-      });
+  if (likeIndex > -1) {
+    const respone = await deleteLikeByPostId(props.post.id);
+    if(respone != null){
       currentPosts.value.posts[postIndex].likes.splice(likeIndex, 1);
-    } else {
-      const response = await axios.post(`https://localhost:7170/api/users/posts/likes`, {
-        userId: userStore.userId,
-        postId: props.post.id
-      }, {
-        headers: {
-          'Authorization': `Bearer ${userStore.token}`
-        }
-      });
-      currentPosts.value.posts[postIndex].likes.push(response.data);
     }
-  } catch (error) {
-    console.error('Błąd podczas aktualizacji polubień', error);
+  } else {
+    const response = await likePostByPostId(props.post.id);
+    currentPosts.value.posts[postIndex].likes.push(response);
   }
 }
 
@@ -111,28 +97,14 @@ async function getComments() {
 
 async function addComment() {
   if (commentToAdd.value) {
-    try {
-      const response = await axios.post(`https://localhost:7170/api/users/posts/comments`, {
-        postId: props.post.id,
-        userId: userStore.userId,
-        content: commentToAdd.value
-      }, {
-        headers: {
-          'Authorization': `Bearer ${userStore.token}`
-        }
-      });
-
-      if (response.status === 201) {
-        commentsCount.value += 1;
-        comments.value.unshift(response.data);
-      }
-    } catch (error) {
-      console.error('Błąd podczas dodawania komentarza', error);
-    } finally {
+    const response = await addCommentToPost(props.post.id, commentToAdd.value)
+    if (response != null) {
+      commentsCount.value += 1;
+      comments.value.unshift(response);
       commentToAdd.value = '';
     }
   } else {
-    console.log("Pusty komentarz nie może zostać dodany");
+    console.log("Can't add an empty comment.");
   }
 }
 

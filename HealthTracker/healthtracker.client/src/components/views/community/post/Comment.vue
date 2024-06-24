@@ -15,7 +15,7 @@
         </div>
 
         <div class="add-comment-div" v-if="isResponseClicked">
-            <button @click="addCommentToParent"><i class='bi bi-send-fill'></i></button>
+            <button @click="addComment"><i class='bi bi-send-fill'></i></button>
             <input v-model="commentToAdd" type="text" placeholder="Respone...">
         </div>
         <div v-if="comments.length != 0">
@@ -31,10 +31,8 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { type IComment } from '@/data/models/postModels'
-import axios from 'axios';
-import { useUserStore } from '@/store/account/auth';
+import { addCommentToParent, getChildComments } from '@/data/service/api/community/postController';
 
-const userStore = useUserStore();
 // const pageNumberOfComments = ref(1); //ToDo: gdy API będzie to obsługiwać. 
 const comments = ref<IComment[]>([]);
 const commentToAdd = ref('');
@@ -59,43 +57,22 @@ function toggleMoreComments() {
 }
 
 async function getComments(parentCommentId: number | null) {
-    try {
-        const response = await axios.get(`https://localhost:7170/api/users/posts/${props.postId}/comments/${parentCommentId}`, {
-            headers: {
-                'Authorization': `Bearer ${userStore.token}`
-            },
-        });
-        comments.value = response.data;
-    } catch (error) {
-        console.error('Error fetching comments', error);
+    const response = await getChildComments(props.postId, parentCommentId);
+    if (response != null) {
+        comments.value = response;
     }
 }
 
-async function addCommentToParent() {
+async function addComment() {
     if (commentToAdd.value) {
-        try {
-            const response = await axios.post(`https://localhost:7170/api/users/posts/comments/${props.item.id}`, {
-                postId: props.postId,
-                userId: props.item.userId,
-                content: commentToAdd.value
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${userStore.token}`
-                }
-            });
-            if (response.status === 201) {
-                comments.value.unshift(response.data);
-                isMoreCommentsClicked.value = true;
-            } else {
-                alert(response.status + " " + response.statusText);
-            }
-        } catch (error) {
-            console.error('Błąd podczas dodawania komentarza', error);
-        } finally {
+        const response = await addCommentToParent(props.postId, props.item.id, commentToAdd.value)
+        if (response != null) {
+            comments.value.unshift(response);
+            isMoreCommentsClicked.value = true;
             commentToAdd.value = '';
         }
     } else {
-        console.log("Pusty komentarz nie może zostać dodany");
+        console.log("Can't add an empty comment");
     }
 }
 
