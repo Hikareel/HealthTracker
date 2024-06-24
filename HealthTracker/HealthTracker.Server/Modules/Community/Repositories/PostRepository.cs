@@ -125,7 +125,6 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                     Content = p.Content,
                     DateOfCreate = p.DateOfCreate,
                     AmountOfComments = p.Comments.Count(line => line.ParentCommentId == null),
-                    //Comments = p.Comments.Where(c => c.ParentComment == null).Select(c => _mapper.Map<CommentDTO>(c)).ToList(),
                     Likes = p.Likes.Select(l => _mapper.Map<LikeDTO>(l)).ToList()
                 })
                 .ToListAsync();
@@ -183,17 +182,12 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync() ?? throw new CommentNotFoundException();
 
-            var user = await _context.User.FirstOrDefaultAsync(line => line.Id == commentDTO.UserId);
-
-            commentDTO.UserFirstName = user.FirstName;
-            commentDTO.UserLastName = user.LastName;
             commentDTO.AmountOfChildComments = await _context.Comment
-                .CountAsync(child => child.ParentCommentId == commentDTO.Id);
+                    .CountAsync(c => c.ParentCommentId == commentDTO.Id);
 
             return commentDTO;
         }
 
-        //To do zmiany bo nie potrzeba robić wyszukiwania Użytkowników, gdyż każdy POST na swojego użytkownika jak i userId. (Z użytkownika pobrać można imie i nazwisko)
         public async Task<CommentFromPostDTO> GetCommentsByPostId(int postId, int pageNr, int pageSize)
         {
             if (!await _context.Post.AnyAsync(line => line.Id == postId))
@@ -201,46 +195,38 @@ namespace HealthTracker.Server.Modules.Community.Repositories
                 throw new PostNotFoundException();
             }
 
-            var commentsQuery = _context.Comment
+            var commentsDTO = await _context.Comment
                 .Where(comment => comment.PostId == postId && comment.ParentCommentId == null)
                 .OrderByDescending(comment => comment.DateOfCreate)
                 .Skip((pageNr - 1) * pageSize)
                 .Take(pageSize)
-                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider);
+                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-            var comments = await commentsQuery.ToListAsync();
-
-            if (comments.Count == 0)
+            if (commentsDTO.Count == 0)
             {
                 throw new NullPageException();
             }
 
-            // Załaduj wszystkie potrzebne dane dodatkowe
-            foreach (var commentDTO in comments)
-            {
-                // Pobierz dane użytkownika
-                var user = await _context.User.FindAsync(commentDTO.UserId);
-                if (user != null)
-                {
-                    commentDTO.UserFirstName = user.FirstName;
-                    commentDTO.UserLastName = user.LastName;
-                }
+            var childCommentCounts = await _context.Comment
+                .Where(c => c.ParentCommentId.HasValue && commentsDTO.Select(dto => dto.Id).Contains(c.ParentCommentId.Value))
+                .GroupBy(c => c.ParentCommentId.Value)
+                .Select(g => new { ParentCommentId = g.Key, Count = g.Count() })
+                .ToListAsync();
 
-                // Policz komentarze dzieci
-                var childCommentsCount = await _context.Comment
-                    .CountAsync(c => c.ParentCommentId == commentDTO.Id);
-                commentDTO.AmountOfChildComments = childCommentsCount;
+            foreach (var comment in commentsDTO)
+            {
+                comment.AmountOfChildComments = childCommentCounts.FirstOrDefault(c => c.ParentCommentId == comment.Id)?.Count ?? 0;
             }
 
-            // Oblicz, ile pozostało komentarzy poza bieżącą stroną
-            var totalCommentsLeft = await _context.Comment
-                .Where(comment => comment.PostId == postId && comment.ParentCommentId == null)
-                .Skip(pageNr * pageSize)
-                .CountAsync();
+            var totalCommentsCount = await _context.Comment
+                .CountAsync(comment => comment.PostId == postId && comment.ParentCommentId == null);
+
+            var totalCommentsLeft = totalCommentsCount - pageNr * pageSize > 0 ? totalCommentsCount - pageNr * pageSize : 0;
 
             return new CommentFromPostDTO()
             {
-                Comments = comments,
+                Comments = commentsDTO,
                 PageNr = pageNr,
                 PageSize = pageSize,
                 PostId = postId,
@@ -250,57 +236,34 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         public async Task<List<CommentDTO>> GetCommentsByParentCommentId(int postId, int parentCommentId)
         {
-            // Sprawdzenie istnienia posta
             if (!await _context.Post.AnyAsync(post => post.Id == postId))
             {
                 throw new PostNotFoundException();
             }
 
-            // Sprawdzenie istnienia komentarza rodzica
-            var parentComment = await _context.Comment
-                .Where(comment => comment.Id == parentCommentId)
-                .FirstOrDefaultAsync();
-
-            if (parentComment == null)
+            if (!await _context.Comment.AnyAsync(comment => comment.Id == parentCommentId))
             {
                 throw new CommentNotFoundException();
             }
 
-            // Pobieranie komentarzy dzieci
-            var comments = await _context.Comment
+            var commentsDTO = await _context.Comment
                 .Where(comment => comment.PostId == postId && comment.ParentCommentId == parentCommentId)
                 .OrderByDescending(comment => comment.DateOfCreate)
                 .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            // Pobierz ID użytkowników dla wszystkich komentarzy
-            var userIds = comments.Select(c => c.UserId).Distinct().ToList();
+            var childCommentCounts = await _context.Comment
+                .Where(c => c.ParentCommentId.HasValue && commentsDTO.Select(dto => dto.Id).Contains(c.ParentCommentId.Value))
+                .GroupBy(c => c.ParentCommentId.Value)
+                .Select(g => new { ParentCommentId = g.Key, Count = g.Count() })
+                .ToListAsync();
 
-            // Pobieranie danych użytkowników
-            var users = await _context.User
-                .Where(user => userIds.Contains(user.Id))
-                .ToDictionaryAsync(user => user.Id, user => user);
-
-            // Pobieranie liczby dzieci dla każdego z komentarzy
-            var childCounts = await _context.Comment
-                .Where(child => child.PostId == postId && child.ParentCommentId != null)
-                .GroupBy(child => child.ParentCommentId)
-                .Select(group => new { ParentId = group.Key, Count = group.Count() })
-                .ToDictionaryAsync(group => group.ParentId, group => group.Count);
-
-            // Mapowanie danych użytkowników i liczby dzieci do odpowiednich komentarzy
-            foreach (var commentDTO in comments)
+            foreach (var comment in commentsDTO)
             {
-                if (users.TryGetValue(commentDTO.UserId, out var user))
-                {
-                    commentDTO.UserFirstName = user.FirstName;
-                    commentDTO.UserLastName = user.LastName;
-                }
-
-                commentDTO.AmountOfChildComments = childCounts.TryGetValue(commentDTO.Id, out var count) ? count : 0;
+                comment.AmountOfChildComments = childCommentCounts.FirstOrDefault(c => c.ParentCommentId == comment.Id)?.Count ?? 0;
             }
 
-            return comments;
+            return commentsDTO;
         }
 
 

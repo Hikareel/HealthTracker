@@ -74,9 +74,13 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _postRepository.GetCommentsByPostId(postId, pageNumber, pageSize);
                 return Ok(result);
             }
-            catch(NullPageException ex)
+            catch (NullPageException ex)
             {
                 return Ok();
+            }
+            catch (PostNotFoundException ex)
+            {
+                return NotFound(ex);
             }
             catch (Exception ex)
             {
