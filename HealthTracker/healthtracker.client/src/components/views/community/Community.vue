@@ -28,8 +28,8 @@
 
     <div class="right-content">
       <FriendsList :friends="friends" @select="clickAtFriend" class="list" />
-      <ChatItem v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
-        class="chat" />
+      <ChatItem v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
+        :connection="connection" class="chat" />
     </div>
 
   </main>
@@ -44,9 +44,10 @@ import { type FriendModel, friends } from '@/data/models/friendModel'
 import { currentPosts } from '@/data/models/postModels';
 import { currentMessages } from '@/data/models/messageModel';
 import { ref, onMounted } from "vue";
-import axios from 'axios';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import { getPostOnWall } from '../../../data/service/api/community/postController'
+import { getPostOnWall } from '@/data/service/api/community/postController'
+import { getFriendList } from '@/data/service/api/community/friendshipController'
+import { getMessagesWithFriend } from '@/data/service/api/community/chatController'
 import { useUserStore } from '@/store/account/auth';
 
 const userStore = useUserStore();
@@ -71,7 +72,7 @@ let connection = new HubConnectionBuilder()
   .build();
 
 onMounted(async () => {
-  await getFriendList();
+  await getFriends();
   await getPosts();
   await connectToChatHub();
 });
@@ -98,51 +99,34 @@ async function connectToChatHub() {
 }
 
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
-  try {
-    const response = await axios.get(`https://localhost:7170/api/users/messages/${userStore.userId}/${friendId}/`, {
-      headers: {
-        'Authorization': `Bearer ${userStore.token}`
-      }, 
-      params: {
-        pageNumber: currentMessages.value.pageNumber,
-        pageSize: currentMessages.value.pageSize
-      }
-    });
-
-    const messages = response.data.map((message: { id: number; text: string; userIdFrom: number; }) => ({
+  const response = await getMessagesWithFriend(friendId, currentMessages.value.pageNumber, currentMessages.value.pageSize)
+  if (response != null) {
+    const messages = response.map((message: { id: number; text: string; userIdFrom: number; }) => ({
       id: message.id,
       text: message.text,
       isYours: message.userIdFrom === userStore.userId
     })).reverse();
     currentMessages.value.messages = messages
-
-  } catch (error) {
-    console.error(error);
   }
+
 }
 
-async function getFriendList() {
-  try {
-    if (!userStore.userId) {
-      return;
-    }
-    const response = await axios.get(`https://localhost:7170/api/users/${userStore.userId}/friends`, {
-      headers: {
-        'Authorization': `Bearer ${userStore.token}`
-      }, 
-    });
-    friends.value = response.data;
-  } catch (error) {
-    console.error(error);
+async function getFriends() {
+  if (!userStore.userId) {
+    return;
+  }
+  const response = await getFriendList();
+  if (response != null) {
+    friends.value = response;
   }
 }
 async function getPosts() {
   const posts = await getPostOnWall(postPageNumber.value, postPageSize);
-    if (posts) {
-      currentPosts.value.posts = posts
-    } else {
-        console.error("Failed to load posts or no posts available");
-    }
+  if (posts) {
+    currentPosts.value.posts = posts
+  } else {
+    console.error("Failed to load posts or no posts available");
+  }
 }
 
 </script>
