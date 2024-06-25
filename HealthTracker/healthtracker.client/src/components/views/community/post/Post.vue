@@ -23,7 +23,7 @@
           <input type="text" v-model="commentToAdd" placeholder="Write comment...">
         </div>
         <Comment v-for="comment in comments" :key="comment.id" :item="comment" :depth=0 :post-id=comment.postId />
-        <button v-if="isMoreComments" @click="getComments">Load more comments</button>
+        <button v-if="isMoreComments" class="load-comments-button" @click="getComments">Load more comments...</button>
       </div>
     </div>
   </main>
@@ -71,7 +71,7 @@ async function presslikePostButton() {
 
   if (likeIndex > -1) {
     const respone = await deleteLikeByPostId(props.post.id);
-    if(respone != null){
+    if (respone != null) {
       currentPosts.value.posts[postIndex].likes.splice(likeIndex, 1);
     }
   } else {
@@ -87,9 +87,9 @@ async function getComments() {
     recivedData.comments.forEach((element: IComment) => {
       comments.value.push(element);
     });
-    if (recivedData.totalCommentsLeft > 0){
+    if (recivedData.totalCommentsLeft > 0) {
       isMoreComments.value = true;
-    }else{
+    } else {
       isMoreComments.value = false;
     }
   }
@@ -164,6 +164,8 @@ async function addComment() {
     .comment-section {
       padding: 1rem;
       width: inherit;
+      display: flex;
+      flex-direction: column;
 
       .comment-input {
         display: flex;
@@ -216,6 +218,20 @@ async function addComment() {
           &:focus {
             border: 0;
           }
+        }
+      }
+
+      .load-comments-button {
+        color: white;
+        background-color: rgb(73, 61, 61);
+        cursor: pointer;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 1.5rem;
+        margin-top: 0.5rem;
+
+        &:hover {
+          background-color: rgb(112, 112, 112);
         }
       }
     }
