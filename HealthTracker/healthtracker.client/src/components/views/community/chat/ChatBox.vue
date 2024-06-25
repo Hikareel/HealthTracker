@@ -1,7 +1,7 @@
 <template>
   <div class="chat-messinput">
-    <div class="messages">
-      <div v-for="message in currentMessages.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
+    <div class="messages" ref="messagesContainer" @scroll="handleScroll">
+      <div v-for="message in chatStore.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
         {{ message.text }}
       </div>
     </div>
@@ -13,23 +13,62 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
-import { currentMessages } from '@/data/models/messageModel';
+import { ref, defineProps, onMounted, nextTick, watch } from 'vue';
 import { useUserStore } from '@/store/account/auth';
+import { getMessagesWithFriend } from '@/data/service/api/community/chatController';
+import { useChatStore } from '@/store/community/chat';
 
 const userStore = useUserStore();
+const chatStore = useChatStore();
 const props = defineProps<{
   connection: any;
 }>();
 
+const messagesContainer = ref();
 const messageToSend = ref('');
 
+chatStore.$subscribe((mutation, state) => { //TODO
+  console.log('Mutation:', mutation);
+  console.log('Mutation events:', mutation.events);
+  console.log('Type of mutation events:', typeof mutation.events);
+  
+  if (Array.isArray(mutation.events) && mutation.events.includes('friendToChat') && state.friendToChat) {
+    chatStore.pageNumber = 1;
+    chatStore.setMessages([]);
+    loadMessages();
+  }
+});
+
+async function loadMessages() {
+  console.log('friendToChat: ' + chatStore.friendToChat?.userId);
+  console.log('pageNumber: ' + chatStore.pageNumber);
+  if (chatStore.friendToChat == null) return;
+  const response = await getMessagesWithFriend(chatStore.friendToChat.userId, chatStore.pageNumber, chatStore.pageSize);
+  console.log('Response: ' + response);
+  if (response.length > 0) {
+    const userStore = useUserStore()
+    chatStore.addMessagesFromAPI(response, userStore.userId);
+    await nextTick();
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    chatStore.pageNumber++;
+  }
+}
+
+onMounted(async () => {
+  nextTick().then(() => {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  });
+});
+
 async function sendMessage() {
-  if (messageToSend.value.trim() !== '' && currentMessages.value.friendToChat !== null) {
+  if (messageToSend.value.trim() !== '' && chatStore.friendToChat !== null) {
     try {
       if (userStore.userId) {
-        await props.connection.invoke("SendMessageToUser", userStore.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
+        await props.connection.invoke("SendMessageToUser", userStore.userId, chatStore.friendToChat.userId, messageToSend.value);
         messageToSend.value = '';
+        nextTick().then(() => {
+          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        });
       }
     } catch (err) {
       console.error(err);
@@ -37,6 +76,11 @@ async function sendMessage() {
   }
 }
 
+const handleScroll = () => {
+  if (messagesContainer.value.scrollTop === 0) {
+    loadMessages();
+  }
+};
 </script>
 
 

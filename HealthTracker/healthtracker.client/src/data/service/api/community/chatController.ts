@@ -2,7 +2,7 @@ import { useUserStore } from "@/store/account/auth";
 import apiClient from "../axios";
 
 const getMessagesWithFriend = async (
-    friendId: number,
+    friendId: number | null,
     pageNumber: number,
     pageSize: number
 ) => {
@@ -20,7 +20,6 @@ const getMessagesWithFriend = async (
       console.log(error);
       return null;
     });
-
   return response?.data;
 };
 

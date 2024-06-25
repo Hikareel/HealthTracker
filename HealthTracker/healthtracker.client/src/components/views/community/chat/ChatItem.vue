@@ -10,7 +10,7 @@
           </button>
         </div>
         <div class="chat-header-label">
-          <p v-if="currentMessages.friendToChat">{{ currentMessages.friendToChat.firstName }} {{ currentMessages.friendToChat.lastName }}</p>
+          <p v-if="chatStore.friendToChat">{{ chatStore.friendToChat.firstName }} {{ chatStore.friendToChat.lastName }}</p>
         </div>
       </div>
       <div class="chat-content">
@@ -27,8 +27,9 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import ChatBox from './ChatBox.vue'
-import { currentMessages } from "@/data/models/messageModel";
+import { useChatStore } from "@/store/community/chat";
 
+const chatStore = useChatStore();
 const is_expanded = ref(false)
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value

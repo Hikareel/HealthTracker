@@ -16,8 +16,7 @@
       </div>
       <div class="mobile-expander">
         <FriendsList :friends="friends" @select="clickAtFriend" class="list-mobile" />
-        <ChatBox :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
-          :connection="connection" class="chat-mobile" />
+        <ChatBox :connection="connection" class="chat-mobile" />
       </div>
       <div class="wall-body">
         <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
@@ -28,8 +27,7 @@
 
     <div class="right-content">
       <FriendsList :friends="friends" @select="clickAtFriend" class="list" />
-      <ChatItem v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
-        :connection="connection" class="chat" />
+      <ChatItem v-if="chatStore.friendToChat" :connection="connection" class="chat" />
     </div>
 
   </main>
@@ -42,14 +40,14 @@ import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { type FriendModel, friends } from '@/data/models/friendModel'
 import { currentPosts } from '@/data/models/postModels';
-import { currentMessages } from '@/data/models/messageModel';
 import { ref, onMounted } from "vue";
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { getPostOnWall } from '@/data/service/api/community/postController'
 import { getFriendList } from '@/data/service/api/community/friendshipController'
-import { getMessagesWithFriend } from '@/data/service/api/community/chatController'
 import { useUserStore } from '@/store/account/auth';
+import { useChatStore } from '@/store/community/chat';
 
+const chatStore = useChatStore();
 const userStore = useUserStore();
 const is_mobile_expanded = ref(false)
 const postPageNumber = ref(1)
@@ -58,11 +56,8 @@ const ToggleMobile = () => {
   is_mobile_expanded.value = !is_mobile_expanded.value
 }
 
-const selectedFriend = ref<FriendModel | null>(null);
 const clickAtFriend = (friend: FriendModel) => {
-  selectedFriend.value = friend;
-  currentMessages.value.friendToChat = friend;
-  getCurrentUsersMessagesWithFriend(friend.userId);
+  chatStore.friendToChat = friend;
 };
 
 let connection = new HubConnectionBuilder()
@@ -72,9 +67,9 @@ let connection = new HubConnectionBuilder()
   .build();
 
 onMounted(async () => {
+  await connectToChatHub();
   await getFriends();
   await getPosts();
-  await connectToChatHub();
 });
 
 async function connectToChatHub() {
@@ -86,31 +81,11 @@ async function connectToChatHub() {
     await connection.start();
     console.log("Connected to Chat");
     connection.on("ReceiveMessage", (id, userFrom, userTo, message) => {
-      const isYours = userFrom === userStore.userId;
-      currentMessages.value.messages.push({
-        id: id,
-        text: message,
-        isYours: isYours
-      });
+      chatStore.addMessageFromChatHub(id, message, userFrom, userTo, userStore.userId);
     });
   } catch (err) {
     console.error("Error connecting to Chat:", err);
   }
-}
-
-async function getCurrentUsersMessagesWithFriend(friendId: number) {
-  const response = await getMessagesWithFriend(friendId, currentMessages.value.pageNumber, currentMessages.value.pageSize)
-  if (response != null && response != "") {
-    const messages = response.map((message: { id: number; text: string; userIdFrom: number; }) => ({
-      id: message.id,
-      text: message.text,
-      isYours: message.userIdFrom === userStore.userId
-    })).reverse();
-    currentMessages.value.messages = messages
-  }else{
-    currentMessages.value.messages = []
-  }
-
 }
 
 async function getFriends() {
