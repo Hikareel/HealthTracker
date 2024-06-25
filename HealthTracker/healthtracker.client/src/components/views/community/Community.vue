@@ -100,13 +100,15 @@ async function connectToChatHub() {
 
 async function getCurrentUsersMessagesWithFriend(friendId: number) {
   const response = await getMessagesWithFriend(friendId, currentMessages.value.pageNumber, currentMessages.value.pageSize)
-  if (response != null) {
+  if (response != null && response != "") {
     const messages = response.map((message: { id: number; text: string; userIdFrom: number; }) => ({
       id: message.id,
       text: message.text,
       isYours: message.userIdFrom === userStore.userId
     })).reverse();
     currentMessages.value.messages = messages
+  }else{
+    currentMessages.value.messages = []
   }
 
 }
