@@ -1,16 +1,16 @@
 <template>
   <main>
     <div class="friend-item">
-      <p><i class="bi bi-person-circle"></i>{{ item.firstName }} {{ item.lastName }}</p>
+      <p><i class="bi bi-person-circle"></i>{{ friend.firstName }} {{ friend.lastName }}</p>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import type { FriendsModel } from '@/data/models/friendModel'
+import type { FriendModel } from '@/data/models/friendModel'
 
 defineProps<{
-  item: FriendsModel
+  friend: FriendModel
 }>()
 </script>
 

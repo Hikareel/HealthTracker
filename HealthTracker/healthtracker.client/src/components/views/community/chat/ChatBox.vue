@@ -1,7 +1,8 @@
 <template>
   <div class="chat-messinput">
     <div class="messages" ref="messagesContainer" @scroll="handleScroll">
-      <div v-for="message in chatStore.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
+      <div v-for="message in chatStore.messages"
+        :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
         {{ message.text }}
       </div>
     </div>
@@ -20,45 +21,54 @@ import { useChatStore } from '@/store/community/chat';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const messagesContainer = ref();
+const messageToSend = ref('');
+
 const props = defineProps<{
   connection: any;
 }>();
 
-const messagesContainer = ref();
-const messageToSend = ref('');
+onMounted(async () => {
+  chatStore.pageNumber = 1;
+  await loadMessages();
+  await nextTick(() => {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  });
 
-chatStore.$subscribe((mutation, state) => { //TODO
-  console.log('Mutation:', mutation);
-  console.log('Mutation events:', mutation.events);
-  console.log('Type of mutation events:', typeof mutation.events);
-  
-  if (Array.isArray(mutation.events) && mutation.events.includes('friendToChat') && state.friendToChat) {
-    chatStore.pageNumber = 1;
-    chatStore.setMessages([]);
-    loadMessages();
-  }
 });
 
+const handleScroll = async () => {
+  if (messagesContainer.value.scrollTop === 0 && chatStore.pageNumber > 1) {
+    await loadMessages();
+  }
+};
+
+watch(
+  () => chatStore.friendToChat,
+  async () => {
+    chatStore.pageNumber = 1;
+    chatStore.setMessages([]);
+    await loadMessages();
+    await nextTick(() => {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  });
+  },
+)
+
+
 async function loadMessages() {
-  console.log('friendToChat: ' + chatStore.friendToChat?.userId);
-  console.log('pageNumber: ' + chatStore.pageNumber);
   if (chatStore.friendToChat == null) return;
+  const actualScrollHeight = messagesContainer.value.scrollHeight;
   const response = await getMessagesWithFriend(chatStore.friendToChat.userId, chatStore.pageNumber, chatStore.pageSize);
-  console.log('Response: ' + response);
   if (response.length > 0) {
     const userStore = useUserStore()
     chatStore.addMessagesFromAPI(response, userStore.userId);
-    await nextTick();
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
     chatStore.pageNumber++;
+
+    await nextTick();
+    messagesContainer.value.scrollTop += (messagesContainer.value.scrollHeight - actualScrollHeight);
   }
 }
-
-onMounted(async () => {
-  nextTick().then(() => {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-  });
-});
 
 async function sendMessage() {
   if (messageToSend.value.trim() !== '' && chatStore.friendToChat !== null) {
@@ -75,15 +85,7 @@ async function sendMessage() {
     }
   }
 }
-
-const handleScroll = () => {
-  if (messagesContainer.value.scrollTop === 0) {
-    loadMessages();
-  }
-};
 </script>
-
-
 <style lang="scss" scoped>
 .chat-messinput {
   grid-column: 2/3;

@@ -54,8 +54,8 @@ export const useChatStore = defineStore("chatData", {
           text: message.text,
           isYours: message.userIdFrom === userId,
         })
-      );
-      this.messages = [...this.messages, ...newMessages];
+      ).reverse();
+      this.messages = [...newMessages, ...this.messages];
     },
     addMessageFromChatHub(
       id: number,
@@ -77,5 +77,8 @@ export const useChatStore = defineStore("chatData", {
       this.pageNumber = 1;
       this.pageSize = 10;
     },
+    setFriendToChat(friend: FriendModel){
+      this.friendToChat = friend;
+    }
   },
 });
