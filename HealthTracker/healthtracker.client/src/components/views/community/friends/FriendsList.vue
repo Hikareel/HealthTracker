@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useChatStore } from '@/store/community/chat';
+import { useChatStore } from '@/store/community/chatStore';
 import FriendItem from './FriendItem.vue'
 import { type FriendModel } from '@/data/models/friendModel'
 

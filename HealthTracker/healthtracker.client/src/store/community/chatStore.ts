@@ -1,4 +1,4 @@
-import type { FriendModel } from "@/data/models/friendModel";
+import { friends, type FriendModel } from "@/data/models/friendModel";
 import { defineStore } from "pinia";
 import { useUserStore } from "../account/auth";
 
@@ -70,6 +70,10 @@ export const useChatStore = defineStore("chatData", {
         text: message,
         isYours: isYours,
       });
+      if (!isYours) {
+        const index = friends.value.findIndex(friends => friends.userId == userFrom);
+        friends.value[index].newMessagesCount == undefined ? friends.value[index].newMessagesCount = 1 : friends.value[index].newMessagesCount++;
+      }
     },
     clearUserData() {
       this.messages = [];

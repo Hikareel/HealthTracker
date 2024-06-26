@@ -17,7 +17,7 @@
 import { ref, defineProps, onMounted, nextTick, watch } from 'vue';
 import { useUserStore } from '@/store/account/auth';
 import { getMessagesWithFriend } from '@/data/service/api/community/chatController';
-import { useChatStore } from '@/store/community/chat';
+import { useChatStore } from '@/store/community/chatStore';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();

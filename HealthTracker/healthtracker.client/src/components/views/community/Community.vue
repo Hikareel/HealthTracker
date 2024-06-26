@@ -45,7 +45,7 @@ import { HubConnectionBuilder } from '@microsoft/signalr';
 import { getPostOnWall } from '@/data/service/api/community/postController'
 import { getFriendList } from '@/data/service/api/community/friendshipController'
 import { useUserStore } from '@/store/account/auth';
-import { useChatStore } from '@/store/community/chat';
+import { useChatStore } from '@/store/community/chatStore';
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
@@ -79,7 +79,10 @@ async function getFriends() {
   }
   const response = await getFriendList();
   if (response != null) {
-    friends.value = response;
+    friends.value = response.map((friend: any) => ({
+      ...friend,
+      newMessagesCount: 0
+    }));
   }
 }
 

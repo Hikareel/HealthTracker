@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import ChatBox from './ChatBox.vue'
-import { useChatStore } from '@/store/community/chat'
+import { useChatStore } from '@/store/community/chatStore'
 
 const chatStore = useChatStore();
 const is_expanded = ref(false)
