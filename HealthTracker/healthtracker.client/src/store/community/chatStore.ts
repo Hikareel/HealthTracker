@@ -14,6 +14,7 @@ interface IChat {
   messages: IMessage[];
   friendToChat: FriendModel | null;
   isChatExpanded: boolean;
+  isLoadingOlderMessages: boolean;
   pageNumber: number;
   pageSize: number;
 }
@@ -23,6 +24,7 @@ export const useChatStore = defineStore("chatData", {
     messages: [],
     friendToChat: null,
     isChatExpanded: false,
+    isLoadingOlderMessages: false,
     pageNumber: 1,
     pageSize: 10,
   }),
@@ -37,6 +39,7 @@ export const useChatStore = defineStore("chatData", {
     setMessagesFromAPI(
       messageData: { id: number; text: string; userIdFrom: number; isReaded: boolean }[]
     ) {
+      this.isLoadingOlderMessages = false;
       const userStore = useUserStore();
       this.messages = messageData.map(
         (message: { id: number; text: string; userIdFrom: number; isReaded: boolean }) => ({
@@ -54,6 +57,7 @@ export const useChatStore = defineStore("chatData", {
       messageData: { id: number; text: string; userIdFrom: number; isReaded: boolean }[],
       userId: number | null
     ) {
+      this.isLoadingOlderMessages = true;
       const newMessages = messageData.map(
         (message: { id: number; text: string; userIdFrom: number; isReaded: boolean }) => ({
           id: message.id,
@@ -71,6 +75,7 @@ export const useChatStore = defineStore("chatData", {
       userTo: number,
       userId: number | null
     ) {
+      this.isLoadingOlderMessages = false;
       const friendsStore = useFriendsStore();
       const isYours = userFrom === userId;
       this.messages.push({

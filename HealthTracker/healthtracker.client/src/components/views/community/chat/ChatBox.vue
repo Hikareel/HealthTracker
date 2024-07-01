@@ -44,7 +44,7 @@ watch(
     await nextTick(() => {
       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
     });
-    if (chatStore.isChatExpanded){
+    if (chatStore.isChatExpanded) {
       await resetNewMessagesCount();
     }
   },
@@ -57,6 +57,19 @@ watch(
       await resetNewMessagesCount();
     }
   });
+
+watch(
+  () => chatStore.messages,
+  async () => {
+    if (chatStore.isChatExpanded) {
+      await nextTick(() => {
+        if (!chatStore.isLoadingOlderMessages) {
+          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        }
+      });
+    }
+  }, { deep: true });
+
 
 const handleScroll = async () => {
   if (messagesContainer.value.scrollTop === 0 && chatStore.pageNumber > 1) {
