@@ -7,26 +7,23 @@
       </div>
     </div>
     <div class="chat-input">
-      <button @click="sendMessage"><i class='bi bi-send-fill'></i></button>
-      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessage" />
+      <button @click="sendMessageToHub"><i class='bi bi-send-fill'></i></button>
+      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessageToHub" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useUserStore } from '@/store/account/auth';
-import { getMessagesWithFriend } from '@/data/service/api/community/chatController';
+import { getMessagesWithFriend } from '@/service/api/community/chatController';
 import { useChatStore } from '@/store/community/chatStore';
+import { sendMesssage } from '@/service/hubs/chatHub'
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
 const messagesContainer = ref();
 const messageToSend = ref('');
-
-const props = defineProps<{
-  connection: any;
-}>();
 
 onMounted(async () => {
   chatStore.pageNumber = 1;
@@ -55,7 +52,6 @@ watch(
   },
 )
 
-
 async function loadMessages() {
   if (chatStore.friendToChat == null) return;
   const actualScrollHeight = messagesContainer.value.scrollHeight;
@@ -70,11 +66,11 @@ async function loadMessages() {
   }
 }
 
-async function sendMessage() {
+async function sendMessageToHub() {
   if (messageToSend.value.trim() !== '' && chatStore.friendToChat !== null) {
     try {
       if (userStore.userId) {
-        await props.connection.invoke("SendMessageToUser", userStore.userId, chatStore.friendToChat.userId, messageToSend.value);
+        await sendMesssage(messageToSend.value);
         messageToSend.value = '';
         nextTick().then(() => {
           messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;

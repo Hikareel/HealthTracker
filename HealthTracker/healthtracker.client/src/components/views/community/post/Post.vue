@@ -36,7 +36,7 @@ import DOMPurify from 'dompurify';
 import MarkdownIt from 'markdown-it';
 import { currentPosts, type IPost } from '@/data/models/postModels';
 import type { IComment } from '@/data/models/postModels';
-import { getPostComments, likePostByPostId, deleteLikeByPostId, addCommentToPost } from '@/data/service/api/community/postController';
+import { getPostComments, likePostByPostId, deleteLikeByPostId, addCommentToPost } from '@/service/api/community/postController';
 import { useUserStore } from '@/store/account/auth';
 
 const props = defineProps<{

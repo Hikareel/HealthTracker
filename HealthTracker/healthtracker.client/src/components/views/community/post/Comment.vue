@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
 import { type IComment } from '@/data/models/postModels'
-import { addCommentToParent, getChildComments } from '@/data/service/api/community/postController';
+import { addCommentToParent, getChildComments } from '@/service/api/community/postController';
 
 // const pageNumberOfComments = ref(1); //ToDo: gdy API będzie to obsługiwać. 
 const comments = ref<IComment[]>([]);

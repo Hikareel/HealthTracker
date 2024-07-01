@@ -2,7 +2,7 @@
 import axios from "axios";
 import router from "@/router";
 import { ref } from "vue";
-import { useUserStore } from './../../../../store/account/auth';
+import { useUserStore } from '../../../store/account/auth';
 
 interface IResponseModel {
   status: boolean,

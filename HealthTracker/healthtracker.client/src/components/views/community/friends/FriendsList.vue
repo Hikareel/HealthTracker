@@ -1,7 +1,7 @@
 <template>
     <main class="main-list">
         <div class="friends-list">
-            <FriendItem v-for="friend in friends" :friend="friend" :key="friend.userId" @click="chatStore.setFriendToChat(friend)"/>
+            <FriendItem v-for="friend in friendsStore.friends" :friend="friend" :key="friend.userId" @click="chatStore.setFriendToChat(friend)"/>
         </div>
     </main>
 </template>
@@ -9,13 +9,10 @@
 <script lang="ts" setup>
 import { useChatStore } from '@/store/community/chatStore';
 import FriendItem from './FriendItem.vue'
-import { type FriendModel } from '@/data/models/friendModel'
+import { useFriendsStore } from '@/store/community/friendsStore';
 
 const chatStore = useChatStore();
-
-defineProps<{
-    friends: FriendModel[]
-}>();
+const friendsStore = useFriendsStore();
 
 </script>
 

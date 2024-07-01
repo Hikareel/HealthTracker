@@ -17,7 +17,7 @@
         <div class="notification">
           <p>Notification</p>
         </div>
-        <ChatBox :connection="connection"/>
+        <ChatBox/>
       </div>
 
     </div>
@@ -34,11 +34,6 @@ const is_expanded = ref(false)
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value
 }
-
-defineProps<{
-  connection: any;
-}>();
-
 </script>
 
 <style lang="scss">

@@ -18,7 +18,7 @@
 				<div class="notification">
 					<p>{{ notificationLabel }}</p>
 				</div>
-				<ChatBox :connection="connection" />
+				<ChatBox />
 			</div>
 
 		</div>
@@ -32,10 +32,6 @@ import { useChatStore } from "@/store/community/chatStore";
 
 const chatStore = useChatStore();
 const is_expanded = ref(false);
-
-defineProps<{
-  connection: any;
-}>();
 
 const notificationLabel = computed(() => {
   const count = chatStore.friendToChat?.newMessagesCount;

@@ -15,8 +15,8 @@
         </div>
       </div>
       <div class="mobile-expander" v-if="isMobile">
-        <FriendsList :friends="friends" class="list-mobile" />
-        <ChatBox :connection="connection" class="chat-mobile" />
+        <FriendsList class="list-mobile" />
+        <ChatBox class="chat-mobile" />
       </div>
       <div class="wall-body">
         <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
@@ -26,8 +26,8 @@
     </div>
 
     <div class="right-content" v-if="!isMobile">
-      <FriendsList :friends="friends" class="list" />
-      <ChatItem v-if="chatStore.friendToChat" :connection="connection" class="chat" />
+      <FriendsList class="list" />
+      <ChatItem v-if="chatStore.friendToChat" class="chat" />
     </div>
 
   </main>
@@ -38,17 +38,18 @@ import FriendsList from './friends/FriendsList.vue'
 import ChatItem from './chat/ChatItem.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
-import { friends } from '@/data/models/friendModel'
 import { currentPosts } from '@/data/models/postModels';
 import { ref, onMounted, onUnmounted } from "vue";
-import { HubConnectionBuilder } from '@microsoft/signalr';
-import { getPostOnWall } from '@/data/service/api/community/postController'
-import { getFriendList } from '@/data/service/api/community/friendshipController'
+import { getPostOnWall } from '@/service/api/community/postController';
+import { getFriendList } from '@/service/api/community/friendshipController';
 import { useUserStore } from '@/store/account/auth';
 import { useChatStore } from '@/store/community/chatStore';
+import { useFriendsStore } from '@/store/community/friendsStore';
+import { connectToChatHub } from '@/service/hubs/chatHub'
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
+const friendsStore = useFriendsStore();
 const isMobile = ref(window.innerWidth < 785 || window.innerHeight < 590);
 const is_mobile_expanded = ref(false)
 const postPageNumber = ref(1)
@@ -79,7 +80,7 @@ async function getFriends() {
   }
   const response = await getFriendList();
   if (response != null) {
-    friends.value = response.map((friend: any) => ({
+    friendsStore.friends = response.map((friend: any) => ({
       ...friend,
       newMessagesCount: 0
     }));
@@ -92,28 +93,6 @@ async function getPosts() {
     currentPosts.value.posts = posts
   } else {
     console.error("Failed to load posts or no posts available");
-  }
-}
-
-let connection = new HubConnectionBuilder()
-  .withUrl("https://localhost:7170/chatHub", {
-    accessTokenFactory: () => userStore.token ?? ""
-  })
-  .build();
-
-async function connectToChatHub() {
-  try {
-    if (!userStore.userId) {
-      return;
-    }
-
-    await connection.start();
-    console.log("Connected to Chat");
-    connection.on("ReceiveMessage", (id, userFrom, userTo, message) => {
-      chatStore.addMessageFromChatHub(id, message, userFrom, userTo, userStore.userId);
-    });
-  } catch (err) {
-    console.error("Error connecting to Chat:", err);
   }
 }
 

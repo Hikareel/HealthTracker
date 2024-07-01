@@ -31,7 +31,7 @@
 import { ref } from 'vue';
 import type { INewPassModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
-import { preventSubmit } from '@/data/service/api/account/sendDataService'
+import { preventSubmit } from '@/service/api/account/sendDataService'
 
 const formData = ref<INewPassModel>({
     password: '',
