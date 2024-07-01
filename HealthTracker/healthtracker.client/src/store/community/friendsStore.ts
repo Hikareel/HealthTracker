@@ -18,6 +18,12 @@ export const useFriendsStore = defineStore("friendData", {
     addFriend(friendData: FriendModel) {
       this.friends.push(friendData);
     },
+    setNewMessagesCount(userId: number, count: number) {
+      const friend = this.friends.find((f) => f.userId === userId);
+      if (friend) {
+        friend.newMessagesCount = count;
+      }
+    },
     resetNewMessagesCount(userId: number) {
       const friend = this.friends.find((f) => f.userId === userId);
       if (friend) {

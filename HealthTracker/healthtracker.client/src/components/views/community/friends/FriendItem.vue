@@ -20,6 +20,7 @@ import type { FriendModel } from '@/data/models/friendModel'
 defineProps<{
   friend: FriendModel
 }>()
+
 </script>
 
 <style lang="scss" scoped>

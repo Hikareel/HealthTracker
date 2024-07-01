@@ -14,7 +14,9 @@ namespace HealthTracker.Server.Modules.Community.Repositories
         Task<MessageDTO> CreateMessage(CreateMessageDTO sendMessageDTO);
         Task<MessageDTO> GetMessage(int Id);
         Task<List<MessageDTO>> GetMessages(int userFrom, int userTo, int pageNumber, int pageSize);
-        
+        Task<int> GetNumberOfNewMessages(int userFrom, int userTo);
+        Task UpdateMessagesToReaded(int userFrom, int userTo);
+
     }
     public class ChatRepository : IChatRepository
     {
@@ -81,5 +83,46 @@ namespace HealthTracker.Server.Modules.Community.Repositories
 
         }
 
+        public async Task<int> GetNumberOfNewMessages(int userFrom, int userTo)
+        {
+            var user1 = await _context.User.AnyAsync(line => line.Id == userFrom);
+            var user2 = await _context.User.AnyAsync(line => line.Id == userTo);
+
+            if (!user1 || !user2)
+            {
+                throw new UserNotFoundException(user1 ? userFrom : userTo);
+            }
+
+            var messagesCount = await _context.Message
+               .Where(m => (m.UserIdFrom == userFrom && m.UserIdTo == userTo))
+               .Where(m => m.IsReaded == false)
+               .CountAsync();
+
+            return messagesCount;
+        }
+
+        public async Task UpdateMessagesToReaded(int userFrom, int userTo)
+        {
+            var user1 = await _context.User.AnyAsync(line => line.Id == userFrom);
+            var user2 = await _context.User.AnyAsync(line => line.Id == userTo);
+
+            if (!user1 || !user2)
+            {
+                throw new UserNotFoundException(user1 ? userFrom : userTo);
+            }
+
+            var messages = await _context.Message
+               .Where(m => (m.UserIdFrom == userFrom && m.UserIdTo == userTo) || (m.UserIdFrom == userTo && m.UserIdTo == userFrom))
+               .Where(m => m.IsReaded == false)
+               .ToListAsync();
+
+            foreach (var message in messages)
+            {
+                message.IsReaded = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+        }
     }
 }

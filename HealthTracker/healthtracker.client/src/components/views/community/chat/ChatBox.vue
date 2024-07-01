@@ -16,12 +16,14 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from 'vue';
 import { useUserStore } from '@/store/account/auth';
-import { getMessagesWithFriend } from '@/service/api/community/chatController';
+import { getMessagesWithFriend, updateMessagesToRead } from '@/service/api/community/chatController';
 import { useChatStore } from '@/store/community/chatStore';
-import { sendMesssage } from '@/service/hubs/chatHub'
+import { sendMesssage } from '@/service/hubs/chatHub';
+import { useFriendsStore } from '@/store/community/friendsStore';
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const friendsStore = useFriendsStore();
 const messagesContainer = ref();
 const messageToSend = ref('');
 
@@ -31,14 +33,7 @@ onMounted(async () => {
   await nextTick(() => {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   });
-
 });
-
-const handleScroll = async () => {
-  if (messagesContainer.value.scrollTop === 0 && chatStore.pageNumber > 1) {
-    await loadMessages();
-  }
-};
 
 watch(
   () => chatStore.friendToChat,
@@ -49,18 +44,40 @@ watch(
     await nextTick(() => {
       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
     });
+    if (chatStore.isChatExpanded){
+      await resetNewMessagesCount();
+    }
   },
-)
+);
+
+watch(
+  () => chatStore.isChatExpanded,
+  async () => {
+    if (chatStore.isChatExpanded == true) {
+      await resetNewMessagesCount();
+    }
+  });
+
+const handleScroll = async () => {
+  if (messagesContainer.value.scrollTop === 0 && chatStore.pageNumber > 1) {
+    await loadMessages();
+  }
+};
+
+async function resetNewMessagesCount() {
+  if (chatStore.friendToChat) {
+    friendsStore.resetNewMessagesCount(chatStore.friendToChat.userId);
+    await updateMessagesToRead(chatStore.friendToChat.userId);
+  }
+}
 
 async function loadMessages() {
   if (chatStore.friendToChat == null) return;
   const actualScrollHeight = messagesContainer.value.scrollHeight;
   const response = await getMessagesWithFriend(chatStore.friendToChat.userId, chatStore.pageNumber, chatStore.pageSize);
   if (response.length > 0) {
-    const userStore = useUserStore()
     chatStore.addMessagesFromAPI(response, userStore.userId);
     chatStore.pageNumber++;
-
     await nextTick();
     messagesContainer.value.scrollTop += (messagesContainer.value.scrollHeight - actualScrollHeight);
   }
@@ -82,6 +99,7 @@ async function sendMessageToHub() {
   }
 }
 </script>
+
 <style lang="scss" scoped>
 .chat-messinput {
   grid-column: 2/3;

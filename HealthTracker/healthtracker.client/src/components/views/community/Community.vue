@@ -16,7 +16,7 @@
       </div>
       <div class="mobile-expander" v-if="isMobile">
         <FriendsList class="list-mobile" />
-        <ChatBox class="chat-mobile" />
+        <ChatBox :is_expanded="true" class="chat-mobile" />
       </div>
       <div class="wall-body">
         <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
@@ -46,6 +46,7 @@ import { useUserStore } from '@/store/account/auth';
 import { useChatStore } from '@/store/community/chatStore';
 import { useFriendsStore } from '@/store/community/friendsStore';
 import { connectToChatHub } from '@/service/hubs/chatHub'
+import { getNumberOfNewMessagesForFriend } from '@/service/api/community/chatController';
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
@@ -84,6 +85,11 @@ async function getFriends() {
       ...friend,
       newMessagesCount: 0
     }));
+
+    friendsStore.friends.forEach(async (friend) => {
+      const response = await getNumberOfNewMessagesForFriend(friend.userId);
+      friend.newMessagesCount = response; 
+    });
   }
 }
 

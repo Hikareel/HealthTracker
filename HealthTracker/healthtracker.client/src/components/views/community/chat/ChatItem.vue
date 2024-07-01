@@ -1,6 +1,6 @@
 <template>
 	<main class="chat">
-		<div class="content" :class="`${is_expanded && 'is-expanded'}`">
+		<div class="content" :class="`${chatStore.isChatExpanded && 'is-expanded'}`">
 			<div class="chat-header">
 				<div class="menu-toggle-wrap">
 					<button class="menu-toggle" @click="toggleMenu">
@@ -26,31 +26,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import ChatBox from './ChatBox.vue'
 import { useChatStore } from "@/store/community/chatStore";
 
 const chatStore = useChatStore();
-const is_expanded = ref(false);
 
 const notificationLabel = computed(() => {
-  const count = chatStore.friendToChat?.newMessagesCount;
-  return count > 1 ? `${count} new messages` :
-         count === 1 ? "New message" : "";
+	const count = chatStore.friendToChat?.newMessagesCount;
+	return count > 1 ? `${count} new messages` :
+		count === 1 ? "New message" : "";
 });
 
-function toggleMenu() { 
-  is_expanded.value = !is_expanded.value;
-  if (is_expanded.value) {
-    resetNewMessagesCount();
-  }
+function toggleMenu() {
+	chatStore.isChatExpanded = !chatStore.isChatExpanded;
 }
 
-function resetNewMessagesCount() { //TODO: nie działa w momencie kiedy czat jest już wysunięty.
-  if (chatStore.friendToChat) {
-    chatStore.friendToChat.newMessagesCount = 0;
-  }
-}
 </script>
 
 <style lang="scss">

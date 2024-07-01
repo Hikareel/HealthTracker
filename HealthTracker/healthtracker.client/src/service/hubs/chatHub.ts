@@ -1,10 +1,8 @@
-import {
-  HubConnection,
-  HubConnectionBuilder,
-  HubConnectionState,
-} from "@microsoft/signalr";
+import { useFriendsStore } from './../../store/community/friendsStore';
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useUserStore } from "@/store/account/auth";
 import { useChatStore } from "@/store/community/chatStore";
+import { updateMessagesToRead } from '../api/community/chatController';
 
 let connection: HubConnection | null = null;
 
@@ -37,14 +35,14 @@ async function connectToChatHub() {
     const connection = getConnection();
     await connection.start();
     console.log("Connected to Chat");
-    connection.on("ReceiveMessage", (id, userFrom, userTo, message) => {
-      chatStore.addMessageFromChatHub(
-        id,
-        message,
-        userFrom,
-        userTo,
-        userStore.userId
-      );
+    connection.on("ReceiveMessage", async (id, userFrom, userTo, message) => {
+      chatStore.addMessageFromChatHub(id, message, userFrom, userTo, userStore.userId);
+
+      if (chatStore.friendToChat && chatStore.friendToChat.userId == userFrom && chatStore.isChatExpanded == true){
+        const friendsStore = useFriendsStore();
+        friendsStore.resetNewMessagesCount(chatStore.friendToChat.userId);
+        await updateMessagesToRead(chatStore.friendToChat.userId);
+      }
     });
   } catch (err) {
     console.error("Error connecting to Chat:", err);
@@ -66,12 +64,7 @@ async function sendMesssage(messageToSend: string) {
     return;
   }
   if (chatStore.friendToChat != null) {
-    await connection.invoke(
-      "SendMessageToUser",
-      userStore.userId,
-      chatStore.friendToChat.userId,
-      messageToSend
-    );
+    await connection.invoke("SendMessageToUser", userStore.userId, chatStore.friendToChat.userId, messageToSend);
   }
 }
 
