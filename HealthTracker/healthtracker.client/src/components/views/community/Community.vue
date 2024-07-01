@@ -1,7 +1,7 @@
 <template>
   <main class="community-page">
 
-    <div class="wall" :class="`${is_mobile_expanded && 'is_mobile_expanded'}`">
+    <div class="wall" :class="`${isMobileExpanded && 'is_mobile_expanded'}`">
       <div class="wall-header">
         <div class="search">
           <input placeholder="Search..." class="search-input">
@@ -39,7 +39,7 @@ import ChatItem from './chat/ChatItem.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
 import { currentPosts } from '@/data/models/postModels';
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { getPostOnWall } from '@/service/api/community/postController';
 import { getFriendList } from '@/service/api/community/friendshipController';
 import { useUserStore } from '@/store/account/auth';
@@ -52,7 +52,9 @@ const chatStore = useChatStore();
 const userStore = useUserStore();
 const friendsStore = useFriendsStore();
 const isMobile = ref(window.innerWidth < 785 || window.innerHeight < 590);
-const is_mobile_expanded = ref(false)
+const isButtonExpandedClicked = ref(false);
+const isMobileExpanded = computed(() => isMobile.value && isButtonExpandedClicked.value);
+
 const postPageNumber = ref(1)
 const postPageSize = 10
 
@@ -68,7 +70,7 @@ onUnmounted(() => {
 });
 
 function toggleMobile() {
-  is_mobile_expanded.value = !is_mobile_expanded.value
+  isButtonExpandedClicked.value = !isButtonExpandedClicked.value
 }
 
 function handleResize() {
