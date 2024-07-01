@@ -9,6 +9,7 @@ namespace HealthTracker.Server.Modules.Community.Models
     {
         public Message()
         {
+            IsReaded = false;
             SendTime = DateTime.UtcNow;
         }
 
@@ -20,6 +21,7 @@ namespace HealthTracker.Server.Modules.Community.Models
         public int UserIdTo { get; set; }
         public int UserIdFrom { get; set; }
         public required string Text { get; set; }
+        public bool IsReaded { get; set; }
         public DateTime SendTime { get; set; }
     }
 }

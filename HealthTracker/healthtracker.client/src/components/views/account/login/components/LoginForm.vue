@@ -35,7 +35,7 @@
 import { ref } from 'vue';
 import type { ILoginModel } from '@/data/models/formDataModels';
 import FormStatus from '@/components/shared/FormStatus.vue'
-import { preventSubmit } from '@/data/service/sendDataService';
+import { preventSubmit } from '@/service/api/account/sendDataService';
 import LoginWithGoogle from './LoginWithGoogle.vue'
 
 const isLogging = ref(false);

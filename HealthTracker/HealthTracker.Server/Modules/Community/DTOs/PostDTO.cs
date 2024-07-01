@@ -18,7 +18,7 @@ namespace HealthTracker.Server.Modules.Community.DTOs
         public string Content { get; set; }
         public DateTime? DateOfCreate { get; set; }
         public int AmountOfComments { get; set; }
-        public virtual ICollection<CommentDTO> Comments { get; set; }
-        public virtual ICollection<LikeDTO> Likes { get; set; }
-    }
+        //public int AmountOfLikes { get; set; }
+        public virtual ICollection<LikeDTO> Likes { get; set; } //Do zastanowienia: Jeśli np będzie 100 lajków to serwer będzie musiał zwrócić tablicę 100 elementów. Ale można to przerobić tak, żeby cała obsługa działa się na serwerze. Użytkownik klika przycisk i 
+    }   //Można jeszcze zrobić aby była to lista samych userId i nazwać ją wtedy LikesBy czy coś takiego.
 }

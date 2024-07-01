@@ -32,8 +32,8 @@ namespace HealthTracker.Server.Infrastructure.Hubs
             _context.Message.Add(message);
             await _context.SaveChangesAsync();
 
-            await Clients.User(userFrom.ToString()).SendAsync("ReceiveMessage", userFrom, userTo, messageText);
-            await Clients.User(userTo.ToString()).SendAsync("ReceiveMessage", userFrom, userTo, messageText);
+            await Clients.User(userFrom.ToString()).SendAsync("ReceiveMessage", message.Id, userFrom, userTo, messageText);
+            await Clients.User(userTo.ToString()).SendAsync("ReceiveMessage", message.Id, userFrom, userTo, messageText);
         }
 
     }

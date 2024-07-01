@@ -1,17 +1,16 @@
 ﻿using HealthTracker.Server.Core.Exceptions;
 using HealthTracker.Server.Core.Exceptions.Community;
-using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
-using HealthTracker.Server.Modules.Community.Models;
 using HealthTracker.Server.Modules.Community.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class CommentController : ControllerBase
     {
         private readonly IPostRepository _postRepository;
@@ -39,7 +38,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (Exception ex) when (ex is CommentNotFoundException || ex is UserNotFoundException || ex is PostNotFoundException)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -58,7 +57,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (CommentNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -75,13 +74,35 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _postRepository.GetCommentsByPostId(postId, pageNumber, pageSize);
                 return Ok(result);
             }
-            catch(NullPageException ex)
+            catch (NullPageException ex)
             {
-                return NotFound(ex.Message);
+                return Ok();
+            }
+            catch (PostNotFoundException ex)
+            {
+                return NotFound(ex);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during the get comments for post process for {PostId}.", postId);
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpGet("users/posts/{postId}/comments/{parentCommentId}")]
+        public async Task<ActionResult<List<CommentDTO>>> GetCommentsByParentCommentId(int postId, int parentCommentId)
+        {
+            try
+            {
+                var result = await _postRepository.GetCommentsByParentCommentId(postId, parentCommentId);
+                return Ok(result);
+            }
+            catch (Exception ex) when (ex is CommentNotFoundException || ex is PostNotFoundException)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -96,7 +117,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (CommentNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -115,7 +136,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -134,7 +155,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (PostNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

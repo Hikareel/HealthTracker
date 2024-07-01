@@ -13,7 +13,7 @@ interface IPost {
   userLastName: string;
   content: string;
   dateOfCreate: string;
-  comments: IComment[];
+  amountOfComments: number;
   likes: ILike[];
 }
 
@@ -21,8 +21,12 @@ interface IComment {
   id: number;
   postId: number;
   userId: number;
+  userFirstName: string;
+  userLastName: string;
   parentCommentId: number | null;
+  amountOfChildComments: number;
   content: string;
+  dateOfCreate: string;
 }
 
 interface ILike {

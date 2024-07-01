@@ -1,35 +1,33 @@
 <template>
   <main class="community-page">
 
-    <div class="wall" :class="`${is_mobile_expanded && 'is_mobile_expanded'}`">
+    <div class="wall" :class="`${isMobileExpanded && 'is_mobile_expanded'}`">
       <div class="wall-header">
         <div class="search">
           <input placeholder="Search..." class="search-input">
         </div>
         <div class="friends-button">
-          <button class="menu-toggle" @click="ToggleMobile">
+          <button class="menu-toggle" @click="toggleMobile">
             <span class="material-icons">
               keyboard_double_arrow_down
             </span>
           </button>
         </div>
       </div>
-      <div class="mobile-expander">
-        <FriendsList :friends="friends" @select="clickAtFriend" class="list-mobile" />
-        <ChatBox :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages"
-          :connection="connection" class="chat-mobile" />
+      <div class="mobile-expander" v-if="isMobile">
+        <FriendsList class="list-mobile" />
+        <ChatBox :is_expanded="true" class="chat-mobile" />
       </div>
       <div class="wall-body">
         <div v-for="post in currentPosts.posts" :key="post.id" class="posts">
-          <Post :item="post" />
+          <Post :post="post" />
         </div>
       </div>
     </div>
 
-    <div class="right-content">
-      <FriendsList :friends="friends" @select="clickAtFriend" class="list" />
-      <ChatItem v-if="selectedFriend" :friendToChat="currentMessages.friendToChat" :messages="currentMessages.messages" :connection="connection"
-        class="chat" />
+    <div class="right-content" v-if="!isMobile">
+      <FriendsList class="list" />
+      <ChatItem v-if="chatStore.friendToChat" class="chat" />
     </div>
 
   </main>
@@ -40,111 +38,70 @@ import FriendsList from './friends/FriendsList.vue'
 import ChatItem from './chat/ChatItem.vue'
 import ChatBox from './chat/ChatBox.vue';
 import Post from './post/Post.vue'
-import { type FriendModel, friends } from '@/data/models/friendModel'
 import { currentPosts } from '@/data/models/postModels';
-import { user } from '../../../data/service/userData'
-import { currentMessages } from '@/data/models/messageModel';
-import { ref, onMounted } from "vue";
-import axios from 'axios';
-import { HubConnectionBuilder } from '@microsoft/signalr';
-import { v4 as uuidv4 } from 'uuid';
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { getPostOnWall } from '@/service/api/community/postController';
+import { getFriendList } from '@/service/api/community/friendshipController';
+import { useUserStore } from '@/store/account/auth';
+import { useChatStore } from '@/store/community/chatStore';
+import { useFriendsStore } from '@/store/community/friendsStore';
+import { connectToChatHub } from '@/service/hubs/chatHub'
+import { getNumberOfNewMessagesForFriend } from '@/service/api/community/chatController';
 
-const is_mobile_expanded = ref(false)
-const ToggleMobile = () => {
-  is_mobile_expanded.value = !is_mobile_expanded.value
-}
+const chatStore = useChatStore();
+const userStore = useUserStore();
+const friendsStore = useFriendsStore();
+const isMobile = ref(window.innerWidth < 785 || window.innerHeight < 590);
+const isButtonExpandedClicked = ref(false);
+const isMobileExpanded = computed(() => isMobile.value && isButtonExpandedClicked.value);
 
-const selectedFriend = ref<FriendModel | null>(null);
-const clickAtFriend = (friend: FriendModel) => {
-  selectedFriend.value = friend;
-  currentMessages.value.friendToChat = friend;
-  getCurrentUsersMessagesWithFriend(friend.userId);
-};
-
-let connection = new HubConnectionBuilder()
-  .withUrl("https://localhost:7170/chatHub", {
-    accessTokenFactory: () => user.token ?? ""
-  })
-  .build();
+const postPageNumber = ref(1)
+const postPageSize = 10
 
 onMounted(async () => {
-  getFriendList();
-  getPosts();
-  connectToChatHub();
+  window.addEventListener('resize', handleResize);
+  await connectToChatHub();
+  await getFriends();
+  await getPosts();
 });
 
-async function connectToChatHub() {
-  try {
-    if (!user.userId) {
-      return;
-    }
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+});
 
-    await connection.start();
-    console.log("Connected to Chat");
-    connection.on("ReceiveMessage", (userFrom, userTo, message) => {
-      console.log(message)
-      const isYours = userFrom === user.userId;
-      currentMessages.value.messages.push({
-        id: uuidv4(),
-        text: message,
-        isYours: isYours
-      });
+function toggleMobile() {
+  isButtonExpandedClicked.value = !isButtonExpandedClicked.value
+}
+
+function handleResize() {
+  isMobile.value = window.innerWidth < 785 || window.innerHeight < 590;
+}
+
+async function getFriends() {
+  if (!userStore.userId) {
+    return;
+  }
+  const response = await getFriendList();
+  if (response != null) {
+    friendsStore.friends = response.map((friend: any) => ({
+      ...friend,
+      newMessagesCount: 0
+    }));
+
+    friendsStore.friends.forEach(async (friend) => {
+      const response = await getNumberOfNewMessagesForFriend(friend.userId);
+      friend.newMessagesCount = response; 
     });
-  } catch (err) {
-    console.error("Error connecting to Chat:", err);
   }
 }
 
-async function getCurrentUsersMessagesWithFriend(friendId: number) {
-  //Obsłuzyć może jakoś różne status cody. (500, 200, itp)
-  try {
-    const response = await axios.get(`https://localhost:7170/api/users/messages/${user.userId}/${friendId}/`, {
-      params: {
-        pageNumber: currentMessages.value.pageNumber,
-        pageSize: currentMessages.value.pageSize
-      }
-    });
-
-    const messages = response.data.map((message: { id: number; text: string; userIdFrom: number; }) => ({
-      id: message.id,
-      text: message.text,
-      isYours: message.userIdFrom === user.userId
-    })).reverse();
-    currentMessages.value.messages = messages
-
-    console.log(currentMessages.value)
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function getFriendList() {
-  try {
-    if (!user.userId) {
-      return;
-    }
-    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/friends`);
-    friends.value = response.data;
-  } catch (error) {
-    console.error(error);
-  }
-}
 async function getPosts() {
-  try {
-    if (!user.userId) {
-      return;
-    }
-    const response = await axios.get(`https://localhost:7170/api/users/${user.userId}/wall/posts`, {
-      params: {
-        pageNumber: currentPosts.value.pageNumber,
-        pageSize: currentPosts.value.pageSize
-      }
-    });
-    currentPosts.value.posts = response.data;
-  } catch (error) {
-    console.error(error);
+  const posts = await getPostOnWall(postPageNumber.value, postPageSize);
+  if (posts) {
+    currentPosts.value.posts = posts
+  } else {
+    console.error("Failed to load posts or no posts available");
   }
-
 }
 
 </script>

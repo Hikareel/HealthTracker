@@ -18,7 +18,9 @@ import Footer from './components/shared/footer/Footer.vue'
 import Sidebar from './components/shared/sidebar/Sidebar.vue'
 import Header from './components/shared/header/Header.vue'
 import { onMounted } from 'vue';
-import { updateUser } from './data/service/userData';
+import { useUserStore } from './store/account/auth'
+
+const userStore = useUserStore();
 
 onMounted(async ()=>{
   await initialApplication()
@@ -26,7 +28,8 @@ onMounted(async ()=>{
 
 async function initialApplication() {
   console.log('Strona została odświeżona lub załadowana');
-  updateUser();
+  
+  userStore.updateUserData();
 }
 </script>
 

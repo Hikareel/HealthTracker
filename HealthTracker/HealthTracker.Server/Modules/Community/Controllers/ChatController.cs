@@ -4,6 +4,7 @@ using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
 using HealthTracker.Server.Modules.Community.DTOs;
 using HealthTracker.Server.Modules.Community.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IChatRepository _chatRepository;
@@ -37,7 +39,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -55,7 +57,7 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 return Ok(result);
 
             }
-            catch(MessageNotFoundException ex)
+            catch (MessageNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
@@ -74,17 +76,55 @@ namespace HealthTracker.Server.Modules.Community.Controllers
                 var result = await _chatRepository.GetMessages(userFrom, userTo, pageNumber, pageSize);
                 return Ok(result);
             }
-            catch(NullPageException ex)
+            catch (NullPageException ex)
             {
-                return NotFound(ex.Message);
+                return Ok();
             }
             catch (UserNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during the get messages process for {UserFrom} to {UserTo}.", userFrom, userTo);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("users/messages/{userFrom}/{userTo}/new")]
+        public async Task<ActionResult<int>> GetNumberOfNewMessages(int userFrom, int userTo)
+        {
+            try
+            {
+                var result = await _chatRepository.GetNumberOfNewMessages(userFrom, userTo);
+                return Ok(result);
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred getting the new messages count process for {UserFrom} to {UserTo}.", userFrom, userTo);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("users/messages/{userFrom}/{userTo}")]
+        public async Task<IActionResult> UpdateMessagesToReaded(int userFrom, int userTo)
+        {
+            try
+            {
+                await _chatRepository.UpdateMessagesToReaded(userFrom, userTo);
+                return Ok(new { message = "Messages updated successfully." });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred updating the messages process for {UserFrom} to {UserTo}.", userFrom, userTo);
                 return StatusCode(500, "Internal server error");
             }
         }

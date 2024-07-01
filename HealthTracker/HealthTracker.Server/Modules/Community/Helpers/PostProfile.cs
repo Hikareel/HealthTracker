@@ -12,7 +12,9 @@ namespace HealthTracker.Server.Modules.Community.Helpers
             CreateMap<Post, PostDTO>();
 
             CreateMap<CreateCommentDTO, Comment>();
-            CreateMap<Comment, CommentDTO>();
+            CreateMap<Comment, CommentDTO>()
+                .ForMember(dest => dest.UserFirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.UserLastName, opt => opt.MapFrom(src => src.User.LastName));
 
             CreateMap<Like, LikeDTO>();
             CreateMap<LikeDTO, Like>();

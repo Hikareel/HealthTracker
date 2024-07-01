@@ -2,6 +2,7 @@
 using HealthTracker.Server.Modules.PhysicalActivity.DTOs;
 using HealthTracker.Server.Modules.PhysicalActivity.Models;
 using HealthTracker.Server.Modules.PhysicalActivity.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace HealthTracker.Server.Modules.PhysicalActivity.Controllers
 {
     [Route("api")]
     [ApiController]
+    [Authorize]
     public class ExerciseController : ControllerBase
     {
         private readonly IExerciseRepository _exerciseRepository;

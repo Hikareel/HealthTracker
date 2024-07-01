@@ -1,43 +1,117 @@
 <template>
   <div class="chat-messinput">
-    <div class="messages">
-      <div v-for="message in currentMessages.messages" :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
+    <div class="messages" ref="messagesContainer" @scroll="handleScroll">
+      <div v-for="message in chatStore.messages"
+        :class="['message', message.isYours ? 'own-message' : 'received-message']" :key="message.id">
         {{ message.text }}
       </div>
     </div>
     <div class="chat-input">
-      <button @click="sendMessage"><i class='bi bi-send-fill'></i></button>
-      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessage" />
+      <button @click="sendMessageToHub"><i class='bi bi-send-fill'></i></button>
+      <input type="text" v-model="messageToSend" placeholder="Write message..." @keyup.enter="sendMessageToHub" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
-import { user } from '@/data/service/userData'
-import { currentMessages } from '@/data/models/messageModel';
+import { ref, onMounted, nextTick, watch } from 'vue';
+import { useUserStore } from '@/store/account/auth';
+import { getMessagesWithFriend, updateMessagesToRead } from '@/service/api/community/chatController';
+import { useChatStore } from '@/store/community/chatStore';
+import { sendMesssage } from '@/service/hubs/chatHub';
+import { useFriendsStore } from '@/store/community/friendsStore';
 
-const props = defineProps<{
-  connection: any;
-}>();
-
+const userStore = useUserStore();
+const chatStore = useChatStore();
+const friendsStore = useFriendsStore();
+const messagesContainer = ref();
 const messageToSend = ref('');
 
-async function sendMessage() {
-  if (messageToSend.value.trim() !== '' && currentMessages.value.friendToChat !== null) {
+onMounted(async () => {
+  chatStore.pageNumber = 1;
+  await loadMessages();
+  await nextTick(() => {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  });
+});
+
+watch(
+  () => chatStore.friendToChat,
+  async () => {
+    chatStore.pageNumber = 1;
+    chatStore.setMessages([]);
+    await loadMessages();
+    await nextTick(() => {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    });
+    if (chatStore.isChatExpanded) {
+      await resetNewMessagesCount();
+    }
+  },
+);
+
+watch(
+  () => chatStore.isChatExpanded,
+  async () => {
+    if (chatStore.isChatExpanded == true) {
+      await resetNewMessagesCount();
+    }
+  });
+
+watch(
+  () => chatStore.messages,
+  async () => {
+    if (chatStore.isChatExpanded) {
+      await nextTick(() => {
+        if (!chatStore.isLoadingOlderMessages) {
+          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        }
+      });
+    }
+  }, { deep: true });
+
+
+const handleScroll = async () => {
+  if (messagesContainer.value.scrollTop === 0 && chatStore.pageNumber > 1) {
+    await loadMessages();
+  }
+};
+
+async function resetNewMessagesCount() {
+  if (chatStore.friendToChat) {
+    friendsStore.resetNewMessagesCount(chatStore.friendToChat.userId);
+    await updateMessagesToRead(chatStore.friendToChat.userId);
+  }
+}
+
+async function loadMessages() {
+  if (chatStore.friendToChat == null) return;
+  const actualScrollHeight = messagesContainer.value.scrollHeight;
+  const response = await getMessagesWithFriend(chatStore.friendToChat.userId, chatStore.pageNumber, chatStore.pageSize);
+  if (response.length > 0) {
+    chatStore.addMessagesFromAPI(response, userStore.userId);
+    chatStore.pageNumber++;
+    await nextTick();
+    messagesContainer.value.scrollTop += (messagesContainer.value.scrollHeight - actualScrollHeight);
+  }
+}
+
+async function sendMessageToHub() {
+  if (messageToSend.value.trim() !== '' && chatStore.friendToChat !== null) {
     try {
-      if (user.userId) {
-        await props.connection.invoke("SendMessageToUser", user.userId, currentMessages.value.friendToChat.userId, messageToSend.value);
+      if (userStore.userId) {
+        await sendMesssage(messageToSend.value);
         messageToSend.value = '';
+        nextTick().then(() => {
+          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        });
       }
     } catch (err) {
       console.error(err);
     }
   }
 }
-
 </script>
-
 
 <style lang="scss" scoped>
 .chat-messinput {

@@ -2,7 +2,7 @@
 import axios from "axios";
 import router from "@/router";
 import { ref } from "vue";
-import { updateUser } from "../service/userData";
+import { useUserStore } from '../../../store/account/auth';
 
 interface IResponseModel {
   status: boolean,
@@ -31,8 +31,9 @@ const tasksForEndpoint = (
   if (endpoint == "/login") {
     localStorage.setItem("user", JSON.stringify(responseContent))
     formStatus.value.success = "User is logged"
+    const userStore = useUserStore();
     router.push("/").then(() => {
-      updateUser()
+      userStore.updateUserData();
     });
   } else {
     formStatus.value.success = responseContent

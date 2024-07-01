@@ -1,24 +1,19 @@
 <template>
     <main class="main-list">
         <div class="friends-list">
-            <FriendItem v-for="friend in friends" :item="friend" :key="friend.userId" @click="selectFriend(friend)"/>
+            <FriendItem v-for="friend in friendsStore.friends" :friend="friend" :key="friend.userId" @click="chatStore.setFriendToChat(friend)"/>
         </div>
     </main>
 </template>
 
 <script lang="ts" setup>
+import { useChatStore } from '@/store/community/chatStore';
 import FriendItem from './FriendItem.vue'
-import { type FriendModel } from '@/data/models/friendModel'
+import { useFriendsStore } from '@/store/community/friendsStore';
 
-defineProps<{
-    friends: FriendModel[]
-}>();
+const chatStore = useChatStore();
+const friendsStore = useFriendsStore();
 
-const emit = defineEmits(['select']);
-
-const selectFriend = (friend: FriendModel) => {
-  emit('select', friend);
-};
 </script>
 
 <style lang="scss" scoped>
