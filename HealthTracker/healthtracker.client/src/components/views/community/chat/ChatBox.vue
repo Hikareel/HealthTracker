@@ -47,8 +47,8 @@ watch(
     chatStore.setMessages([]);
     await loadMessages();
     await nextTick(() => {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-  });
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    });
   },
 )
 
