@@ -12,6 +12,7 @@ import Login from '../components/views/account/login/Login.vue'
 import NewPass from '../components/views/account/new_pass/NewPass.vue'
 import PassReset from '../components/views/account/pass_reset/PassReset.vue'
 import LoginSuccess from '../components/views/account/login/components/LoginSuccess.vue'
+import UserProfile from '../components/views/account/profile/UserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -86,6 +87,11 @@ const router = createRouter({
         next('/login')
       },
       redirect: ''
+    },
+    {
+      path: '/profile/:id',
+      name: 'UserProfile',
+      component: UserProfile
     }
   ]
 })

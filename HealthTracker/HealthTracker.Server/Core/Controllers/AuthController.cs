@@ -15,15 +15,15 @@ namespace HealthTracker.Server.Core.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IAuthRepository _authRepository;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUserRepository userRepository, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ILogger<AuthController> logger)
+        public AuthController(IAuthRepository authRepository, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ILogger<AuthController> logger)
         {
-            _userRepository = userRepository;
+            _authRepository = authRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
@@ -35,12 +35,12 @@ namespace HealthTracker.Server.Core.Controllers
         {
             try
             {
-                var result = await _userRepository.LoginAsync(loginDto);
+                var result = await _authRepository.LoginAsync(loginDto);
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) ?? await _userManager.FindByEmailAsync(loginDto.EmailUserName);
                     var userDTO = _mapper.Map<SuccessLoginDto>(user);
-                    userDTO.Token = await _userRepository.GenerateJwtToken(loginDto.EmailUserName);
+                    userDTO.Token = await _authRepository.GenerateJwtToken(loginDto.EmailUserName);
                     return Ok(userDTO);
                 }
 
@@ -58,7 +58,7 @@ namespace HealthTracker.Server.Core.Controllers
         {
             try
             {
-                var result = await _userRepository.RegisterUserAsync(registerUserDto);
+                var result = await _authRepository.RegisterUserAsync(registerUserDto);
 
                 if (result.Succeeded)
                 {
@@ -97,7 +97,7 @@ namespace HealthTracker.Server.Core.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
                 var userDTO = _mapper.Map<SuccessLoginDto>(user);
-                userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
+                userDTO.Token = await _authRepository.GenerateJwtToken(user.Email);
                 var settings = new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -130,7 +130,7 @@ namespace HealthTracker.Server.Core.Controllers
                     await _userManager.AddLoginAsync(user, info);
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     var userDTO = _mapper.Map<SuccessLoginDto>(user);
-                    userDTO.Token = await _userRepository.GenerateJwtToken(user.Email);
+                    userDTO.Token = await _authRepository.GenerateJwtToken(user.Email);
                     var settings = new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()

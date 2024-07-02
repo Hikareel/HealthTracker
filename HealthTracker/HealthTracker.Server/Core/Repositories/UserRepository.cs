@@ -1,109 +1,36 @@
-﻿using HealthTracker.Server.Core.DTOs;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using HealthTracker.Server.Core.DTOs;
 using HealthTracker.Server.Core.Exceptions;
-using HealthTracker.Server.Core.Exceptions.Community;
 using HealthTracker.Server.Core.Models;
+using HealthTracker.Server.Infrastrucure.Data;
+using HealthTracker.Server.Modules.Community.DTOs;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
+using Microsoft.EntityFrameworkCore;
 namespace HealthTracker.Server.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto);
-        Task<IdentityResult> LoginAsync(LoginDto loginDto);
-        Task<string> GenerateJwtToken(string emailUserName);
+        Task<UserDTO> GetUser(int id);
     }
     public class UserRepository : IUserRepository
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IConfiguration _configuration;
-        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        public UserRepository(ApplicationDbContext context, IMapper mapper)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(RegisterDTO userDto)
+        public async Task<UserDTO> GetUser(int id)
         {
-            var userExists = await _userManager.FindByEmailAsync(userDto.Email);
-            if (userExists != null)
-            {
-                return IdentityResult.Failed(new IdentityError { Code = "400", Description = $"E-mail '{userDto.Email}' is already taken." });
-            }
+            var userDTO = await _context.Users
+                .Where(u => u.Id == id)
+                .ProjectTo<UserDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync() ?? throw new UserNotFoundException(id);
 
-            var user = new User
-            {
-                UserName = userDto.UserName,
-                Email = userDto.Email,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                PhoneNumber = userDto.PhoneNumber,
-                DateOfBirth = userDto.DateOfBirth,
-                DateOfCreate = DateTime.UtcNow
-            };
-
-            return await _userManager.CreateAsync(user, userDto.Password);
+            return userDTO;
         }
-
-        public async Task<IdentityResult> LoginAsync(LoginDto loginDto)
-        {
-            var user = await _userManager.FindByNameAsync(loginDto.EmailUserName) != null ?
-                await _userManager.FindByNameAsync(loginDto.EmailUserName) : await _userManager.FindByEmailAsync(loginDto.EmailUserName);
-            if (user == null)
-            {
-                return IdentityResult.Failed(new IdentityError { Code = "404", Description = $"Username or Email doesn\'t exists." });
-            }
-            else if (!user.EmailConfirmed)
-            {
-                return IdentityResult.Failed(new IdentityError { Code = "405", Description = $"Email is not confirmed. Please confirm before login." });
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
-            if (result.Succeeded)
-            {
-                return IdentityResult.Success;
-            }
-            else
-            {
-                return IdentityResult.Failed(new IdentityError { Code = "406", Description = $"User wrong credentials" });
-
-            }
-        }
-
-        public async Task<string> GenerateJwtToken(string emailUserName)
-        {
-            var user = await _userManager.FindByNameAsync(emailUserName) ?? await _userManager.FindByEmailAsync(emailUserName);
-            if (user == null)
-            {
-                throw new UserNotFoundException("User not found.");
-            }
-
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim("name", $"{user.FirstName} {user.LastName}"),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(8),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-
     }
 }
